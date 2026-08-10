@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { Search, Heart, ShoppingCart, User, ArrowUpRight, MapPin, Menu, X } from "lucide-react";
 import { categories } from "@/lib/mock-products";
+import { categoryIcon } from "@/lib/category-icons";
 import { useCart, useFavorites, useHydrated } from "@/lib/store";
 
 const navItems = [
@@ -86,20 +87,25 @@ export default function Header() {
             <div className="container-eleva py-6">
               <div className="text-xs font-bold tracking-widest uppercase text-[color:var(--color-accent)] mb-4">Explorá</div>
               <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
-                {categories.map((c) => (
-                  <Link
-                    key={c.slug}
-                    href={`/catalogo?cat=${c.slug}`}
-                    onClick={() => setMenuOpen(false)}
-                    className="card-flat px-4 py-3 flex items-center gap-3 hover:border-[color:var(--color-accent)] hover:shadow-md transition"
-                  >
-                    <span className="text-2xl leading-none">{c.icon}</span>
-                    <div className="min-w-0">
-                      <div className="text-sm font-semibold text-[color:var(--color-brand)] truncate">{c.name}</div>
-                      <div className="text-[11px] text-[color:var(--color-muted)]">{c.count} productos</div>
-                    </div>
-                  </Link>
-                ))}
+                {categories.map((c) => {
+                  const Icon = categoryIcon(c.slug);
+                  return (
+                    <Link
+                      key={c.slug}
+                      href={`/catalogo?cat=${c.slug}`}
+                      onClick={() => setMenuOpen(false)}
+                      className="card-flat px-4 py-3 flex items-center gap-3 hover:border-[color:var(--color-accent)] hover:shadow-md transition"
+                    >
+                      <span className="w-9 h-9 rounded bg-[color:var(--color-brand-100)] flex items-center justify-center text-[color:var(--color-brand)] shrink-0">
+                        <Icon size={18} />
+                      </span>
+                      <div className="min-w-0">
+                        <div className="text-sm font-semibold text-[color:var(--color-brand)] truncate">{c.name}</div>
+                        <div className="text-[11px] text-[color:var(--color-muted)]">{c.count} productos</div>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
               <Link href="/categorias" onClick={() => setMenuOpen(false)} className="inline-block mt-5 text-sm font-semibold text-[color:var(--color-brand)] hover:text-[color:var(--color-accent)]">
                 Ver todas las categorías →

@@ -19,19 +19,19 @@ export default function Hero() {
   const s = slides[i];
   return (
     <section className="container-eleva pt-6">
-      <div className="relative overflow-hidden rounded bg-gradient-to-br from-[#240453] via-[#3B1370] to-[#240453] text-white">
-        <div className="grid md:grid-cols-2 gap-6 p-8 md:p-14 min-h-[380px]">
-          <div className="flex flex-col justify-center gap-5">
+      <div className="relative overflow-hidden rounded bg-gradient-to-br from-[#240453] via-[#3B1370] to-[#240453] text-white h-[420px] md:h-[440px]">
+        <div className="grid md:grid-cols-2 gap-6 p-8 md:p-14 h-full">
+          <div className="flex flex-col justify-center gap-5 min-w-0">
             <div className="flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-[color:var(--color-accent)]">
               <span className="h-px w-8 bg-[color:var(--color-accent)]" /> {s.kicker}
             </div>
-            <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">{s.title}</h1>
-            <p className="text-base md:text-lg text-white/80 max-w-md">{s.desc}</p>
+            <h1 className="text-3xl md:text-5xl font-extrabold leading-tight line-clamp-3">{s.title}</h1>
+            <p className="text-base md:text-lg text-white/80 max-w-md line-clamp-2">{s.desc}</p>
             <Link href={s.href} className="btn-primary w-fit mt-2">
               {s.cta} <ArrowRight size={18} />
             </Link>
           </div>
-          <div className="hidden md:block relative">
+          <div className="hidden md:block relative h-full">
             <div className="absolute inset-0 rounded overflow-hidden border border-white/15">
               <Image src={s.img} alt={s.title} fill sizes="50vw" className="object-cover" priority />
               <div className="absolute inset-0 bg-gradient-to-l from-transparent to-[#240453]/40" />

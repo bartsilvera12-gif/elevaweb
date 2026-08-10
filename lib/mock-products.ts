@@ -3,25 +3,24 @@ import type { ProductCard } from "@/components/home/ProductRow";
 export interface Category {
   slug: string;
   name: string;
-  icon: string;
   image: string;
 }
 
 const catImg = (seed: string) => `https://picsum.photos/seed/eleva-cat-${seed}/600/400`;
 
 const rawCategories: Category[] = [
-  { slug: "moda", name: "Moda y accesorios", icon: "👗", image: catImg("moda") },
-  { slug: "belleza", name: "Belleza y cuidado", icon: "💄", image: catImg("belleza") },
-  { slug: "hogar", name: "Hogar y deco", icon: "🛋️", image: catImg("hogar") },
-  { slug: "electronica", name: "Electrónica", icon: "📱", image: catImg("electronica") },
-  { slug: "audio", name: "Audio", icon: "🎧", image: catImg("audio") },
-  { slug: "wearables", name: "Wearables", icon: "⌚", image: catImg("wearables") },
-  { slug: "deportes", name: "Deportes y outdoor", icon: "🏃", image: catImg("deportes") },
-  { slug: "ninos", name: "Niños y bebés", icon: "🧸", image: catImg("ninos") },
-  { slug: "libros", name: "Libros y papelería", icon: "📚", image: catImg("libros") },
-  { slug: "gourmet", name: "Gourmet y bebidas", icon: "🍷", image: catImg("gourmet") },
-  { slug: "mascotas", name: "Mascotas", icon: "🐾", image: catImg("mascotas") },
-  { slug: "auto", name: "Auto y viajes", icon: "🚗", image: catImg("auto") },
+  { slug: "moda", name: "Moda y accesorios", image: catImg("moda") },
+  { slug: "belleza", name: "Belleza y cuidado", image: catImg("belleza") },
+  { slug: "hogar", name: "Hogar y deco", image: catImg("hogar") },
+  { slug: "electronica", name: "Electrónica", image: catImg("electronica") },
+  { slug: "audio", name: "Audio", image: catImg("audio") },
+  { slug: "wearables", name: "Wearables", image: catImg("wearables") },
+  { slug: "deportes", name: "Deportes y outdoor", image: catImg("deportes") },
+  { slug: "ninos", name: "Niños y bebés", image: catImg("ninos") },
+  { slug: "libros", name: "Libros y papelería", image: catImg("libros") },
+  { slug: "gourmet", name: "Gourmet y bebidas", image: catImg("gourmet") },
+  { slug: "mascotas", name: "Mascotas", image: catImg("mascotas") },
+  { slug: "auto", name: "Auto y viajes", image: catImg("auto") },
 ];
 
 export interface VariantGroup {
