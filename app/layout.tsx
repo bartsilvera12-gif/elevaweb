@@ -6,12 +6,6 @@ import Footer from "@/components/layout/Footer";
 export const metadata: Metadata = {
   title: "ELEVA — Marketplace paraguayo",
   description: "Comprá y vendé en un solo lugar. Emprendedores paraguayos, entrega coordinada, pago protegido.",
-  icons: {
-    icon: [
-      { url: "/uploads/Isotipo-eleva.png", type: "image/png" },
-    ],
-    apple: "/uploads/Isotipo-eleva.png",
-  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
