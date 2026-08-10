@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Shirt, Sparkles, Sofa, Smartphone, Headphones, Watch, Dumbbell, Baby, BookOpen, Wine, PawPrint, Package } from "lucide-react";
+import { Shirt, Sparkles, Sofa, Smartphone, Headphones, Watch, Dumbbell, Baby, BookOpen, Wine, PawPrint, Gamepad2, Package } from "lucide-react";
 
 const map: Record<string, LucideIcon> = {
   moda: Shirt,
@@ -13,6 +13,7 @@ const map: Record<string, LucideIcon> = {
   libros: BookOpen,
   gourmet: Wine,
   mascotas: PawPrint,
+  videojuegos: Gamepad2,
 };
 
 export function categoryIcon(slug: string): LucideIcon {

@@ -18,6 +18,7 @@ const rawCategories: Category[] = [
   { slug: "libros", name: "Libros y papelería", image: "/categorias/libros.jpg" },
   { slug: "gourmet", name: "Gourmet y bebidas", image: "/categorias/gourmet.jpg" },
   { slug: "mascotas", name: "Mascotas", image: "/categorias/mascotas.jpg" },
+  { slug: "videojuegos", name: "Videojuegos", image: "/categorias/videojuegos.jpg" },
 ];
 
 export interface VariantGroup {
