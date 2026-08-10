@@ -4,25 +4,24 @@ export interface Category {
   slug: string;
   name: string;
   icon: string;
-  count: number;
   image: string;
 }
 
 const catImg = (seed: string) => `https://picsum.photos/seed/eleva-cat-${seed}/600/400`;
 
-export const categories: Category[] = [
-  { slug: "moda", name: "Moda y accesorios", icon: "👗", count: 128, image: catImg("moda") },
-  { slug: "belleza", name: "Belleza y cuidado", icon: "💄", count: 84, image: catImg("belleza") },
-  { slug: "hogar", name: "Hogar y deco", icon: "🛋️", count: 96, image: catImg("hogar") },
-  { slug: "electronica", name: "Electrónica", icon: "📱", count: 72, image: catImg("electronica") },
-  { slug: "audio", name: "Audio", icon: "🎧", count: 38, image: catImg("audio") },
-  { slug: "wearables", name: "Wearables", icon: "⌚", count: 24, image: catImg("wearables") },
-  { slug: "deportes", name: "Deportes y outdoor", icon: "🏃", count: 56, image: catImg("deportes") },
-  { slug: "ninos", name: "Niños y bebés", icon: "🧸", count: 44, image: catImg("ninos") },
-  { slug: "libros", name: "Libros y papelería", icon: "📚", count: 61, image: catImg("libros") },
-  { slug: "gourmet", name: "Gourmet y bebidas", icon: "🍷", count: 33, image: catImg("gourmet") },
-  { slug: "mascotas", name: "Mascotas", icon: "🐾", count: 27, image: catImg("mascotas") },
-  { slug: "auto", name: "Auto y viajes", icon: "🚗", count: 19, image: catImg("auto") },
+const rawCategories: Category[] = [
+  { slug: "moda", name: "Moda y accesorios", icon: "👗", image: catImg("moda") },
+  { slug: "belleza", name: "Belleza y cuidado", icon: "💄", image: catImg("belleza") },
+  { slug: "hogar", name: "Hogar y deco", icon: "🛋️", image: catImg("hogar") },
+  { slug: "electronica", name: "Electrónica", icon: "📱", image: catImg("electronica") },
+  { slug: "audio", name: "Audio", icon: "🎧", image: catImg("audio") },
+  { slug: "wearables", name: "Wearables", icon: "⌚", image: catImg("wearables") },
+  { slug: "deportes", name: "Deportes y outdoor", icon: "🏃", image: catImg("deportes") },
+  { slug: "ninos", name: "Niños y bebés", icon: "🧸", image: catImg("ninos") },
+  { slug: "libros", name: "Libros y papelería", icon: "📚", image: catImg("libros") },
+  { slug: "gourmet", name: "Gourmet y bebidas", icon: "🍷", image: catImg("gourmet") },
+  { slug: "mascotas", name: "Mascotas", icon: "🐾", image: catImg("mascotas") },
+  { slug: "auto", name: "Auto y viajes", icon: "🚗", image: catImg("auto") },
 ];
 
 export interface FullProduct extends ProductCard {
@@ -70,6 +69,11 @@ export const brands = [
 ];
 
 export type ProductWithImage = FullProduct;
+
+export const categories: (Category & { count: number })[] = rawCategories.map((c) => ({
+  ...c,
+  count: products.filter((p) => p.category === c.slug).length,
+}));
 
 export const featured = products.filter((p) => (p.rating ?? 0) >= 4.6).slice(0, 4);
 export const nuevos = products.filter((p) => p.badge === "nuevo").slice(0, 4);
