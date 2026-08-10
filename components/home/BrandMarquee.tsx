@@ -14,7 +14,6 @@ const brands = [
   { slug: "xiaomi", name: "Xiaomi" },
   { slug: "hp", name: "HP" },
   { slug: "dell", name: "Dell" },
-  { slug: "philips", name: "Philips" },
   { slug: "huawei", name: "Huawei" },
   { slug: "panasonic", name: "Panasonic" },
   { slug: "lenovo", name: "Lenovo" },
@@ -35,7 +34,7 @@ export default function BrandMarquee() {
             baseVelocity={7}
             slowdownOnHover
             draggable
-            repeat={2}
+            repeat={1}
             dragSensitivity={0.1}
             className="w-full h-full"
             responsive
@@ -44,7 +43,7 @@ export default function BrandMarquee() {
             {brands.map((b) => (
               <div
                 key={b.slug}
-                className="w-24 h-24 md:w-28 md:h-28 bg-white border border-[color:var(--color-line)] shadow-[0_6px_18px_-8px_rgba(36,4,83,0.25)] flex items-center justify-center hover:scale-110 hover:shadow-[0_10px_24px_-8px_rgba(252,80,5,0.45)] transition-transform duration-300 ease-in-out"
+                className="w-20 h-20 md:w-24 md:h-24 bg-white border border-[color:var(--color-line)] shadow-[0_6px_18px_-8px_rgba(36,4,83,0.25)] flex items-center justify-center hover:scale-110 hover:shadow-[0_10px_24px_-8px_rgba(252,80,5,0.45)] transition-transform duration-300 ease-in-out"
                 style={{ borderRadius: 4 }}
               >
                 {}
