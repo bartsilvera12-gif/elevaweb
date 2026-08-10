@@ -242,6 +242,53 @@
       </div>
     </div>
 
+    <!-- BRAND MARQUEE -->
+    <style>
+      @keyframes elevaBrandScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+      .eleva-brand-track { display:flex; gap:56px; width:max-content; animation: elevaBrandScroll 40s linear infinite; align-items:center; }
+      .eleva-brand-mask:hover .eleva-brand-track { animation-play-state: paused; }
+      .eleva-brand-track img { height:34px; width:auto; opacity:.75; filter:grayscale(1); transition:opacity .2s, filter .2s, transform .2s; }
+      .eleva-brand-track img:hover { opacity:1; filter:none; transform:scale(1.08); }
+      .eleva-brand-mask { -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%); }
+    </style>
+    <section style="background:#fff;border-top:1px solid #F1EDF9;border-bottom:1px solid #F1EDF9">
+      <div style="max-width:1240px;margin:0 auto;padding:28px 22px">
+        <div style="text-align:center;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#8A82A0;margin-bottom:18px">Marcas que ya están en ELEVA</div>
+        <div class="eleva-brand-mask" style="overflow:hidden">
+          <div class="eleva-brand-track">
+            <img src="https://cdn.simpleicons.org/samsung/240453" alt="Samsung"/>
+            <img src="https://cdn.simpleicons.org/apple/240453" alt="Apple"/>
+            <img src="https://cdn.simpleicons.org/nike/240453" alt="Nike"/>
+            <img src="https://cdn.simpleicons.org/adidas/240453" alt="Adidas"/>
+            <img src="https://cdn.simpleicons.org/sony/240453" alt="Sony"/>
+            <img src="https://cdn.simpleicons.org/lg/240453" alt="LG"/>
+            <img src="https://cdn.simpleicons.org/xiaomi/240453" alt="Xiaomi"/>
+            <img src="https://cdn.simpleicons.org/hp/240453" alt="HP"/>
+            <img src="https://cdn.simpleicons.org/dell/240453" alt="Dell"/>
+            <img src="https://cdn.simpleicons.org/philips/240453" alt="Philips"/>
+            <img src="https://cdn.simpleicons.org/huawei/240453" alt="Huawei"/>
+            <img src="https://cdn.simpleicons.org/panasonic/240453" alt="Panasonic"/>
+            <img src="https://cdn.simpleicons.org/lenovo/240453" alt="Lenovo"/>
+            <img src="https://cdn.simpleicons.org/asus/240453" alt="Asus"/>
+            <img src="https://cdn.simpleicons.org/samsung/240453" alt="Samsung"/>
+            <img src="https://cdn.simpleicons.org/apple/240453" alt="Apple"/>
+            <img src="https://cdn.simpleicons.org/nike/240453" alt="Nike"/>
+            <img src="https://cdn.simpleicons.org/adidas/240453" alt="Adidas"/>
+            <img src="https://cdn.simpleicons.org/sony/240453" alt="Sony"/>
+            <img src="https://cdn.simpleicons.org/lg/240453" alt="LG"/>
+            <img src="https://cdn.simpleicons.org/xiaomi/240453" alt="Xiaomi"/>
+            <img src="https://cdn.simpleicons.org/hp/240453" alt="HP"/>
+            <img src="https://cdn.simpleicons.org/dell/240453" alt="Dell"/>
+            <img src="https://cdn.simpleicons.org/philips/240453" alt="Philips"/>
+            <img src="https://cdn.simpleicons.org/huawei/240453" alt="Huawei"/>
+            <img src="https://cdn.simpleicons.org/panasonic/240453" alt="Panasonic"/>
+            <img src="https://cdn.simpleicons.org/lenovo/240453" alt="Lenovo"/>
+            <img src="https://cdn.simpleicons.org/asus/240453" alt="Asus"/>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- PROMO BANNERS -->
     <section style="max-width:1240px;margin:0 auto;padding:34px 22px">
       <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:18px" class="eleva-banner-grid">
