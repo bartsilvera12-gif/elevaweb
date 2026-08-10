@@ -28,7 +28,7 @@ export default function BrandMarquee() {
         <div className="text-center text-xs font-bold tracking-[0.14em] uppercase text-[color:var(--color-muted)] mb-4">
           Marcas que ya están en ELEVA
         </div>
-        <div className="h-[220px] md:h-[280px]">
+        <div className="h-[260px] md:h-[340px]">
           <MarqueeAlongSvgPath
             path={path}
             viewBox="0 0 996 330"
@@ -42,12 +42,16 @@ export default function BrandMarquee() {
             grabCursor
           >
             {brands.map((b) => (
-              <div key={b.slug} className="w-16 h-16 flex items-center justify-center hover:scale-125 transition-transform duration-300 ease-in-out">
+              <div
+                key={b.slug}
+                className="w-24 h-24 md:w-28 md:h-28 bg-white border border-[color:var(--color-line)] shadow-[0_6px_18px_-8px_rgba(36,4,83,0.25)] flex items-center justify-center hover:scale-110 hover:shadow-[0_10px_24px_-8px_rgba(252,80,5,0.45)] transition-transform duration-300 ease-in-out"
+                style={{ borderRadius: 4 }}
+              >
                 {}
                 <img
                   src={`https://cdn.simpleicons.org/${b.slug}/240453`}
                   alt={b.name}
-                  className="w-full h-full object-contain"
+                  className="w-3/5 h-3/5 object-contain"
                   draggable={false}
                 />
               </div>
