@@ -8,6 +8,7 @@ import { Search, Heart, ShoppingCart, User, ArrowUpRight, MapPin, Menu, X, Zap, 
 import { categories } from "@/lib/mock-products";
 import { categoryIcon } from "@/lib/category-icons";
 import { useCart, useFavorites, useHydrated } from "@/lib/store";
+import CitySelector from "./CitySelector";
 
 const navItems = [
   { href: "/", label: "Inicio" },
@@ -108,10 +109,7 @@ export default function Header() {
 
       <nav className="hidden md:block border-t border-[color:var(--color-line-soft)]">
         <div className="container-eleva flex items-center gap-1 h-12">
-          <button className="flex items-center gap-2 px-3 py-2 rounded text-sm text-[color:var(--color-brand)] hover:bg-[color:var(--color-brand-100)] transition-colors">
-            <MapPin size={16} className="text-[color:var(--color-accent)]" />
-            <span className="text-[color:var(--color-muted)]">Enviar a <strong className="text-[color:var(--color-brand)]">Asunción</strong></span>
-          </button>
+          <CitySelector />
           <span className="w-px h-5 bg-[color:var(--color-line)] mx-2" />
           <motion.button
             whileTap={{ scale: 0.97 }}
