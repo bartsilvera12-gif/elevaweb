@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { formatGs } from "@/lib/utils";
 import { products } from "@/lib/mock-products";
 import { Minus, Plus, Trash2, ShoppingCart, ArrowRight } from "lucide-react";
@@ -37,7 +38,9 @@ export default function CarritoPage() {
         <div className="lg:col-span-2 flex flex-col gap-3">
           {items.map((it) => (
             <div key={it.slug} className="card-flat p-4 flex items-center gap-4">
-              <div className="w-20 h-20 shrink-0 bg-gradient-to-br from-[#F1EAFB] to-[#FFD9C2] rounded" />
+              <div className="relative w-20 h-20 shrink-0 rounded overflow-hidden bg-[color:var(--color-line-soft)]">
+                <Image src={it.p.image} alt={it.p.name} fill sizes="80px" className="object-cover" />
+              </div>
               <div className="flex-1 min-w-0">
                 <Link href={`/producto/${it.p.slug}`} className="font-semibold text-[color:var(--color-brand)] hover:text-[color:var(--color-accent)] line-clamp-1">{it.p.name}</Link>
                 <div className="text-xs text-[color:var(--color-muted)] capitalize mt-0.5">{it.p.category}</div>

@@ -1,12 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 const slides = [
-  { kicker: "Recién llegados", title: "Novedades de la semana", desc: "Lo último que sumaron nuestros emprendedores.", cta: "Descubrir novedades", href: "/catalogo?nuevo=1" },
-  { kicker: "Hasta -40%", title: "Semana de ofertas", desc: "Los mejores precios del mes, por tiempo limitado.", cta: "Ver ofertas", href: "/catalogo?ofertas=1" },
-  { kicker: "Vendé con nosotros", title: "Llevá tu emprendimiento más alto", desc: "Vos publicás; nosotros almacenamos, vendemos y entregamos.", cta: "Quiero vender", href: "/vender" },
+  { kicker: "Recién llegados", title: "Novedades de la semana", desc: "Lo último que sumaron nuestros emprendedores.", cta: "Descubrir novedades", href: "/catalogo?nuevo=1", img: "https://picsum.photos/seed/eleva-hero-nuevos/900/600" },
+  { kicker: "Hasta -40%", title: "Semana de ofertas", desc: "Los mejores precios del mes, por tiempo limitado.", cta: "Ver ofertas", href: "/catalogo?ofertas=1", img: "https://picsum.photos/seed/eleva-hero-ofertas/900/600" },
+  { kicker: "Vendé con nosotros", title: "Llevá tu emprendimiento más alto", desc: "Vos publicás; nosotros almacenamos, vendemos y entregamos.", cta: "Quiero vender", href: "/vender", img: "https://picsum.photos/seed/eleva-hero-vender/900/600" },
 ];
 
 export default function Hero() {
@@ -30,9 +31,10 @@ export default function Hero() {
               {s.cta} <ArrowRight size={18} />
             </Link>
           </div>
-          <div className="hidden md:flex items-center justify-center">
-            <div className="w-full h-64 rounded border border-white/15 bg-white/5 flex items-center justify-center text-white/50 text-sm">
-              Banner: {s.kicker}
+          <div className="hidden md:block relative">
+            <div className="absolute inset-0 rounded overflow-hidden border border-white/15">
+              <Image src={s.img} alt={s.title} fill sizes="50vw" className="object-cover" priority />
+              <div className="absolute inset-0 bg-gradient-to-l from-transparent to-[#240453]/40" />
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { categories } from "@/lib/mock-products";
 
 export default function CategoriesGrid() {
@@ -11,16 +12,22 @@ export default function CategoriesGrid() {
         </div>
         <Link href="/categorias" className="text-sm font-semibold text-[color:var(--color-brand)] hover:text-[color:var(--color-accent)]">Ver todas</Link>
       </div>
-      <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-        {categories.slice(0, 12).map((c) => (
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+        {categories.slice(0, 6).map((c) => (
           <Link
             key={c.slug}
             href={`/catalogo?cat=${c.slug}`}
-            className="card-flat px-3 py-4 flex flex-col items-center gap-2 hover:border-[color:var(--color-accent)] hover:shadow-md transition"
+            className="card-flat overflow-hidden hover:shadow-md hover:border-[color:var(--color-accent)] transition"
           >
-            <span className="text-3xl leading-none">{c.icon}</span>
-            <span className="text-xs font-semibold text-center text-[color:var(--color-ink)]">{c.name}</span>
-            <span className="text-[10px] text-[color:var(--color-muted)]">{c.count} productos</span>
+            <div className="relative aspect-[4/3] bg-[color:var(--color-line-soft)]">
+              <Image src={c.image} alt={c.name} fill sizes="(max-width:768px) 50vw, 16vw" className="object-cover" />
+            </div>
+            <div className="p-3">
+              <div className="text-sm font-bold text-[color:var(--color-brand)] flex items-center gap-1.5">
+                <span>{c.icon}</span> <span className="truncate">{c.name}</span>
+              </div>
+              <div className="text-[11px] text-[color:var(--color-muted)] mt-0.5">{c.count} productos</div>
+            </div>
           </Link>
         ))}
       </div>

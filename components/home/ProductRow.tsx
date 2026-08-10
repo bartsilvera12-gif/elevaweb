@@ -1,6 +1,8 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronRight, ShoppingCart } from "lucide-react";
 import { formatGs } from "@/lib/utils";
+import { products as allProducts } from "@/lib/mock-products";
 
 export interface ProductCard {
   slug: string;
@@ -12,6 +14,7 @@ export interface ProductCard {
   badge?: "nuevo" | "masvendido" | null;
   discPct?: number | null;
   in_stock?: boolean;
+  image?: string;
 }
 
 export default function ProductRow({ kicker, title, viewAllHref, products }: {
@@ -36,27 +39,24 @@ export default function ProductRow({ kicker, title, viewAllHref, products }: {
 }
 
 function Card({ p }: { p: ProductCard }) {
+  const image = p.image || allProducts.find((x) => x.slug === p.slug)?.image;
   return (
-    <Link href={`/producto/${p.slug}`} className="card-flat hover:shadow-md transition-shadow flex flex-col">
-      <div className="relative aspect-[4/3] bg-gradient-to-br from-[#F1EAFB] via-[#E3D0F5] to-[#FFD9C2] flex items-center justify-center text-[color:var(--color-brand)]/60 text-sm px-3 text-center">
+    <Link href={`/producto/${p.slug}`} className="card-flat hover:shadow-md transition-shadow flex flex-col overflow-hidden">
+      <div className="relative aspect-[4/3] bg-[color:var(--color-line-soft)]">
+        {image && <Image src={image} alt={p.name} fill sizes="(max-width:768px) 50vw, 25vw" className="object-cover" />}
         {p.discPct && (
-          <span className="absolute top-2.5 left-2.5 bg-[color:var(--color-accent)] text-white font-extrabold text-xs px-2 py-1 rounded">
-            -{p.discPct}%
-          </span>
+          <span className="absolute top-2.5 left-2.5 bg-[color:var(--color-accent)] text-white font-extrabold text-xs px-2 py-1 rounded z-10">-{p.discPct}%</span>
         )}
-        {p.badge === "nuevo" && (
-          <span className="absolute top-2.5 left-2.5 bg-[color:var(--color-brand)] text-white font-bold text-[11px] px-2 py-1 rounded uppercase">Nuevo</span>
+        {p.badge === "nuevo" && !p.discPct && (
+          <span className="absolute top-2.5 left-2.5 bg-[color:var(--color-brand)] text-white font-bold text-[11px] px-2 py-1 rounded uppercase z-10">Nuevo</span>
         )}
-        {p.badge === "masvendido" && (
-          <span className="absolute top-2.5 left-2.5 bg-white text-[color:var(--color-brand)] font-bold text-[11px] px-2 py-1 rounded uppercase border">Más vendido</span>
+        {p.badge === "masvendido" && !p.discPct && (
+          <span className="absolute top-2.5 left-2.5 bg-white text-[color:var(--color-brand)] font-bold text-[11px] px-2 py-1 rounded uppercase border z-10">Más vendido</span>
         )}
-        <span className="font-medium">{p.name}</span>
       </div>
       <div className="p-3.5 flex flex-col gap-1.5">
-        {p.rating && (
-          <div className="text-xs text-[color:var(--color-muted)]">
-            ★ {p.rating.toFixed(1)} · {p.sold ?? 0} vendidos
-          </div>
+        {p.rating != null && (
+          <div className="text-xs text-[color:var(--color-muted)]">★ {p.rating.toFixed(1)} · {p.sold ?? 0} vendidos</div>
         )}
         <div className="font-semibold text-sm line-clamp-2 text-[color:var(--color-ink)]">{p.name}</div>
         <div className="flex items-baseline gap-2 mt-1">

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ShoppingCart } from "lucide-react";
 import { formatGs } from "@/lib/utils";
 import type { FullProduct } from "@/lib/mock-products";
@@ -14,18 +15,18 @@ export default function CatalogGrid({ products }: { products: FullProduct[] }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
       {products.map((p) => (
-        <Link key={p.slug} href={`/producto/${p.slug}`} className="card-flat hover:shadow-md transition-shadow flex flex-col">
-          <div className="relative aspect-[4/3] bg-gradient-to-br from-[#F1EAFB] via-[#E3D0F5] to-[#FFD9C2] flex items-center justify-center text-[color:var(--color-brand)]/60 text-sm px-3 text-center">
+        <Link key={p.slug} href={`/producto/${p.slug}`} className="card-flat hover:shadow-md transition-shadow flex flex-col overflow-hidden">
+          <div className="relative aspect-[4/3] bg-[color:var(--color-line-soft)]">
+            <Image src={p.image} alt={p.name} fill sizes="(max-width:768px) 50vw, 33vw" className="object-cover" />
             {p.discPct ? (
-              <span className="absolute top-2.5 left-2.5 bg-[color:var(--color-accent)] text-white font-extrabold text-xs px-2 py-1 rounded">-{p.discPct}%</span>
+              <span className="absolute top-2.5 left-2.5 bg-[color:var(--color-accent)] text-white font-extrabold text-xs px-2 py-1 rounded z-10">-{p.discPct}%</span>
             ) : null}
-            {p.badge === "nuevo" && (
-              <span className="absolute top-2.5 left-2.5 bg-[color:var(--color-brand)] text-white font-bold text-[11px] px-2 py-1 rounded uppercase">Nuevo</span>
+            {p.badge === "nuevo" && !p.discPct && (
+              <span className="absolute top-2.5 left-2.5 bg-[color:var(--color-brand)] text-white font-bold text-[11px] px-2 py-1 rounded uppercase z-10">Nuevo</span>
             )}
-            {p.badge === "masvendido" && (
-              <span className="absolute top-2.5 left-2.5 bg-white text-[color:var(--color-brand)] font-bold text-[11px] px-2 py-1 rounded uppercase border">Más vendido</span>
+            {p.badge === "masvendido" && !p.discPct && (
+              <span className="absolute top-2.5 left-2.5 bg-white text-[color:var(--color-brand)] font-bold text-[11px] px-2 py-1 rounded uppercase border z-10">Más vendido</span>
             )}
-            <span className="font-medium">{p.name}</span>
           </div>
           <div className="p-3.5 flex flex-col gap-1.5">
             {p.rating != null && (

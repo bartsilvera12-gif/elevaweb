@@ -17,7 +17,7 @@ export default function Footer() {
           <span>© 2026 ELEVA. Todos los derechos reservados.</span>
           <span className="flex items-center gap-4">
             <span>Asunción, Paraguay</span>
-            <a href="https://neura.com" target="_blank" rel="noopener" className="text-[color:var(--color-brand-100)] font-semibold hover:text-[color:var(--color-accent)]">
+            <a href="https://neura.com.py" target="_blank" rel="noopener" className="text-[color:var(--color-brand-100)] font-semibold hover:text-[color:var(--color-accent)]">
               Desarrollado por <strong className="text-white">Neura</strong>
             </a>
           </span>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { formatGs } from "@/lib/utils";
 import { products } from "@/lib/mock-products";
@@ -10,6 +11,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const p = products.find((x) => x.slug === slug);
   if (!p) notFound();
   const related = products.filter((x) => x.category === p.category && x.slug !== p.slug).slice(0, 3);
+  const gallery = [p.image, `https://picsum.photos/seed/${p.slug}-2/600/600`, `https://picsum.photos/seed/${p.slug}-3/600/600`, `https://picsum.photos/seed/${p.slug}-4/600/600`];
 
   return (
     <div className="container-eleva pt-6">
@@ -25,12 +27,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
       <div className="grid md:grid-cols-2 gap-10">
         <div className="flex flex-col gap-3">
-          <div className="aspect-square bg-gradient-to-br from-[#F1EAFB] via-[#E3D0F5] to-[#FFD9C2] rounded flex items-center justify-center text-[color:var(--color-brand)]/60 px-6 text-center">
-            {p.name}
+          <div className="relative aspect-square rounded overflow-hidden bg-[color:var(--color-line-soft)]">
+            <Image src={p.image} alt={p.name} fill sizes="(max-width:768px) 100vw, 50vw" className="object-cover" priority />
           </div>
           <div className="grid grid-cols-4 gap-2">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="aspect-square bg-[color:var(--color-line-soft)] rounded border border-[color:var(--color-line)]" />
+            {gallery.map((src, i) => (
+              <div key={i} className="relative aspect-square rounded overflow-hidden border border-[color:var(--color-line)] bg-[color:var(--color-line-soft)]">
+                <Image src={src} alt={`${p.name} ${i + 1}`} fill sizes="15vw" className="object-cover" />
+              </div>
             ))}
           </div>
         </div>

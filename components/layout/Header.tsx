@@ -1,7 +1,9 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, Heart, ShoppingCart, User, ArrowUpRight, MapPin, Menu } from "lucide-react";
+import { useState } from "react";
+import { Search, Heart, ShoppingCart, User, ArrowUpRight, MapPin, Menu, X } from "lucide-react";
+import { categories } from "@/lib/mock-products";
 
 const navItems = [
   { href: "/", label: "Inicio" },
@@ -12,11 +14,12 @@ const navItems = [
 ];
 
 export default function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-[color:var(--color-line)]">
       <div className="container-eleva flex items-center gap-6 py-3.5">
         <Link href="/" aria-label="ELEVA inicio" className="shrink-0">
-          <Image src="/logo-eleva-trans.png" alt="ELEVA" width={140} height={40} priority className="h-10 w-auto" />
+          <Image src="/logo-eleva-trans.png" alt="ELEVA" width={200} height={60} priority className="h-14 w-auto" />
         </Link>
 
         <form action="/catalogo" className="hidden md:block flex-1 relative">
@@ -41,9 +44,6 @@ export default function Header() {
           <Link href="/carrito" aria-label="Carrito" className="w-11 h-11 rounded flex items-center justify-center text-[color:var(--color-brand)] hover:bg-[color:var(--color-brand-100)]">
             <ShoppingCart size={22} />
           </Link>
-          <button aria-label="Menú" className="md:hidden w-11 h-11 rounded flex items-center justify-center text-[color:var(--color-brand)]">
-            <Menu size={22} />
-          </button>
         </div>
       </div>
 
@@ -54,9 +54,13 @@ export default function Header() {
             <span className="text-[color:var(--color-muted)]">Enviar a <strong className="text-[color:var(--color-brand)]">Asunción</strong></span>
           </button>
           <span className="w-px h-5 bg-[color:var(--color-line)] mx-2" />
-          <Link href="/categorias" className="flex items-center gap-2 px-3.5 py-2 rounded text-sm font-bold text-[color:var(--color-brand)] bg-[color:var(--color-brand-100)] hover:bg-[color:var(--color-brand-200)]">
-            <Menu size={16} /> Categorías
-          </Link>
+          <button
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-expanded={menuOpen}
+            className="flex items-center gap-2 px-3.5 py-2 rounded text-sm font-bold text-[color:var(--color-brand)] bg-[color:var(--color-brand-100)] hover:bg-[color:var(--color-brand-200)]"
+          >
+            {menuOpen ? <X size={16} /> : <Menu size={16} />} Categorías
+          </button>
           {navItems.map((n) => (
             <Link key={n.href} href={n.href} className="px-3 py-2 rounded text-sm font-medium text-[color:var(--color-ink-soft)] hover:text-[color:var(--color-accent)] whitespace-nowrap">
               {n.label}
@@ -64,6 +68,36 @@ export default function Header() {
           ))}
         </div>
       </nav>
+
+      {menuOpen && (
+        <>
+          <div className="fixed inset-0 z-40 bg-black/30" onClick={() => setMenuOpen(false)} />
+          <div className="absolute left-0 right-0 top-full bg-white border-b border-[color:var(--color-line)] shadow-xl z-50">
+            <div className="container-eleva py-6">
+              <div className="text-xs font-bold tracking-widest uppercase text-[color:var(--color-accent)] mb-4">Explorá</div>
+              <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
+                {categories.map((c) => (
+                  <Link
+                    key={c.slug}
+                    href={`/catalogo?cat=${c.slug}`}
+                    onClick={() => setMenuOpen(false)}
+                    className="card-flat px-4 py-3 flex items-center gap-3 hover:border-[color:var(--color-accent)] hover:shadow-md transition"
+                  >
+                    <span className="text-2xl leading-none">{c.icon}</span>
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold text-[color:var(--color-brand)] truncate">{c.name}</div>
+                      <div className="text-[11px] text-[color:var(--color-muted)]">{c.count} productos</div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              <Link href="/categorias" onClick={() => setMenuOpen(false)} className="inline-block mt-5 text-sm font-semibold text-[color:var(--color-brand)] hover:text-[color:var(--color-accent)]">
+                Ver todas las categorías →
+              </Link>
+            </div>
+          </div>
+        </>
+      )}
     </header>
   );
 }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { categories } from "@/lib/mock-products";
 
 export default function CategoriasPage() {
@@ -15,11 +16,15 @@ export default function CategoriasPage() {
           <Link
             key={c.slug}
             href={`/catalogo?cat=${c.slug}`}
-            className="card-flat p-5 flex items-center gap-4 hover:border-[color:var(--color-accent)] hover:shadow-md transition"
+            className="card-flat overflow-hidden hover:border-[color:var(--color-accent)] hover:shadow-md transition"
           >
-            <span className="text-4xl leading-none">{c.icon}</span>
-            <div className="min-w-0">
-              <div className="font-bold text-[color:var(--color-brand)] truncate">{c.name}</div>
+            <div className="relative aspect-[4/3] bg-[color:var(--color-line-soft)]">
+              <Image src={c.image} alt={c.name} fill sizes="(max-width:768px) 50vw, 25vw" className="object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+              <span className="absolute top-3 left-3 text-3xl leading-none">{c.icon}</span>
+            </div>
+            <div className="p-4">
+              <div className="font-bold text-[color:var(--color-brand)]">{c.name}</div>
               <div className="text-xs text-[color:var(--color-muted)] mt-0.5">{c.count} productos</div>
             </div>
           </Link>
