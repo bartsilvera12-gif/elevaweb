@@ -141,30 +141,25 @@ export default function ComoComprarPage() {
         </div>
       </section>
 
-      {/* ENVIOS con mini mapa */}
+      {/* ENVIOS */}
       <section className="container-eleva pt-24">
         <SectionHead kicker="Envíos" title="A todo Paraguay" />
-        <div className="grid md:grid-cols-[1.1fr_1fr] gap-8 mt-10 items-center">
-          <div className="flex flex-col gap-3">
-            <ShipRow k="Asunción" v="24 horas" acc>
-              Zona céntrica. Retiro coordinado con el vendedor.
-            </ShipRow>
-            <ShipRow k="Área Central" v="24 – 48 h">
-              Fernando de la Mora, Lambaré, San Lorenzo, Luque, Ñemby, Capiatá y más.
-            </ShipRow>
-            <ShipRow k="Ciudades grandes" v="2 – 3 días">
-              Ciudad del Este, Encarnación, Villarrica, Coronel Oviedo, Concepción.
-            </ShipRow>
-            <ShipRow k="Interior" v="3 – 5 días">
-              Envío por encomienda con seguimiento. Descuento para pedidos +Gs. 800.000.
-            </ShipRow>
-            <ShipRow k="Chaco" v="4 – 7 días">
-              Filadelfia, Loma Plata, Neuland. Coordinamos con transporte local.
-            </ShipRow>
-          </div>
-          <div className="relative aspect-[4/5] max-w-[380px] mx-auto w-full">
-            <ParaguayMap />
-          </div>
+        <div className="mt-10 max-w-3xl">
+          <ShipRow k="Asunción" v="24 horas" acc>
+            Zona céntrica. Retiro coordinado con el vendedor.
+          </ShipRow>
+          <ShipRow k="Área Central" v="24 – 48 h">
+            Fernando de la Mora, Lambaré, San Lorenzo, Luque, Ñemby, Capiatá y más.
+          </ShipRow>
+          <ShipRow k="Ciudades grandes" v="2 – 3 días">
+            Ciudad del Este, Encarnación, Villarrica, Coronel Oviedo, Concepción.
+          </ShipRow>
+          <ShipRow k="Interior" v="3 – 5 días">
+            Envío por encomienda con seguimiento. Descuento para pedidos +Gs. 800.000.
+          </ShipRow>
+          <ShipRow k="Chaco" v="4 – 7 días">
+            Filadelfia, Loma Plata, Neuland. Coordinamos con transporte local.
+          </ShipRow>
         </div>
       </section>
 
@@ -391,46 +386,6 @@ function CashArt() {
       <rect x="40" y="30" width="140" height="20" rx="3" fill="#FC5005" opacity="0.9" />
       <text x="110" y="45" textAnchor="middle" fill="white" fontWeight="800" fontSize="11" letterSpacing="2">GUARANIES</text>
     </svg>
-  );
-}
-
-function ParaguayMap() {
-  return (
-    <svg viewBox="0 0 300 380" className="w-full h-full">
-      {/* Simplified Paraguay silhouette */}
-      <path
-        d="M65 20 L180 15 L235 45 L280 90 L285 160 L245 210 L215 245 L245 300 L200 355 L130 365 L80 340 L55 285 L45 210 L30 145 L45 70 Z"
-        fill="url(#pyGradient)"
-        stroke="#240453"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <defs>
-        <linearGradient id="pyGradient" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#F1EAFB" />
-          <stop offset="1" stopColor="#E3D0F5" />
-        </linearGradient>
-      </defs>
-      {/* Cities */}
-      <MapPin cx={165} cy={280} label="Asunción" primary />
-      <MapPin cx={230} cy={230} label="Ciudad del Este" />
-      <MapPin cx={200} cy={340} label="Encarnación" />
-      <MapPin cx={140} cy={180} label="Concepción" />
-      <MapPin cx={80} cy={130} label="Filadelfia" />
-    </svg>
-  );
-}
-
-function MapPin({ cx, cy, label, primary }: { cx: number; cy: number; label: string; primary?: boolean }) {
-  const color = primary ? "#FC5005" : "#240453";
-  return (
-    <g>
-      <circle cx={cx} cy={cy} r={primary ? 10 : 6} fill={color} opacity="0.2" />
-      <circle cx={cx} cy={cy} r={primary ? 5 : 3.5} fill={color} />
-      <text x={cx + 12} y={cy + 4} fill={color} fontSize="11" fontWeight={primary ? 800 : 600}>
-        {label}
-      </text>
-    </g>
   );
 }
 
