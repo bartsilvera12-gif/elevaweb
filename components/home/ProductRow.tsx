@@ -1,8 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronRight, ShoppingCart } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { formatGs } from "@/lib/utils";
 import { products as allProducts } from "@/lib/mock-products";
+import FavoriteButton from "@/components/product/FavoriteButton";
+import AddToCartButton from "@/components/product/AddToCartButton";
 
 export interface ProductCard {
   slug: string;
@@ -39,9 +41,11 @@ export default function ProductRow({ kicker, title, viewAllHref, products }: {
 }
 
 function Card({ p }: { p: ProductCard }) {
-  const image = p.image || allProducts.find((x) => x.slug === p.slug)?.image;
+  const full = allProducts.find((x) => x.slug === p.slug);
+  const image = p.image || full?.image || "";
+  const hasVariants = !!full?.variants;
   return (
-    <Link href={`/producto/${p.slug}`} className="card-flat hover:shadow-md transition-shadow flex flex-col overflow-hidden">
+    <Link href={`/producto/${p.slug}`} className="card-flat hover:shadow-md transition-shadow flex flex-col overflow-hidden group">
       <div className="relative aspect-[4/3] bg-[color:var(--color-line-soft)]">
         {image && <Image src={image} alt={p.name} fill sizes="(max-width:768px) 50vw, 25vw" className="object-cover" />}
         {p.discPct && (
@@ -53,6 +57,7 @@ function Card({ p }: { p: ProductCard }) {
         {p.badge === "masvendido" && !p.discPct && (
           <span className="absolute top-2.5 left-2.5 bg-white text-[color:var(--color-brand)] font-bold text-[11px] px-2 py-1 rounded uppercase border z-10">Más vendido</span>
         )}
+        <FavoriteButton slug={p.slug} floating />
       </div>
       <div className="p-3.5 flex flex-col gap-1.5">
         {p.rating != null && (
@@ -65,9 +70,11 @@ function Card({ p }: { p: ProductCard }) {
             <span className="text-xs text-[color:var(--color-muted)] line-through">{formatGs(p.compare_cents)}</span>
           )}
         </div>
-        <button className="btn-dark w-full justify-center mt-2 text-sm">
-          <ShoppingCart size={16} /> Agregar
-        </button>
+        {hasVariants ? (
+          <Link href={`/producto/${p.slug}`} className="btn-dark w-full justify-center mt-2 text-sm">Elegir opciones</Link>
+        ) : (
+          <AddToCartButton slug={p.slug} name={p.name} price_cents={p.price_cents} image={image} className="mt-2" />
+        )}
       </div>
     </Link>
   );

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { Search, Heart, ShoppingCart, User, ArrowUpRight, MapPin, Menu, X } from "lucide-react";
 import { categories } from "@/lib/mock-products";
+import { useCart, useFavorites, useHydrated } from "@/lib/store";
 
 const navItems = [
   { href: "/", label: "Inicio" },
@@ -15,6 +16,9 @@ const navItems = [
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const hydrated = useHydrated();
+  const cartCount = useCart((s) => s.count());
+  const favCount = useFavorites((s) => s.slugs.length);
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-[color:var(--color-line)]">
       <div className="container-eleva flex items-center gap-6 py-3.5">
@@ -35,14 +39,20 @@ export default function Header() {
           <Link href="/vender" className="btn-primary hidden md:inline-flex">
             <ArrowUpRight size={16} /> Quiero vender
           </Link>
-          <Link href="/ingresar" aria-label="Mi cuenta" className="w-11 h-11 rounded flex items-center justify-center text-[color:var(--color-brand)] hover:bg-[color:var(--color-brand-100)]">
+          <Link href="/mis-pedidos" aria-label="Mis pedidos" title="Mis pedidos" className="w-11 h-11 rounded flex items-center justify-center text-[color:var(--color-brand)] hover:bg-[color:var(--color-brand-100)]">
             <User size={22} />
           </Link>
-          <Link href="/favoritos" aria-label="Favoritos" className="w-11 h-11 rounded flex items-center justify-center text-[color:var(--color-brand)] hover:bg-[color:var(--color-brand-100)]">
+          <Link href="/favoritos" aria-label="Favoritos" className="relative w-11 h-11 rounded flex items-center justify-center text-[color:var(--color-brand)] hover:bg-[color:var(--color-brand-100)]">
             <Heart size={22} />
+            {hydrated && favCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 min-w-[17px] h-[17px] px-1 bg-[color:var(--color-brand)] text-white text-[10px] font-bold rounded-full flex items-center justify-center">{favCount}</span>
+            )}
           </Link>
-          <Link href="/carrito" aria-label="Carrito" className="w-11 h-11 rounded flex items-center justify-center text-[color:var(--color-brand)] hover:bg-[color:var(--color-brand-100)]">
+          <Link href="/carrito" aria-label="Carrito" className="relative w-11 h-11 rounded flex items-center justify-center text-[color:var(--color-brand)] hover:bg-[color:var(--color-brand-100)]">
             <ShoppingCart size={22} />
+            {hydrated && cartCount > 0 && (
+              <span className="absolute top-1 right-1 min-w-[18px] h-[18px] px-1 bg-[color:var(--color-accent)] text-white text-[10px] font-extrabold rounded-full flex items-center justify-center">{cartCount}</span>
+            )}
           </Link>
         </div>
       </div>

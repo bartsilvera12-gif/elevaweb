@@ -3,8 +3,9 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { formatGs } from "@/lib/utils";
 import { products } from "@/lib/mock-products";
-import { ShoppingCart, Heart, Shield, Truck, ChevronRight, Store } from "lucide-react";
+import { Shield, Truck, ChevronRight, Store } from "lucide-react";
 import CatalogGrid from "@/components/catalog/CatalogGrid";
+import ProductActions from "@/components/product/ProductActions";
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -71,10 +72,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
           </div>
 
-          <div className="flex gap-2 mt-4">
-            <button className="btn-primary flex-1 justify-center"><ShoppingCart size={18} /> Agregar al carrito</button>
-            <button className="btn-outline" aria-label="Favorito"><Heart size={18} /></button>
-          </div>
+          <ProductActions p={p} />
 
           <div className="card-flat p-5 mt-2">
             <h3 className="font-bold text-sm uppercase tracking-wider text-[color:var(--color-brand)] mb-2">Descripción</h3>
