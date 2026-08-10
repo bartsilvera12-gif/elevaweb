@@ -43,31 +43,12 @@ const faqs = [
 export default function ComoComprarPage() {
   return (
     <>
-      {/* HERO */}
-      <section className="bg-gradient-to-br from-[#240453] via-[#3B1370] to-[#1A003F] text-white relative overflow-hidden">
-        <BackdropGrid />
-        <div className="container-eleva py-16 md:py-24 relative">
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/20 bg-white/5 text-xs font-semibold text-white/90 mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-[color:var(--color-accent)] animate-pulse" />
-              Guía de compra
-            </div>
-            <h1 className="font-black tracking-tight text-5xl md:text-7xl leading-[0.95]">
-              Comprar en ELEVA<br />
-              <span className="text-[color:var(--color-accent)]">es fácil.</span>
-            </h1>
-            <p className="mt-6 text-lg md:text-xl text-white/70 max-w-xl leading-relaxed">
-              Cuatro pasos. Métodos de pago que ya usás. Envío coordinado a los 17 departamentos del país.
-            </p>
-
-            <div className="grid grid-cols-3 gap-6 mt-10 max-w-lg">
-              <Stat n="+2.4k" l="pedidos entregados" />
-              <Stat n="47 min" l="respuesta promedio" />
-              <Stat n="98%" l="clientes conformes" />
-            </div>
-          </motion.div>
-        </div>
-      </section>
+      <div className="container-eleva pt-10">
+        <h1 className="text-3xl md:text-4xl font-extrabold text-[color:var(--color-brand-900)]">Cómo comprar en ELEVA</h1>
+        <p className="text-[color:var(--color-ink-soft)] mt-2 max-w-xl">
+          Los pasos, los métodos de pago, los tiempos de envío y las garantías.
+        </p>
+      </div>
 
       {/* PASOS */}
       <section className="container-eleva pt-20">

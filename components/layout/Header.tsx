@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { Search, Heart, ShoppingCart, User, ArrowUpRight, MapPin, Menu, X, Zap, Truck } from "lucide-react";
 import { categories } from "@/lib/mock-products";
@@ -31,8 +31,21 @@ export default function Header() {
   const cartCount = useCart((s) => s.count());
   const favCount = useFavorites((s) => s.slugs.length);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const isHome = pathname === "/";
+  const isActive = (href: string) => {
+    const [path, query] = href.split("?");
+    if (pathname !== path) return false;
+    if (!query) {
+      return !["ofertas", "nuevo", "best"].some((k) => searchParams.get(k));
+    }
+    const params = new URLSearchParams(query);
+    for (const [k, v] of params.entries()) {
+      if (searchParams.get(k) !== v) return false;
+    }
+    return true;
+  };
   const onCategoriasClick = () => {
     if (isHome) setMenuOpen((v) => !v);
     else router.push("/categorias");
@@ -123,7 +136,7 @@ export default function Header() {
             Categorías
           </motion.button>
           {navItems.map((n) => {
-            const active = pathname === n.href.split("?")[0];
+            const active = isActive(n.href);
             return (
               <Link
                 key={n.href}

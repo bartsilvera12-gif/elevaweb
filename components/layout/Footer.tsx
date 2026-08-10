@@ -14,7 +14,7 @@ export default function Footer() {
           </p>
         </div>
         <FooterCol title="Comprar" links={[["/catalogo","Catálogo"],["/catalogo?ofertas=1","Ofertas"],["/catalogo?nuevo=1","Novedades"],["/como-comprar","Cómo comprar"]]} />
-        <FooterCol title="Vender" links={[["/vender","Quiero vender"],["/vender/faq","Preguntas de vendedores"]]} />
+        <FooterCol title="Vender" links={[["/vender","Quiero vender"]]} />
         <FooterCol title="Ayuda" links={[["/como-comprar","Preguntas frecuentes"],["/contacto","Contacto"]]} />
       </div>
       <div className="border-t border-white/10">
