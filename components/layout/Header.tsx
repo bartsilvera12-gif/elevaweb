@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Search, Heart, ShoppingCart, User, ArrowUpRight, MapPin, Menu, X } from "lucide-react";
 import { categories } from "@/lib/mock-products";
 import { categoryIcon } from "@/lib/category-icons";
@@ -20,6 +21,13 @@ export default function Header() {
   const hydrated = useHydrated();
   const cartCount = useCart((s) => s.count());
   const favCount = useFavorites((s) => s.slugs.length);
+  const pathname = usePathname();
+  const router = useRouter();
+  const isHome = pathname === "/";
+  const onCategoriasClick = () => {
+    if (isHome) setMenuOpen((v) => !v);
+    else router.push("/categorias");
+  };
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-[color:var(--color-line)]">
       <div className="container-eleva flex items-center gap-6 py-3.5">
@@ -66,11 +74,11 @@ export default function Header() {
           </button>
           <span className="w-px h-5 bg-[color:var(--color-line)] mx-2" />
           <button
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-expanded={menuOpen}
+            onClick={onCategoriasClick}
+            aria-expanded={isHome ? menuOpen : undefined}
             className="flex items-center gap-2 px-3.5 py-2 rounded text-sm font-bold text-[color:var(--color-brand)] bg-[color:var(--color-brand-100)] hover:bg-[color:var(--color-brand-200)]"
           >
-            {menuOpen ? <X size={16} /> : <Menu size={16} />} Categorías
+            {isHome && menuOpen ? <X size={16} /> : <Menu size={16} />} Categorías
           </button>
           {navItems.map((n) => (
             <Link key={n.href} href={n.href} className="px-3 py-2 rounded text-sm font-medium text-[color:var(--color-ink-soft)] hover:text-[color:var(--color-accent)] whitespace-nowrap">
@@ -80,7 +88,7 @@ export default function Header() {
         </div>
       </nav>
 
-      {menuOpen && (
+      {isHome && menuOpen && (
         <>
           <div className="fixed inset-0 z-40 bg-black/30" onClick={() => setMenuOpen(false)} />
           <div className="absolute left-0 right-0 top-full bg-white border-b border-[color:var(--color-line)] shadow-xl z-50">
