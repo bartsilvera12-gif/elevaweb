@@ -145,7 +145,7 @@ export default function Header() {
               >
                 {n.label}
                 <span
-                  className={`absolute left-3 right-3 -bottom-[9px] h-0.5 bg-[color:var(--color-accent)] origin-left transition-transform duration-200 ${
+                  className={`absolute left-3 right-3 bottom-0 h-0.5 bg-[color:var(--color-accent)] origin-left transition-transform duration-200 ${
                     active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                   }`}
                 />
