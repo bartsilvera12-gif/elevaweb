@@ -1,15 +1,8 @@
 "use client";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { ArrowUpRight, Package, TrendingUp, Users, ShieldCheck, Store, ChevronDown, Warehouse, BarChart3, Wallet, Clock } from "lucide-react";
+import { ArrowUpRight, TrendingUp, ShieldCheck, Store, ChevronDown, Warehouse, Wallet } from "lucide-react";
 import { useState } from "react";
-
-const stats = [
-  { n: "+500", l: "emprendedores activos" },
-  { n: "24k", l: "productos publicados" },
-  { n: "72h", l: "pago promedio" },
-  { n: "0%", l: "comisión de alta" },
-];
 
 const beneficios = [
   { icon: Warehouse, t: "Nosotros almacenamos", d: "Dejás tu stock en nuestro depósito de Asunción y nos ocupamos de recepción, control y logística." },
@@ -42,33 +35,16 @@ const faqs = [
 export default function VenderPage() {
   return (
     <>
-      <section className="bg-gradient-to-br from-[#240453] via-[#3B1370] to-[#240453] text-white overflow-hidden relative">
-        <div className="container-eleva py-16 md:py-24 grid md:grid-cols-2 gap-8 items-center relative">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <div className="text-xs font-bold tracking-widest uppercase text-[color:var(--color-accent)]">Vendé con nosotros</div>
-            <h1 className="text-4xl md:text-6xl font-extrabold mt-3 leading-[1.05]">Publicá.<br/>Nosotros hacemos el resto.</h1>
-            <p className="text-white/80 mt-5 max-w-lg text-lg">Vos creás tus productos. Nosotros los almacenamos, vendemos y entregamos en todo Paraguay.</p>
-            <div className="flex gap-3 mt-8">
-              <Link href="/registro" className="btn-primary">Empezar ahora <ArrowUpRight size={18} /></Link>
-              <a href="#como-funciona" className="btn-outline bg-transparent text-white border-white/30 hover:bg-white/10">Ver cómo funciona</a>
-            </div>
-          </motion.div>
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.15 }} className="grid grid-cols-2 gap-3">
-            {stats.map((s, i) => (
-              <motion.div
-                key={s.l}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.25 + i * 0.08 }}
-                className="border border-white/15 rounded p-5 backdrop-blur-sm bg-white/5"
-              >
-                <div className="text-3xl md:text-4xl font-extrabold text-[color:var(--color-accent)]">{s.n}</div>
-                <div className="text-xs text-white/70 mt-1 uppercase tracking-wide">{s.l}</div>
-              </motion.div>
-            ))}
-          </motion.div>
+      <div className="container-eleva pt-10">
+        <h1 className="text-3xl md:text-4xl font-extrabold text-[color:var(--color-brand-900)]">Vendé en ELEVA</h1>
+        <p className="text-[color:var(--color-ink-soft)] mt-2 max-w-xl">
+          Vos creás y publicás tus productos. Nosotros los almacenamos, vendemos y entregamos en todo Paraguay.
+        </p>
+        <div className="mt-5 flex gap-3 flex-wrap">
+          <Link href="/registro" className="btn-primary">Empezar ahora <ArrowUpRight size={18} /></Link>
+          <a href="#como-funciona" className="btn-outline">Ver cómo funciona</a>
         </div>
-      </section>
+      </div>
 
       <section className="container-eleva pt-16">
         <motion.div
