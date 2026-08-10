@@ -6,21 +6,18 @@ export interface Category {
   image: string;
 }
 
-const catImg = (seed: string) => `https://picsum.photos/seed/eleva-cat-${seed}/600/400`;
-
 const rawCategories: Category[] = [
-  { slug: "moda", name: "Moda y accesorios", image: catImg("moda") },
-  { slug: "belleza", name: "Belleza y cuidado", image: catImg("belleza") },
-  { slug: "hogar", name: "Hogar y deco", image: catImg("hogar") },
-  { slug: "electronica", name: "Electrónica", image: catImg("electronica") },
-  { slug: "audio", name: "Audio", image: catImg("audio") },
-  { slug: "wearables", name: "Wearables", image: catImg("wearables") },
-  { slug: "deportes", name: "Deportes y outdoor", image: catImg("deportes") },
-  { slug: "ninos", name: "Niños y bebés", image: catImg("ninos") },
-  { slug: "libros", name: "Libros y papelería", image: catImg("libros") },
-  { slug: "gourmet", name: "Gourmet y bebidas", image: catImg("gourmet") },
-  { slug: "mascotas", name: "Mascotas", image: catImg("mascotas") },
-  { slug: "auto", name: "Auto y viajes", image: catImg("auto") },
+  { slug: "moda", name: "Moda y accesorios", image: "/categorias/moda.jpg" },
+  { slug: "belleza", name: "Belleza y cuidado", image: "/categorias/belleza.avif" },
+  { slug: "hogar", name: "Hogar y deco", image: "/categorias/hogar.jpg" },
+  { slug: "electronica", name: "Electrónica", image: "/categorias/electronica.jpg" },
+  { slug: "audio", name: "Audio", image: "/categorias/audio.jpeg" },
+  { slug: "wearables", name: "Wearables", image: "/categorias/wearables.jpg" },
+  { slug: "deportes", name: "Deportes y outdoor", image: "/categorias/deportes.jpg" },
+  { slug: "ninos", name: "Niños y bebés", image: "/categorias/ninos.png" },
+  { slug: "libros", name: "Libros y papelería", image: "/categorias/libros.jpg" },
+  { slug: "gourmet", name: "Gourmet y bebidas", image: "/categorias/gourmet.jpg" },
+  { slug: "mascotas", name: "Mascotas", image: "/categorias/mascotas.jpg" },
 ];
 
 export interface VariantGroup {
@@ -52,7 +49,6 @@ export const products: FullProduct[] = [
   { slug: "cafe-100g", name: "Café de especialidad 100g", price_cents: 38000, rating: 4.9, sold: 560, badge: "masvendido", in_stock: true, category: "gourmet", image: "/productos/cafe-100g.jpg" },
   { slug: "juguete-madera", name: "Juguete didáctico de madera", price_cents: 85000, rating: 4.6, sold: 42, in_stock: true, category: "ninos", image: "/productos/juguete-madera.jpg" },
   { slug: "collar-perro", name: "Collar ajustable para perros", price_cents: 55000, rating: 4.6, sold: 130, in_stock: true, category: "mascotas", image: "/productos/collar-perro.jpeg", variants: { label: "Talle", options: ["Chico", "Mediano", "Grande"] } },
-  { slug: "cargador-auto", name: "Cargador USB-C para auto", price_cents: 42000, compare_cents: 60000, rating: 4.4, sold: 210, discPct: 30, in_stock: true, category: "auto", image: "/productos/cargador-auto.jpeg" },
 ];
 
 export const brands = [
