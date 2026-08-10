@@ -74,6 +74,12 @@ export const categories: (Category & { count: number })[] = rawCategories.map((c
   count: products.filter((p) => p.category === c.slug).length,
 }));
 
-export const featured = products.filter((p) => (p.rating ?? 0) >= 4.6).slice(0, 4);
-export const nuevos = products.filter((p) => p.badge === "nuevo").slice(0, 4);
 export const ofertas = products.filter((p) => p.discPct && p.discPct > 0).slice(0, 4);
+const _ofertaSlugs = new Set(ofertas.map((p) => p.slug));
+
+export const nuevos = products.filter((p) => p.badge === "nuevo" && !_ofertaSlugs.has(p.slug)).slice(0, 4);
+const _nuevoSlugs = new Set(nuevos.map((p) => p.slug));
+
+export const featured = products
+  .filter((p) => (p.rating ?? 0) >= 4.6 && !_ofertaSlugs.has(p.slug) && !_nuevoSlugs.has(p.slug))
+  .slice(0, 4);
