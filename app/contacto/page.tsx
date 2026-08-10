@@ -230,6 +230,40 @@ export default function ContactoPage() {
   );
 }
 
+function SupportStep({ n, icon: Icon, title, desc, bullets, delay = 0 }: {
+  n: number;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  title: string;
+  desc: string;
+  bullets: string[];
+  delay?: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.4, delay }}
+      className="bg-white/[0.04] border border-white/10 rounded-lg p-6 flex flex-col"
+    >
+      <div className="md:hidden w-9 h-9 rounded-full border border-white/30 text-white font-bold flex items-center justify-center mb-4">{n}</div>
+      <div className="w-11 h-11 rounded bg-white/10 flex items-center justify-center mb-5">
+        <Icon size={20} className="text-white" />
+      </div>
+      <h3 className="text-xl font-bold text-white">{title}</h3>
+      <p className="text-sm text-white/70 mt-2 leading-relaxed">{desc}</p>
+      <ul className="mt-5 flex flex-col gap-2.5">
+        {bullets.map((b) => (
+          <li key={b} className="flex items-start gap-2.5 text-sm text-white/80">
+            <span className="w-1.5 h-1.5 rounded-full bg-[color:var(--color-accent)] mt-1.5 shrink-0" />
+            <span>{b}</span>
+          </li>
+        ))}
+      </ul>
+    </motion.div>
+  );
+}
+
 function Field({ label, value, onChange, required, type = "text", placeholder, className = "" }: {
   label: string; value: string; onChange: (v: string) => void; required?: boolean; type?: string; placeholder?: string; className?: string;
 }) {
