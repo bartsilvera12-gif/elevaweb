@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { motion } from "motion/react";
-import { MessageCircle, Mail, Phone, MapPin, Clock, Send, Check, Instagram, Facebook } from "lucide-react";
+import { MessageCircle, Mail, Phone, MapPin, Clock, Send, Check, Instagram, Facebook, Search, Users, CheckCircle2 } from "lucide-react";
 
 const canales = [
   { icon: MessageCircle, t: "WhatsApp", d: "+595 981 000 000", sub: "Respuesta en menos de 2 horas", href: "https://wa.me/595981000000", accent: true },
@@ -41,8 +41,64 @@ export default function ContactoPage() {
         </div>
       </section>
 
-      <section className="container-eleva pt-12">
-        <div className="grid md:grid-cols-3 gap-4">
+      {/* Cómo funciona el soporte */}
+      <section className="bg-[#0F0026] text-white">
+        <div className="container-eleva py-16 md:py-20">
+          <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.4 }} className="text-center">
+            <h2 className="font-black tracking-tight text-3xl md:text-5xl">Cómo funciona el soporte</h2>
+            <p className="mt-4 text-white/70 text-base md:text-lg max-w-2xl mx-auto">
+              Escribinos por el canal que quieras. Un humano de nuestro equipo te resuelve el problema.
+            </p>
+          </motion.div>
+
+          {/* Steps rail */}
+          <div className="mt-12 relative">
+            <div className="hidden md:grid grid-cols-3 max-w-4xl mx-auto relative">
+              {/* Line between numbers */}
+              <div className="absolute top-6 left-[16.66%] right-[16.66%] h-px bg-gradient-to-r from-white/20 via-white/40 to-white/20" />
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="flex justify-center relative z-10">
+                  <div className="w-12 h-12 rounded-full border border-white/30 bg-[#0F0026] text-white font-bold flex items-center justify-center">{n}</div>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-4 mt-8 max-w-6xl mx-auto">
+              <SupportStep
+                delay={0}
+                n={1}
+                icon={Search}
+                title="Contás qué necesitás"
+                desc="Elegís cómo escribirnos: WhatsApp, email o el formulario. Contás qué te pasa con el mayor detalle posible."
+                bullets={["Sin bots, sin formularios largos", "Podés adjuntar fotos o video", "Un solo canal, no rebotamos"]}
+              />
+              <SupportStep
+                delay={0.08}
+                n={2}
+                icon={Users}
+                title="Te atiende una persona"
+                desc="Un asesor del equipo lee tu caso, revisa tu pedido si aplica, y te responde con una solución concreta."
+                bullets={["Respuesta promedio en 47 min", "Lun a Sáb, 9:00 a 20:00", "Siempre te decimos quién te atiende"]}
+              />
+              <SupportStep
+                delay={0.16}
+                n={3}
+                icon={CheckCircle2}
+                title="Resolvemos el caso"
+                desc="Coordinamos lo que haga falta: cambio, devolución, reembolso o simplemente aclarar la duda."
+                bullets={["Reembolso íntegro si corresponde", "Retiro sin costo en devoluciones", "Te seguimos hasta cerrarlo"]}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="container-eleva pt-16">
+        <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.4 }}>
+          <div className="text-xs font-bold tracking-widest uppercase text-[color:var(--color-accent)]">Canales</div>
+          <h2 className="font-black tracking-tight text-3xl md:text-4xl text-[color:var(--color-brand-900)] mt-1">Escribinos donde te quede mejor</h2>
+        </motion.div>
+        <div className="grid md:grid-cols-3 gap-4 mt-6">
           {canales.map((c, i) => (
             <motion.a
               key={c.t}

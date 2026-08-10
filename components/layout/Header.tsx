@@ -12,6 +12,8 @@ import { useCity } from "@/lib/city-store";
 import { depts } from "@/lib/cities";
 
 const navItems = [
+  { href: "/", label: "Inicio" },
+  { href: "/catalogo", label: "Productos" },
   { href: "/catalogo?ofertas=1", label: "Ofertas del día" },
   { href: "/catalogo?nuevo=1", label: "Novedades" },
   { href: "/vender", label: "Vender" },
@@ -57,7 +59,7 @@ export default function Header() {
         <div className="container-eleva flex items-center gap-3 md:gap-4 py-2.5">
           {/* Logo */}
           <Link href="/" aria-label="ELEVA inicio" className="shrink-0 group px-2 py-1 -mx-2 rounded hover:outline hover:outline-1 hover:outline-white/50">
-            <Image src="/logo-eleva-trans.png" alt="ELEVA" width={140} height={44} priority className="h-9 w-auto brightness-0 invert" />
+            <Image src="/logo-eleva-trans.png" alt="ELEVA" width={200} height={60} priority className="h-14 w-auto" />
           </Link>
 
           {/* City selector */}
