@@ -1,39 +1,62 @@
-# ELEVA — Storefront + API
+# ELEVA — Storefront (Next.js 15 + TS + Tailwind 4)
 
-Frontend estático (`ELEVA Storefront.dc.html`) + backend serverless en Vercel (`/api`) con Postgres.
+Storefront paraguayo con backend serverless en Vercel.
 
-## Endpoints
+## Stack
 
-| Método | Ruta | Descripción |
-| --- | --- | --- |
-| POST | `/api/init` | Crea tablas + seed. Header `X-Init-Key: $INIT_KEY` |
-| GET  | `/api/products` | Lista productos (query `?category=`) |
-| GET  | `/api/products/[slug]` | Detalle |
-| POST | `/api/auth/register` | `{ email, password, name }` → `{ user, token }` |
-| POST | `/api/auth/login` | `{ email, password }` → `{ user, token }` |
-| GET  | `/api/me` | Auth: `Authorization: Bearer <token>` |
-| GET  | `/api/orders` | Órdenes del usuario |
-| POST | `/api/orders` | `{ items:[{product_id,quantity}], shipping_address }` |
+- **Next.js 15** (App Router) + **React 19** + **TypeScript**
+- **Tailwind CSS 4** (theme-first, CSS-only config en `app/globals.css`)
+- **Vercel Postgres** (`@vercel/postgres`) + JWT auth (bcryptjs, jsonwebtoken)
+- **motion** para animaciones (marquee de marcas)
+- **lucide-react** para iconos
 
-## Deploy en Vercel (5 pasos)
+## Estructura
 
-1. Entrá a https://vercel.com/new e importá el repo `bartsilvera12-gif/elevaweb`.
-2. Framework preset: **Other**. Build command: vacío. Output dir: `.`
-3. En el proyecto → **Storage → Create Database → Postgres** (Neon). Vercel setea `POSTGRES_URL` solo.
-4. En **Settings → Environment Variables** agregá:
-   - `JWT_SECRET` = string aleatorio largo
-   - `INIT_KEY` = string aleatorio (para proteger `/api/init`)
-5. Deploy. Después, una única vez:
-   ```bash
-   curl -X POST https://<tu-app>.vercel.app/api/init -H "X-Init-Key: <INIT_KEY>"
-   ```
+```
+app/
+  layout.tsx           Header + Footer + fonts
+  page.tsx             Home (hero, trust, marquee de marcas, filas de productos)
+  catalogo/            Catálogo
+  producto/[slug]/     Detalle de producto
+  carrito/, checkout/  Checkout flow
+  ingresar/, registro/ Auth
+  como-comprar/, vender/
+  api/                 Route handlers (products, auth, orders, me, init)
+components/
+  layout/              Header, Footer
+  home/                Hero, TrustStrip, BrandMarquee, ProductRow
+  ui/                  marquee-along-svg-path (shadcn-style path)
+lib/                   utils.ts, db.ts, auth.ts, mock-products.ts
+public/                Logos, uploads del manual de marca
+```
 
-## Dev local
+## Dev
 
 ```bash
 npm install
-npm i -g vercel
-vercel link
-vercel env pull .env.local
-vercel dev
+npm run dev
 ```
+
+## Deploy en Vercel
+
+1. https://vercel.com/new → importar `bartsilvera12-gif/elevaweb`. Framework: **Next.js** (autodetect).
+2. **Storage → Create Database → Postgres** (Neon). Setea `POSTGRES_URL` solo.
+3. **Env vars:** `JWT_SECRET` (aleatorio), `INIT_KEY` (aleatorio, protege `/api/init`).
+4. Deploy.
+5. Init DB (una vez):
+   ```bash
+   curl -X POST https://<app>.vercel.app/api/init -H "X-Init-Key: $INIT_KEY"
+   ```
+
+## API
+
+| Método | Ruta | Auth | Body |
+| --- | --- | --- | --- |
+| POST | `/api/init` | X-Init-Key | — |
+| GET | `/api/products` | — | ?category= |
+| GET | `/api/products/[slug]` | — | — |
+| POST | `/api/auth/register` | — | {email,password,name} |
+| POST | `/api/auth/login` | — | {email,password} |
+| GET | `/api/me` | Bearer | — |
+| GET | `/api/orders` | Bearer | — |
+| POST | `/api/orders` | Bearer | {items,shipping_address} |
