@@ -90,7 +90,7 @@ export default function Header() {
 
       {isHome && menuOpen && (
         <>
-          <div className="fixed inset-0 z-40 bg-black/30" onClick={() => setMenuOpen(false)} />
+          <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
           <div className="absolute left-0 right-0 top-full bg-white border-b border-[color:var(--color-line)] shadow-xl z-50">
             <div className="container-eleva py-6">
               <div className="text-xs font-bold tracking-widest uppercase text-[color:var(--color-accent)] mb-4">Explorá</div>
