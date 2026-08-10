@@ -11,6 +11,9 @@ export default async function CatalogoPage({ searchParams }: { searchParams: Pro
   const q = (sp.q || "").toLowerCase();
   const sort = sp.sort || "relevancia";
 
+  const minP = sp.min ? Number(sp.min) : 0;
+  const maxP = sp.max ? Number(sp.max) : Infinity;
+
   let filtered = products.filter((p) => {
     if (cat && p.category !== cat) return false;
     if (sp.stock === "1" && !p.in_stock) return false;
@@ -18,6 +21,7 @@ export default async function CatalogoPage({ searchParams }: { searchParams: Pro
     if (sp.nuevo === "1" && p.badge !== "nuevo") return false;
     if (sp.best === "1" && p.badge !== "masvendido") return false;
     if (q && !p.name.toLowerCase().includes(q) && !p.category.toLowerCase().includes(q)) return false;
+    if (p.price_cents < minP || p.price_cents > maxP) return false;
     return true;
   });
 

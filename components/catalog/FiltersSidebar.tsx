@@ -3,6 +3,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import { categories } from "@/lib/mock-products";
 import { Check } from "lucide-react";
+import PriceSlider from "./PriceSlider";
 
 export default function FiltersSidebar() {
   const router = useRouter();
@@ -44,6 +45,11 @@ export default function FiltersSidebar() {
             </button>
           ))}
         </div>
+      </div>
+
+      <div className="card-flat p-5 mt-4">
+        <h3 className="font-bold text-sm uppercase tracking-wider text-[color:var(--color-brand)] mb-3">Precio</h3>
+        <PriceSlider />
       </div>
 
       <div className="card-flat p-5 mt-4">
