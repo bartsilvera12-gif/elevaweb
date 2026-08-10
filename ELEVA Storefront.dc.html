@@ -178,7 +178,7 @@
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:16px;margin-bottom:22px">
             <sc-for list="{{ catActive.tiles }}" as="t" hint-placeholder-count="6">
               <button onClick="{{ t.click }}" style="display:flex;flex-direction:column;gap:8px;text-align:center" style-hover="opacity:.92">
-                <span style="aspect-ratio:1/1;border-radius:4px;overflow:hidden;background:#F6F4FB;display:block"><image-slot id="{{ t.slot }}" shape="rect" placeholder="{{ t.label }}"></image-slot></span>
+                <span style="aspect-ratio:4/3;border-radius:4px;overflow:hidden;background:linear-gradient(135deg,#F1EAFB 0%,#E3D0F5 55%,#FFD9C2 100%);display:block"><image-slot id="{{ t.slot }}" shape="rect" placeholder="{{ t.label }}"></image-slot></span>
                 <span style="font-size:13px;color:#3A3350;font-weight:600">{{ t.label }}</span>
               </button>
             </sc-for>
@@ -282,7 +282,7 @@
         <div style="display:flex;gap:16px;overflow-x:auto;padding:2px 2px 14px;scroll-snap-type:x proximity;scrollbar-width:thin">
           <sc-for list="{{ sec.list }}" as="p" hint-placeholder-count="4">
             <div class="eleva-card" style="flex:0 0 224px;scroll-snap-align:start;border:1.5px solid #ECEAF3;background:#fff;border-radius:4px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer" onClick="{{ p.open }}">
-              <div style="position:relative;aspect-ratio:1/1;background:#F6F4FB">
+              <div style="position:relative;aspect-ratio:4/3;background:linear-gradient(135deg,#F1EAFB 0%,#E3D0F5 55%,#FFD9C2 100%)">
                 <image-slot id="{{ p.slot }}" shape="rect" placeholder="{{ p.name }}"></image-slot>
                 <div style="position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:6px;pointer-events:none">
                   <sc-if value="{{ p.discPct }}" hint-placeholder-val="-25%"><span style="background:#FC5005;color:#fff;font-weight:800;font-size:12px;padding:4px 9px;border-radius:3px">{{ p.discPct }}</span></sc-if>
@@ -468,7 +468,7 @@
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px">
             <sc-for list="{{ catalogItems }}" as="p" hint-placeholder-count="9">
               <div class="eleva-card" style="border:1.5px solid #ECEAF3;background:#fff;border-radius:4px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer" onClick="{{ p.open }}">
-                <div style="position:relative;aspect-ratio:1/1;background:#F6F4FB">
+                <div style="position:relative;aspect-ratio:4/3;background:linear-gradient(135deg,#F1EAFB 0%,#E3D0F5 55%,#FFD9C2 100%)">
                   <image-slot id="{{ p.slot }}" shape="rect" placeholder="{{ p.name }}"></image-slot>
                   <div style="position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:6px;pointer-events:none">
                     <sc-if value="{{ p.discPct }}" hint-placeholder-val=""><span style="background:#FC5005;color:#fff;font-weight:800;font-size:12px;padding:4px 9px;border-radius:3px">{{ p.discPct }}</span></sc-if>
@@ -511,12 +511,12 @@
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start" class="eleva-product-grid">
       <!-- gallery -->
       <div style="position:sticky;top:150px">
-        <div style="border-radius:4px;overflow:hidden;border:1px solid #ECEAF3;aspect-ratio:1/1;background:#F6F4FB">
+        <div style="border-radius:4px;overflow:hidden;border:1px solid #ECEAF3;aspect-ratio:4/3;background:linear-gradient(135deg,#F1EAFB 0%,#E3D0F5 55%,#FFD9C2 100%)">
           <image-slot id="{{ prod.mainSlot }}" shape="rect" placeholder="{{ prod.name }}"></image-slot>
         </div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px">
           <sc-for list="{{ prod.gallery }}" as="g" hint-placeholder-count="4">
-            <div style="border-radius:4px;overflow:hidden;border:1px solid #ECEAF3;aspect-ratio:1/1;background:#F6F4FB"><image-slot id="{{ g.id }}" shape="rect" placeholder="Foto"></image-slot></div>
+            <div style="border-radius:4px;overflow:hidden;border:1px solid #ECEAF3;aspect-ratio:4/3;background:linear-gradient(135deg,#F1EAFB 0%,#E3D0F5 55%,#FFD9C2 100%)"><image-slot id="{{ g.id }}" shape="rect" placeholder="Foto"></image-slot></div>
           </sc-for>
         </div>
       </div>
@@ -588,7 +588,7 @@
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px">
         <sc-for list="{{ prod.related }}" as="p" hint-placeholder-count="4">
           <div class="eleva-card" style="border:1.5px solid #ECEAF3;background:#fff;border-radius:4px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer" onClick="{{ p.open }}">
-            <div style="position:relative;aspect-ratio:1/1;background:#F6F4FB"><image-slot id="{{ p.relSlot }}" shape="rect" placeholder="{{ p.name }}"></image-slot><sc-if value="{{ p.discPct }}" hint-placeholder-val=""><span style="position:absolute;top:10px;left:10px;background:#FC5005;color:#fff;font-weight:800;font-size:12px;padding:4px 9px;border-radius:3px">{{ p.discPct }}</span></sc-if></div>
+            <div style="position:relative;aspect-ratio:4/3;background:linear-gradient(135deg,#F1EAFB 0%,#E3D0F5 55%,#FFD9C2 100%)"><image-slot id="{{ p.relSlot }}" shape="rect" placeholder="{{ p.name }}"></image-slot><sc-if value="{{ p.discPct }}" hint-placeholder-val=""><span style="position:absolute;top:10px;left:10px;background:#FC5005;color:#fff;font-weight:800;font-size:12px;padding:4px 9px;border-radius:3px">{{ p.discPct }}</span></sc-if></div>
             <div style="padding:14px 15px 16px;display:flex;flex-direction:column;flex:1">
               <div style="font-weight:600;font-size:14px;color:#1A0B33;line-height:1.35;margin-bottom:8px;min-height:38px">{{ p.name }}</div>
               <div style="margin-top:auto;display:flex;align-items:baseline;gap:8px"><span style="font-family:'Inter Tight';font-weight:800;font-size:18px;color:#240453">{{ p.priceFmt }}</span><sc-if value="{{ p.hasCompare }}" hint-placeholder-val="{{ false }}"><span style="font-size:12.5px;color:#A69EB8;text-decoration:line-through">{{ p.compareFmt }}</span></sc-if></div>
