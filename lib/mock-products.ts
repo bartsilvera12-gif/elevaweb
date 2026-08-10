@@ -35,26 +35,24 @@ export interface FullProduct extends ProductCard {
   variants?: VariantGroup;
 }
 
-const img = (seed: string) => `https://picsum.photos/seed/eleva-${seed}/600/450`;
-
 export const products: FullProduct[] = [
-  { slug: "vestido-midi-floral", name: "Vestido midi floral de verano", price_cents: 189000, compare_cents: 240000, rating: 4.6, sold: 230, badge: "masvendido", discPct: 21, in_stock: true, category: "moda", image: img("vestido-midi-floral"), variants: { label: "Talle", options: ["XS", "S", "M", "L", "XL"] } },
-  { slug: "zapatillas-urbanas", name: "Zapatillas urbanas unisex", price_cents: 320000, rating: 4.7, sold: 95, badge: "nuevo", in_stock: true, category: "moda", image: img("zapatillas-urbanas"), variants: { label: "Talle", options: ["37", "38", "39", "40", "41", "42", "43", "44"] } },
-  { slug: "skincare-nocturno", name: "Set de skincare facial nocturno", price_cents: 155000, compare_cents: 210000, rating: 4.8, sold: 180, discPct: 26, in_stock: true, category: "belleza", image: img("skincare-nocturno") },
-  { slug: "perfume-floral", name: "Perfume floral 50 ml", price_cents: 280000, rating: 4.9, sold: 66, badge: "nuevo", in_stock: true, category: "belleza", image: img("perfume-floral") },
-  { slug: "mochila-viajero", name: "Mochila viajero 30L", price_cents: 420000, rating: 4.5, sold: 42, badge: "nuevo", in_stock: true, category: "deportes", image: img("mochila-viajero"), variants: { label: "Color", options: ["Negro", "Azul", "Verde militar"] } },
-  { slug: "auriculares-inal", name: "Auriculares inalámbricos", price_cents: 350000, rating: 4.6, sold: 88, badge: "nuevo", in_stock: true, category: "audio", image: img("auriculares-inal") },
-  { slug: "termo-1l", name: "Termo acero 1L", price_cents: 95000, rating: 4.7, sold: 210, badge: "nuevo", in_stock: true, category: "hogar", image: img("termo-1l") },
-  { slug: "lampara-mesa", name: "Lámpara de mesa minimalista", price_cents: 178000, rating: 4.6, sold: 34, badge: "nuevo", in_stock: true, category: "hogar", image: img("lampara-mesa") },
-  { slug: "notebook-14", name: 'Notebook 14"', price_cents: 4290000, compare_cents: 4990000, rating: 4.8, sold: 12, discPct: 14, in_stock: true, category: "electronica", image: img("notebook-14") },
-  { slug: "smartwatch-sport", name: "Smartwatch Sport GPS", price_cents: 650000, rating: 4.7, sold: 87, badge: "masvendido", in_stock: true, category: "wearables", image: img("smartwatch-sport") },
-  { slug: "parlante-portatil", name: "Parlante portátil IPX7", price_cents: 420000, compare_cents: 520000, rating: 4.7, sold: 145, discPct: 19, in_stock: true, category: "audio", image: img("parlante-portatil") },
-  { slug: "silla-oficina", name: "Silla ergonómica de oficina", price_cents: 890000, rating: 4.5, sold: 22, in_stock: true, category: "hogar", image: img("silla-oficina") },
-  { slug: "vino-malbec", name: "Vino Malbec reserva", price_cents: 145000, rating: 4.8, sold: 340, badge: "masvendido", in_stock: true, category: "gourmet", image: img("vino-malbec") },
-  { slug: "cafe-100g", name: "Café de especialidad 100g", price_cents: 38000, rating: 4.9, sold: 560, badge: "masvendido", in_stock: true, category: "gourmet", image: img("cafe-100g") },
-  { slug: "juguete-madera", name: "Juguete didáctico de madera", price_cents: 85000, rating: 4.6, sold: 42, in_stock: true, category: "ninos", image: img("juguete-madera") },
-  { slug: "collar-perro", name: "Collar ajustable para perros", price_cents: 55000, rating: 4.6, sold: 130, in_stock: true, category: "mascotas", image: img("collar-perro"), variants: { label: "Talle", options: ["Chico", "Mediano", "Grande"] } },
-  { slug: "cargador-auto", name: "Cargador USB-C para auto", price_cents: 42000, compare_cents: 60000, rating: 4.4, sold: 210, discPct: 30, in_stock: true, category: "auto", image: img("cargador-auto") },
+  { slug: "vestido-midi-floral", name: "Vestido midi floral de verano", price_cents: 189000, compare_cents: 240000, rating: 4.6, sold: 230, badge: "masvendido", discPct: 21, in_stock: true, category: "moda", image: "/productos/vestido-midi-floral.jpg", variants: { label: "Talle", options: ["XS", "S", "M", "L", "XL"] } },
+  { slug: "zapatillas-urbanas", name: "Zapatillas urbanas unisex", price_cents: 320000, rating: 4.7, sold: 95, badge: "nuevo", in_stock: true, category: "moda", image: "/productos/zapatillas-urbanas.webp", variants: { label: "Talle", options: ["37", "38", "39", "40", "41", "42", "43", "44"] } },
+  { slug: "skincare-nocturno", name: "Set de skincare facial nocturno", price_cents: 155000, compare_cents: 210000, rating: 4.8, sold: 180, discPct: 26, in_stock: true, category: "belleza", image: "/productos/skincare-nocturno.jpeg" },
+  { slug: "perfume-floral", name: "Perfume floral 50 ml", price_cents: 280000, rating: 4.9, sold: 66, badge: "nuevo", in_stock: true, category: "belleza", image: "/productos/perfume-floral.jpg" },
+  { slug: "mochila-viajero", name: "Mochila viajero 30L", price_cents: 420000, rating: 4.5, sold: 42, badge: "nuevo", in_stock: true, category: "deportes", image: "/productos/mochila-viajero.jpeg", variants: { label: "Color", options: ["Negro", "Azul", "Verde militar"] } },
+  { slug: "auriculares-inal", name: "Auriculares inalámbricos", price_cents: 350000, rating: 4.6, sold: 88, badge: "nuevo", in_stock: true, category: "audio", image: "/productos/auriculares-inal.jpeg" },
+  { slug: "termo-1l", name: "Termo acero 1L", price_cents: 95000, rating: 4.7, sold: 210, badge: "nuevo", in_stock: true, category: "hogar", image: "/productos/termo-1l.webp" },
+  { slug: "lampara-mesa", name: "Lámpara de mesa minimalista", price_cents: 178000, rating: 4.6, sold: 34, badge: "nuevo", in_stock: true, category: "hogar", image: "/productos/lampara-mesa.jpg" },
+  { slug: "notebook-14", name: 'Notebook 14"', price_cents: 4290000, compare_cents: 4990000, rating: 4.8, sold: 12, discPct: 14, in_stock: true, category: "electronica", image: "/productos/notebook-14.png" },
+  { slug: "smartwatch-sport", name: "Smartwatch Sport GPS", price_cents: 650000, rating: 4.7, sold: 87, badge: "masvendido", in_stock: true, category: "wearables", image: "/productos/smartwatch-sport.jpg" },
+  { slug: "parlante-portatil", name: "Parlante portátil IPX7", price_cents: 420000, compare_cents: 520000, rating: 4.7, sold: 145, discPct: 19, in_stock: true, category: "audio", image: "/productos/parlante-portatil.jpeg" },
+  { slug: "silla-oficina", name: "Silla ergonómica de oficina", price_cents: 890000, rating: 4.5, sold: 22, in_stock: true, category: "hogar", image: "/productos/silla-oficina.jpeg" },
+  { slug: "vino-malbec", name: "Vino Malbec reserva", price_cents: 145000, rating: 4.8, sold: 340, badge: "masvendido", in_stock: true, category: "gourmet", image: "/productos/vino-malbec.jpeg" },
+  { slug: "cafe-100g", name: "Café de especialidad 100g", price_cents: 38000, rating: 4.9, sold: 560, badge: "masvendido", in_stock: true, category: "gourmet", image: "/productos/cafe-100g.jpg" },
+  { slug: "juguete-madera", name: "Juguete didáctico de madera", price_cents: 85000, rating: 4.6, sold: 42, in_stock: true, category: "ninos", image: "/productos/juguete-madera.jpg" },
+  { slug: "collar-perro", name: "Collar ajustable para perros", price_cents: 55000, rating: 4.6, sold: 130, in_stock: true, category: "mascotas", image: "/productos/collar-perro.jpeg", variants: { label: "Talle", options: ["Chico", "Mediano", "Grande"] } },
+  { slug: "cargador-auto", name: "Cargador USB-C para auto", price_cents: 42000, compare_cents: 60000, rating: 4.4, sold: 210, discPct: 30, in_stock: true, category: "auto", image: "/productos/cargador-auto.jpeg" },
 ];
 
 export const brands = [

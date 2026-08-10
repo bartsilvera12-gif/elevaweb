@@ -12,7 +12,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const p = products.find((x) => x.slug === slug);
   if (!p) notFound();
   const related = products.filter((x) => x.category === p.category && x.slug !== p.slug).slice(0, 3);
-  const gallery = [p.image, `https://picsum.photos/seed/${p.slug}-2/600/600`, `https://picsum.photos/seed/${p.slug}-3/600/600`, `https://picsum.photos/seed/${p.slug}-4/600/600`];
+  const gallery = [p.image];
 
   return (
     <div className="container-eleva pt-6">
