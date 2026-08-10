@@ -1,12 +1,17 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   return (
     <footer className="bg-[color:var(--color-brand-900)] text-[color:var(--color-brand-100)] mt-16">
       <div className="container-eleva py-14 grid gap-10 md:grid-cols-4">
         <div>
-          <div className="text-white font-extrabold text-2xl mb-3">ELEVA</div>
-          <p className="text-sm text-[color:var(--color-brand-200)]">Marketplace paraguayo para emprendedores. Todo en una sola tienda.</p>
+          <Link href="/" aria-label="ELEVA inicio" className="inline-block">
+            <Image src="/logo-eleva-trans.png" alt="ELEVA" width={180} height={54} className="h-12 w-auto brightness-0 invert" />
+          </Link>
+          <p className="text-sm text-[color:var(--color-brand-200)] mt-4">
+            Marketplace paraguayo para emprendedores. Todo en una sola tienda.
+          </p>
         </div>
         <FooterCol title="Comprar" links={[["/catalogo","Catálogo"],["/catalogo?ofertas=1","Ofertas"],["/catalogo?nuevo=1","Novedades"],["/como-comprar","Cómo comprar"]]} />
         <FooterCol title="Vender" links={[["/vender","Quiero vender"],["/vender/faq","Preguntas de vendedores"]]} />

@@ -53,7 +53,6 @@ export const products: FullProduct[] = [
   { slug: "vino-malbec", name: "Vino Malbec reserva", price_cents: 145000, rating: 4.8, sold: 340, badge: "masvendido", in_stock: true, category: "gourmet", image: img("vino-malbec") },
   { slug: "cafe-100g", name: "Café de especialidad 100g", price_cents: 38000, rating: 4.9, sold: 560, badge: "masvendido", in_stock: true, category: "gourmet", image: img("cafe-100g") },
   { slug: "juguete-madera", name: "Juguete didáctico de madera", price_cents: 85000, rating: 4.6, sold: 42, in_stock: true, category: "ninos", image: img("juguete-madera") },
-  { slug: "libro-novela", name: "Novela contemporánea", price_cents: 65000, rating: 4.5, sold: 88, in_stock: true, category: "libros", image: img("libro-novela") },
   { slug: "collar-perro", name: "Collar ajustable para perros", price_cents: 55000, rating: 4.6, sold: 130, in_stock: true, category: "mascotas", image: img("collar-perro"), variants: { label: "Talle", options: ["Chico", "Mediano", "Grande"] } },
   { slug: "cargador-auto", name: "Cargador USB-C para auto", price_cents: 42000, compare_cents: 60000, rating: 4.4, sold: 210, discPct: 30, in_stock: true, category: "auto", image: img("cargador-auto") },
 ];
