@@ -8,8 +8,7 @@ export default function CategoriesGrid() {
     <section className="container-eleva pt-12">
       <div className="flex items-end justify-between mb-6">
         <div>
-          <div className="text-xs font-bold tracking-widest uppercase text-[color:var(--color-accent)]">Explorá</div>
-          <h2 className="text-2xl md:text-3xl font-extrabold mt-1">Categorías</h2>
+          <h2 className="text-2xl md:text-3xl font-extrabold">Categorías</h2>
         </div>
         <Link href="/categorias" className="text-sm font-semibold text-[color:var(--color-brand)] hover:text-[color:var(--color-accent)]">Ver todas</Link>
       </div>

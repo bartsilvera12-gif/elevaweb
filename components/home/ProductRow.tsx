@@ -26,8 +26,7 @@ export default function ProductRow({ kicker, title, viewAllHref, products }: {
     <section className="container-eleva pt-12">
       <div className="flex items-end justify-between mb-6">
         <div>
-          <div className="text-xs font-bold tracking-widest uppercase text-[color:var(--color-accent)]">{kicker}</div>
-          <h2 className="text-2xl md:text-3xl font-extrabold mt-1">{title}</h2>
+          <h2 className="text-2xl md:text-3xl font-extrabold">{title}</h2>
         </div>
         <Link href={viewAllHref} className="text-sm font-semibold text-[color:var(--color-brand)] hover:text-[color:var(--color-accent)] flex items-center gap-1">
           Ver todo <ChevronRight size={16} />
