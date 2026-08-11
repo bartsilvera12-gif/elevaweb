@@ -62,12 +62,12 @@ export default function NuevoProducto() {
       active: true,
       variants: variants.length ? variants : undefined,
     });
-    router.push("/admin/productos");
+    router.push("/vendedor/productos");
   };
 
   return (
     <div>
-      <Link href="/admin/productos" className="text-sm text-[color:var(--color-muted)] hover:text-[color:var(--color-accent)] flex items-center gap-1 mb-4">
+      <Link href="/vendedor/productos" className="text-sm text-[color:var(--color-muted)] hover:text-[color:var(--color-accent)] flex items-center gap-1 mb-4">
         <ChevronLeft size={14} /> Volver a productos
       </Link>
       <div className="flex items-end justify-between mb-6">
@@ -160,7 +160,7 @@ export default function NuevoProducto() {
             <button disabled={saving || !name || !priceNum} className="btn-primary justify-center disabled:opacity-50 disabled:cursor-not-allowed">
               {saving ? "Guardando..." : "Publicar producto"}
             </button>
-            <Link href="/admin/productos" className="btn-outline text-center">Cancelar</Link>
+            <Link href="/vendedor/productos" className="btn-outline text-center">Cancelar</Link>
           </div>
         </aside>
       </form>

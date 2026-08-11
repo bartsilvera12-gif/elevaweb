@@ -445,7 +445,7 @@ function MobileDrawer({ open, onClose, favCount }: { open: boolean; onClose: () 
 
               <DrawerSection title="Vender">
                 <DrawerLink href="/vender" icon={Store} label="Quiero vender" onClick={onClose} accent />
-                <DrawerLink href="/admin" icon={Store} label="Panel de vendedor" onClick={onClose} />
+                <DrawerLink href="/vendedor" icon={Store} label="Panel del emprendedor" onClick={onClose} />
               </DrawerSection>
 
               <DrawerSection title="Ayuda">

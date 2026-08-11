@@ -14,23 +14,21 @@ const statusStyle: Record<string, string> = {
 export default function AdminPedidos() {
   const hydrated = useHydrated();
   const orders = useOrders((s) => s.orders);
-  const totalGMV = orders.reduce((n, o) => n + o.total_cents, 0);
-  const totalComm = Math.round(totalGMV * 0.12);
   if (!hydrated) return <div className="min-h-[400px]" />;
 
   return (
     <div>
-      <div className="flex items-end justify-between mb-6 flex-wrap gap-3">
+      <div className="flex items-end justify-between mb-6">
         <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold">Todos los pedidos</h1>
-          <p className="text-sm text-[color:var(--color-muted)] mt-1">GMV: <strong className="text-[color:var(--color-brand)]">{formatGs(totalGMV)}</strong> · Comisión ELEVA: <strong className="text-[color:var(--color-accent)]">{formatGs(totalComm)}</strong></p>
+          <h1 className="text-2xl md:text-3xl font-extrabold">Pedidos</h1>
+          <p className="text-sm text-[color:var(--color-muted)] mt-1">{orders.length} pedidos recibidos</p>
         </div>
       </div>
 
       {!orders.length ? (
         <div className="card-flat p-10 text-center">
           <ShoppingBag size={48} className="mx-auto text-[color:var(--color-brand-200)]" />
-          <p className="mt-4 text-[color:var(--color-ink-soft)]">Todavía no se generaron pedidos en la plataforma.</p>
+          <p className="mt-4 text-[color:var(--color-ink-soft)]">Todavía no hay pedidos.</p>
         </div>
       ) : (
         <div className="card-flat overflow-hidden">
@@ -41,7 +39,6 @@ export default function AdminPedidos() {
                 <th className="text-left px-4 py-3 font-bold hidden md:table-cell">Cliente</th>
                 <th className="text-left px-4 py-3 font-bold hidden md:table-cell">Fecha</th>
                 <th className="text-right px-4 py-3 font-bold">Total</th>
-                <th className="text-right px-4 py-3 font-bold hidden md:table-cell">Comisión</th>
                 <th className="text-right px-4 py-3 font-bold">Estado</th>
                 <th className="w-10 px-2"></th>
               </tr>
@@ -53,12 +50,11 @@ export default function AdminPedidos() {
                     <div className="font-semibold text-[color:var(--color-brand)]">{o.id}</div>
                     <div className="text-[11px] text-[color:var(--color-muted)]">{o.items.length} productos</div>
                   </td>
-                  <td className="px-4 py-3 hidden md:table-cell">{o.shipping.name}</td>
+                  <td className="px-4 py-3 hidden md:table-cell text-[color:var(--color-ink)]">{o.shipping.name}</td>
                   <td className="px-4 py-3 hidden md:table-cell text-[color:var(--color-ink-soft)]">
                     {new Date(o.created_at).toLocaleDateString("es-PY", { day: "2-digit", month: "short", year: "numeric" })}
                   </td>
                   <td className="px-4 py-3 text-right font-bold text-[color:var(--color-brand)]">{formatGs(o.total_cents)}</td>
-                  <td className="px-4 py-3 text-right hidden md:table-cell text-[color:var(--color-accent)] font-semibold">{formatGs(Math.round(o.total_cents * 0.12))}</td>
                   <td className="px-4 py-3 text-right">
                     <span className={"inline-flex text-[11px] font-bold px-2 py-0.5 rounded uppercase " + (statusStyle[o.status] || statusStyle.paid)}>{o.status}</span>
                   </td>

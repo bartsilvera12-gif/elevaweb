@@ -31,7 +31,7 @@ export default function AdminProductos() {
           <h1 className="text-2xl md:text-3xl font-extrabold">Productos</h1>
           <p className="text-sm text-[color:var(--color-muted)] mt-1">{combined.length} productos en el catálogo</p>
         </div>
-        <Link href="/admin/productos/nuevo" className="btn-primary"><Plus size={16} /> Nuevo producto</Link>
+        <Link href="/vendedor/productos/nuevo" className="btn-primary"><Plus size={16} /> Nuevo producto</Link>
       </div>
 
       <div className="card-flat p-3 mb-3">
@@ -91,7 +91,7 @@ export default function AdminProductos() {
                         <Link href={`/producto/${p.slug}`} target="_blank" className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[color:var(--color-line-soft)]"><Eye size={14} /> Ver en tienda</Link>
                         {p.isSeller && (
                           <>
-                            <Link href={`/admin/productos/${p.slug}`} onClick={() => setOpenMenu(null)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[color:var(--color-line-soft)]"><Pencil size={14} /> Editar</Link>
+                            <Link href={`/vendedor/productos/${p.slug}`} onClick={() => setOpenMenu(null)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[color:var(--color-line-soft)]"><Pencil size={14} /> Editar</Link>
                             <button onClick={() => { update(p.slug, { active: !p.active }); setOpenMenu(null); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-[color:var(--color-line-soft)]">
                               {p.active ? <><EyeOff size={14} /> Pausar</> : <><Eye size={14} /> Activar</>}
                             </button>

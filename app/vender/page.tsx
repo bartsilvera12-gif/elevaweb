@@ -170,7 +170,7 @@ export default function VenderPage() {
           <p className="text-white/80 mt-3 max-w-xl mx-auto">Creá tu cuenta gratis y empezá a publicar en menos de 5 minutos.</p>
           <div className="flex gap-3 justify-center mt-6 flex-wrap">
             <Link href="/registro" className="btn-primary">Crear cuenta de vendedor <ArrowUpRight size={18} /></Link>
-            <Link href="/admin" className="btn-outline bg-transparent text-white border-white/30 hover:bg-white/10">Ya tengo cuenta — Entrar al panel</Link>
+            <Link href="/vendedor" className="btn-outline bg-transparent text-white border-white/30 hover:bg-white/10">Ya tengo cuenta — Entrar al panel</Link>
           </div>
         </motion.div>
       </section>

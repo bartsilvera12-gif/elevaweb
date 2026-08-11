@@ -47,7 +47,7 @@ export default function EditarProducto({ params }: { params: Promise<{ slug: str
       <div>
         <h1 className="text-2xl font-extrabold">Producto no encontrado</h1>
         <p className="text-sm text-[color:var(--color-muted)] mt-2">Solo se pueden editar los productos que vos creaste.</p>
-        <Link href="/admin/productos" className="btn-outline mt-4 inline-flex">Volver</Link>
+        <Link href="/vendedor/productos" className="btn-outline mt-4 inline-flex">Volver</Link>
       </div>
     );
   }
@@ -83,12 +83,12 @@ export default function EditarProducto({ params }: { params: Promise<{ slug: str
   const del = () => {
     if (!confirm(`¿Eliminar "${product.name}"? Esta acción no se puede deshacer.`)) return;
     remove(slug);
-    router.push("/admin/productos");
+    router.push("/vendedor/productos");
   };
 
   return (
     <div>
-      <Link href="/admin/productos" className="text-sm text-[color:var(--color-muted)] hover:text-[color:var(--color-accent)] flex items-center gap-1 mb-4">
+      <Link href="/vendedor/productos" className="text-sm text-[color:var(--color-muted)] hover:text-[color:var(--color-accent)] flex items-center gap-1 mb-4">
         <ChevronLeft size={14} /> Volver a productos
       </Link>
       <div className="flex items-end justify-between mb-6 flex-wrap gap-3">
