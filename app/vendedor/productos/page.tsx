@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { products as mockProducts } from "@/lib/mock-products";
-import { useSeller, useHydrated as _useH } from "@/lib/seller-store";
+import { useSeller } from "@/lib/seller-store";
 import { useHydrated } from "@/lib/store";
 import { formatGs } from "@/lib/utils";
 import { Plus, Search, MoreHorizontal, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
