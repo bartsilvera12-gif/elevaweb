@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-import { sql } from "@/lib/db";
-import { getUserFromReq } from "@/lib/auth";
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
-export async function GET(req: NextRequest) {
-  const user = getUserFromReq(req);
-  if (!user) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
-  const { rows } = await sql`SELECT id, email, name, created_at FROM users WHERE id = ${user.uid} LIMIT 1`;
-  if (!rows.length) return NextResponse.json({ error: "Usuario no existe" }, { status: 404 });
-  return NextResponse.json({ user: rows[0] });
+export async function GET() {
+  const supabase = await createClient();
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if (error || !user) return NextResponse.json({ user: null }, { status: 200 });
+
+  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+  return NextResponse.json({ user: { ...user, profile } });
 }

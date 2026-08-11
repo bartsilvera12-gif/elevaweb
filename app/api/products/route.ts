@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sql } from "@/lib/db";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET(req: NextRequest) {
+  const supabase = await createClient();
   const category = req.nextUrl.searchParams.get("category");
-  const { rows } = category
-    ? await sql`SELECT * FROM products WHERE category = ${category} ORDER BY id`
-    : await sql`SELECT * FROM products ORDER BY id`;
-  return NextResponse.json({ products: rows });
+  let q = supabase.from("products").select("*").eq("active", true).order("id");
+  if (category) q = q.eq("category", category);
+  const { data, error } = await q;
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ products: data ?? [] });
 }

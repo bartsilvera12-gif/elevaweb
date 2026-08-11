@@ -1,14 +1,15 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
-import { Search, Heart, ShoppingCart, User, ArrowUpRight, MapPin, Menu, X, Zap, Truck, Package, Store, HelpCircle, MessageCircle, ChevronRight } from "lucide-react";
+import { Search, Heart, ShoppingCart, User, ArrowUpRight, MapPin, Menu, X, Zap, Truck, Package, Store, HelpCircle, MessageCircle, ChevronRight, LogOut, ChevronDown } from "lucide-react";
 import { categories } from "@/lib/mock-products";
 import { categoryIcon } from "@/lib/category-icons";
 import { useCart, useFavorites, useHydrated } from "@/lib/store";
 import { useCity } from "@/lib/city-store";
+import { useUser, signOut } from "@/lib/hooks/use-user";
 import CitySelector from "./CitySelector";
 
 const navItems = [
@@ -32,6 +33,7 @@ export default function Header() {
   const hydrated = useHydrated();
   const cartCount = useCart((s) => s.count());
   const favCount = useFavorites((s) => s.slugs.length);
+  const { user, profile } = useUser();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -119,7 +121,7 @@ export default function Header() {
             </Link>
           </motion.div>
 
-          <IconLink href="/mis-pedidos" label="Mi cuenta"><User size={22} /></IconLink>
+          <UserMenu user={user} profile={profile} />
           <IconLink href="/favoritos" label="Favoritos" badge={hydrated ? favCount : 0} badgeColor="brand"><Heart size={22} /></IconLink>
           <IconLink href="/carrito" label="Carrito" badge={hydrated ? cartCount : 0} badgeColor="accent"><ShoppingCart size={22} /></IconLink>
         </div>
@@ -266,7 +268,7 @@ export default function Header() {
       </AnimatePresence>
 
       {/* MOBILE DRAWER */}
-      <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} favCount={hydrated ? favCount : 0} />
+      <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} favCount={hydrated ? favCount : 0} user={user} profile={profile} />
     </header>
   );
 }
@@ -305,6 +307,57 @@ function IconLink({ href, label, badge = 0, badgeColor = "brand", children }: {
         </AnimatePresence>
       </Link>
     </motion.div>
+  );
+}
+
+function UserMenu({ user, profile }: { user: import("@supabase/supabase-js").User | null; profile: import("@/lib/hooks/use-user").UserProfile | null }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, []);
+
+  if (!user) {
+    return (
+      <Link href="/ingresar" className="hidden md:flex flex-col leading-tight text-left px-2.5 py-1.5 rounded hover:bg-[color:var(--color-brand-100)] transition">
+        <span className="text-[10px] text-[color:var(--color-muted)]">Hola,</span>
+        <span className="text-sm font-bold text-[color:var(--color-brand)] flex items-center gap-1">Ingresá <ChevronDown size={11} /></span>
+      </Link>
+    );
+  }
+
+  const display = profile?.name || user.email?.split("@")[0] || "Cuenta";
+  const initial = display[0]?.toUpperCase() || "U";
+
+  return (
+    <div ref={ref} className="hidden md:block relative">
+      <button onClick={() => setOpen((v) => !v)} className="flex items-center gap-2 px-2 py-1 rounded hover:bg-[color:var(--color-brand-100)] transition">
+        <span className="w-8 h-8 rounded-full bg-gradient-to-br from-[color:var(--color-brand)] to-[color:var(--color-accent)] text-white text-sm font-bold flex items-center justify-center">{initial}</span>
+        <span className="flex flex-col leading-tight text-left">
+          <span className="text-[10px] text-[color:var(--color-muted)]">Hola,</span>
+          <span className="text-sm font-bold text-[color:var(--color-brand)] flex items-center gap-1">{display} <ChevronDown size={11} /></span>
+        </span>
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.15 }}
+            className="absolute top-full right-0 mt-1 w-56 bg-white border border-[color:var(--color-line)] rounded shadow-xl z-50 py-1"
+          >
+            <div className="px-3 py-2 border-b border-[color:var(--color-line-soft)]">
+              <div className="text-sm font-bold text-[color:var(--color-brand)]">{display}</div>
+              <div className="text-[11px] text-[color:var(--color-muted)] truncate">{user.email}</div>
+            </div>
+            <Link href="/mis-pedidos" onClick={() => setOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-[color:var(--color-ink)] hover:bg-[color:var(--color-line-soft)]"><Package size={14} /> Mis pedidos</Link>
+            <Link href="/favoritos" onClick={() => setOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-[color:var(--color-ink)] hover:bg-[color:var(--color-line-soft)]"><Heart size={14} /> Favoritos</Link>
+            <Link href="/vendedor" onClick={() => setOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-[color:var(--color-ink)] hover:bg-[color:var(--color-line-soft)]"><Store size={14} /> Panel del emprendedor</Link>
+            <button onClick={() => { signOut().then(() => window.location.reload()); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 border-t border-[color:var(--color-line-soft)] mt-1"><LogOut size={14} /> Cerrar sesión</button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
@@ -385,7 +438,9 @@ function CityPickerMobile({ onClose }: { onClose: () => void }) {
   );
 }
 
-function MobileDrawer({ open, onClose, favCount }: { open: boolean; onClose: () => void; favCount: number }) {
+function MobileDrawer({ open, onClose, favCount, user, profile }: { open: boolean; onClose: () => void; favCount: number; user: import("@supabase/supabase-js").User | null; profile: import("@/lib/hooks/use-user").UserProfile | null }) {
+  const display = profile?.name || user?.email?.split("@")[0];
+  const initial = (display?.[0] || "U").toUpperCase();
   return (
     <AnimatePresence>
       {open && (
@@ -410,14 +465,23 @@ function MobileDrawer({ open, onClose, favCount }: { open: boolean; onClose: () 
               <button onClick={onClose} aria-label="Cerrar" className="absolute top-3 right-3 w-9 h-9 rounded flex items-center justify-center text-white/80 hover:bg-white/10">
                 <X size={22} />
               </button>
-              <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mb-3">
-                <User size={22} />
-              </div>
-              <div className="text-sm text-white/70">Hola,</div>
-              <div className="text-xl font-bold">Ingresá a tu cuenta</div>
-              <Link href="/ingresar" onClick={onClose} className="mt-4 inline-flex items-center gap-2 bg-[color:var(--color-accent)] hover:brightness-110 text-white font-bold text-sm px-4 py-2 rounded">
-                Iniciar sesión <ChevronRight size={14} />
-              </Link>
+              {user ? (
+                <>
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[color:var(--color-accent)] to-[#e04700] text-white font-bold text-lg flex items-center justify-center mb-3">{initial}</div>
+                  <div className="text-sm text-white/70">Hola,</div>
+                  <div className="text-xl font-bold">{display}</div>
+                  <div className="text-xs text-white/60 mt-0.5 truncate">{user.email}</div>
+                </>
+              ) : (
+                <>
+                  <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mb-3"><User size={22} /></div>
+                  <div className="text-sm text-white/70">Hola,</div>
+                  <div className="text-xl font-bold">Ingresá a tu cuenta</div>
+                  <Link href="/ingresar" onClick={onClose} className="mt-4 inline-flex items-center gap-2 bg-[color:var(--color-accent)] hover:brightness-110 text-white font-bold text-sm px-4 py-2 rounded">
+                    Iniciar sesión <ChevronRight size={14} />
+                  </Link>
+                </>
+              )}
             </div>
 
             <div className="flex-1 overflow-y-auto">
@@ -439,8 +503,17 @@ function MobileDrawer({ open, onClose, favCount }: { open: boolean; onClose: () 
               <DrawerSection title="Mi cuenta">
                 <DrawerLink href="/mis-pedidos" icon={Package} label="Mis pedidos" onClick={onClose} />
                 <DrawerLink href="/favoritos" icon={Heart} label="Favoritos" sub={favCount > 0 ? `${favCount} guardados` : undefined} onClick={onClose} />
-                <DrawerLink href="/ingresar" icon={User} label="Iniciar sesión" onClick={onClose} />
-                <DrawerLink href="/registro" icon={User} label="Crear cuenta" onClick={onClose} />
+                {user ? (
+                  <button onClick={() => { signOut().then(() => { onClose(); window.location.reload(); }); }} className="flex items-center gap-3 px-5 py-3 active:bg-red-50 transition-colors text-left">
+                    <span className="w-8 h-8 rounded flex items-center justify-center bg-red-100 text-red-600 shrink-0"><LogOut size={16} /></span>
+                    <span className="text-[15px] font-medium text-red-600 flex-1">Cerrar sesión</span>
+                  </button>
+                ) : (
+                  <>
+                    <DrawerLink href="/ingresar" icon={User} label="Iniciar sesión" onClick={onClose} />
+                    <DrawerLink href="/registro" icon={User} label="Crear cuenta" onClick={onClose} />
+                  </>
+                )}
               </DrawerSection>
 
               <DrawerSection title="Vender">

@@ -1,62 +1,69 @@
-# ELEVA — Storefront (Next.js 15 + TS + Tailwind 4)
+# ELEVA — Storefront (Next.js 15 + Supabase)
 
-Storefront paraguayo con backend serverless en Vercel.
+Marketplace paraguayo con Next.js 15, TypeScript, Tailwind 4 y **Supabase** (Auth + Postgres + RLS).
 
-## Stack
+## Setup
 
-- **Next.js 15** (App Router) + **React 19** + **TypeScript**
-- **Tailwind CSS 4** (theme-first, CSS-only config en `app/globals.css`)
-- **Vercel Postgres** (`@vercel/postgres`) + JWT auth (bcryptjs, jsonwebtoken)
-- **motion** para animaciones (marquee de marcas)
-- **lucide-react** para iconos
+### 1) Instalar
+```bash
+npm install
+```
+
+### 2) Configurar Supabase
+
+1. Creá un proyecto en [supabase.com](https://supabase.com).
+2. Copiá `.env.example` a `.env.local` y completá con **Project Settings → API**:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY` (solo server, nunca exponer)
+3. Andá al **SQL Editor** de Supabase y corré el contenido de [`supabase/schema.sql`](./supabase/schema.sql) una vez. Eso crea las tablas `profiles`, `products`, `orders`, `order_items`, las políticas RLS, el trigger de auto-profile y hace el seed con 16 productos.
+4. En Vercel: **Settings → Environment Variables** — pegá las mismas 3 variables.
+
+### 3) Correr
+```bash
+npm run dev
+```
+
+## Arquitectura
+
+- `@supabase/ssr` con cookies para auth (funciona en server components y route handlers)
+- **Row Level Security** activa: cada usuario solo ve/edita sus propios pedidos, perfiles, productos (si es vendedor)
+- Products públicos (`active = true`), órdenes privadas por `user_id = auth.uid()`
+- Trigger `handle_new_user()` crea profile automáticamente al registrarse
 
 ## Estructura
 
 ```
 app/
-  layout.tsx           Header + Footer + fonts
-  page.tsx             Home (hero, trust, marquee de marcas, filas de productos)
-  catalogo/            Catálogo
-  producto/[slug]/     Detalle de producto
-  carrito/, checkout/  Checkout flow
-  ingresar/, registro/ Auth
-  como-comprar/, vender/
-  api/                 Route handlers (products, auth, orders, me, init)
+  layout.tsx           Header + Footer
+  page.tsx             Home
+  catalogo/            Catálogo con filtros
+  producto/[slug]/     Detalle
+  carrito/, checkout/  Flow
+  ingresar/, registro/ Auth (Supabase)
+  vendedor/            Panel del emprendedor (7 secciones, clave: eleva2026)
+  admin/               Panel staff ELEVA (7 secciones, clave: eleva-staff-2026)
+  api/                 Route handlers → Supabase
+lib/
+  supabase/            client.ts (browser) · server.ts (SSR) · admin.ts (service role)
+  hooks/use-user.ts    Hook de sesión + logout
+  store.ts             Zustand: cart, favorites, orders locales
 components/
-  layout/              Header, Footer
-  home/                Hero, TrustStrip, BrandMarquee, ProductRow
-  ui/                  marquee-along-svg-path (shadcn-style path)
-lib/                   utils.ts, db.ts, auth.ts, mock-products.ts
-public/                Logos, uploads del manual de marca
+  layout/, home/, catalog/, product/
+supabase/
+  schema.sql           SQL para correr una vez
+middleware.ts          Refresca cookies de sesión en cada request
 ```
-
-## Dev
-
-```bash
-npm install
-npm run dev
-```
-
-## Deploy en Vercel
-
-1. https://vercel.com/new → importar `bartsilvera12-gif/elevaweb`. Framework: **Next.js** (autodetect).
-2. **Storage → Create Database → Postgres** (Neon). Setea `POSTGRES_URL` solo.
-3. **Env vars:** `JWT_SECRET` (aleatorio), `INIT_KEY` (aleatorio, protege `/api/init`).
-4. Deploy.
-5. Init DB (una vez):
-   ```bash
-   curl -X POST https://<app>.vercel.app/api/init -H "X-Init-Key: $INIT_KEY"
-   ```
 
 ## API
 
-| Método | Ruta | Auth | Body |
-| --- | --- | --- | --- |
-| POST | `/api/init` | X-Init-Key | — |
-| GET | `/api/products` | — | ?category= |
-| GET | `/api/products/[slug]` | — | — |
-| POST | `/api/auth/register` | — | {email,password,name} |
-| POST | `/api/auth/login` | — | {email,password} |
-| GET | `/api/me` | Bearer | — |
-| GET | `/api/orders` | Bearer | — |
-| POST | `/api/orders` | Bearer | {items,shipping_address} |
+| Método | Ruta | Auth |
+| --- | --- | --- |
+| POST | `/api/auth/register` | — |
+| POST | `/api/auth/login` | — |
+| POST | `/api/auth/logout` | — |
+| GET | `/api/me` | Cookie |
+| GET | `/api/products` | Público |
+| GET | `/api/products/[slug]` | Público |
+| GET | `/api/orders` | Cookie |
+| POST | `/api/orders` | Cookie |

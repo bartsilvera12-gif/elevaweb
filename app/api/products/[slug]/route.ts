@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { sql } from "@/lib/db";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET(_: Request, ctx: { params: Promise<{ slug: string }> }) {
   const { slug } = await ctx.params;
-  const { rows } = await sql`SELECT * FROM products WHERE slug = ${slug} LIMIT 1`;
-  if (!rows.length) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  return NextResponse.json({ product: rows[0] });
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("products").select("*").eq("slug", slug).eq("active", true).single();
+  if (error) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  return NextResponse.json({ product: data });
 }
