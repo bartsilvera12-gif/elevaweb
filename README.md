@@ -16,8 +16,9 @@ npm install
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY` (solo server, nunca exponer)
-3. Andá al **SQL Editor** de Supabase y corré el contenido de [`supabase/schema.sql`](./supabase/schema.sql) una vez. Eso crea las tablas `profiles`, `products`, `orders`, `order_items`, las políticas RLS, el trigger de auto-profile y hace el seed con 16 productos.
-4. En Vercel: **Settings → Environment Variables** — pegá las mismas 3 variables.
+3. Andá al **SQL Editor** de Supabase y corré el contenido de [`supabase/schema.sql`](./supabase/schema.sql) una vez. Eso crea el schema `eleva` con las tablas `profiles`, `products`, `orders`, `order_items`, las políticas RLS, el trigger de auto-profile y hace el seed con 16 productos.
+4. **Settings → API → Exposed schemas** — agregá `eleva` a la lista (queda: `public, storage, graphql_public, eleva`). Sin esto la API pública no ve las tablas.
+5. En Vercel: **Settings → Environment Variables** — pegá las mismas 3 variables.
 
 ### 3) Correr
 ```bash

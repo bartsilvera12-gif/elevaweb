@@ -1,10 +1,23 @@
--- ELEVA — Supabase schema
+-- ELEVA — Supabase schema (schema: eleva)
 -- Correlo en SQL Editor de Supabase (una sola vez).
+-- Despues: Settings -> API -> Exposed schemas -> agregar "eleva" (queda: public, storage, graphql_public, eleva)
+
+-- ============================================
+-- SCHEMA
+-- ============================================
+create schema if not exists eleva;
+
+-- Permitir a los roles de PostgREST usar el schema
+grant usage on schema eleva to anon, authenticated, service_role;
+grant all on all tables in schema eleva to service_role;
+grant all on all sequences in schema eleva to service_role;
+alter default privileges in schema eleva grant all on tables to service_role;
+alter default privileges in schema eleva grant all on sequences to service_role;
 
 -- ============================================
 -- PROFILES: extiende auth.users
 -- ============================================
-create table if not exists public.profiles (
+create table if not exists eleva.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   name text,
   phone text,
@@ -14,22 +27,22 @@ create table if not exists public.profiles (
   created_at timestamptz default now()
 );
 
-alter table public.profiles enable row level security;
+alter table eleva.profiles enable row level security;
 
-drop policy if exists "profiles_select_own" on public.profiles;
-create policy "profiles_select_own" on public.profiles for select using (auth.uid() = id);
+drop policy if exists "profiles_select_own" on eleva.profiles;
+create policy "profiles_select_own" on eleva.profiles for select using (auth.uid() = id);
 
-drop policy if exists "profiles_update_own" on public.profiles;
-create policy "profiles_update_own" on public.profiles for update using (auth.uid() = id);
+drop policy if exists "profiles_update_own" on eleva.profiles;
+create policy "profiles_update_own" on eleva.profiles for update using (auth.uid() = id);
 
 -- Trigger: crear profile automáticamente al registrarse
-create or replace function public.handle_new_user()
+create or replace function eleva.handle_new_user()
 returns trigger
 language plpgsql
-security definer set search_path = public
+security definer set search_path = eleva, public
 as $$
 begin
-  insert into public.profiles (id, name)
+  insert into eleva.profiles (id, name)
   values (new.id, coalesce(new.raw_user_meta_data->>'name', split_part(new.email, '@', 1)));
   return new;
 end;
@@ -38,14 +51,17 @@ $$;
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
-  for each row execute procedure public.handle_new_user();
+  for each row execute procedure eleva.handle_new_user();
+
+grant select, insert, update on eleva.profiles to authenticated;
+grant usage on schema eleva to authenticated;
 
 -- ============================================
 -- PRODUCTS
 -- ============================================
-create table if not exists public.products (
+create table if not exists eleva.products (
   id bigserial primary key,
-  seller_id uuid references public.profiles(id) on delete set null,
+  seller_id uuid references eleva.profiles(id) on delete set null,
   slug text unique not null,
   name text not null,
   description text,
@@ -63,25 +79,29 @@ create table if not exists public.products (
   created_at timestamptz default now()
 );
 
-create index if not exists products_category_idx on public.products(category);
-create index if not exists products_active_idx on public.products(active);
-create index if not exists products_seller_idx on public.products(seller_id);
+create index if not exists products_category_idx on eleva.products(category);
+create index if not exists products_active_idx on eleva.products(active);
+create index if not exists products_seller_idx on eleva.products(seller_id);
 
-alter table public.products enable row level security;
+alter table eleva.products enable row level security;
 
-drop policy if exists "products_public_read" on public.products;
-create policy "products_public_read" on public.products for select using (active = true);
+drop policy if exists "products_public_read" on eleva.products;
+create policy "products_public_read" on eleva.products for select using (active = true);
 
-drop policy if exists "products_seller_write" on public.products;
-create policy "products_seller_write" on public.products for all
+drop policy if exists "products_seller_write" on eleva.products;
+create policy "products_seller_write" on eleva.products for all
   using (auth.uid() = seller_id) with check (auth.uid() = seller_id);
+
+grant select on eleva.products to anon, authenticated;
+grant insert, update, delete on eleva.products to authenticated;
+grant usage, select on sequence eleva.products_id_seq to authenticated;
 
 -- ============================================
 -- ORDERS + ORDER ITEMS
 -- ============================================
-create table if not exists public.orders (
+create table if not exists eleva.orders (
   id text primary key,
-  user_id uuid references public.profiles(id) on delete set null,
+  user_id uuid references eleva.profiles(id) on delete set null,
   subtotal_cents integer not null,
   discount_cents integer default 0,
   shipping_cents integer default 0,
@@ -93,20 +113,22 @@ create table if not exists public.orders (
   created_at timestamptz default now()
 );
 
-create index if not exists orders_user_idx on public.orders(user_id);
-create index if not exists orders_created_idx on public.orders(created_at desc);
+create index if not exists orders_user_idx on eleva.orders(user_id);
+create index if not exists orders_created_idx on eleva.orders(created_at desc);
 
-alter table public.orders enable row level security;
+alter table eleva.orders enable row level security;
 
-drop policy if exists "orders_own_read" on public.orders;
-create policy "orders_own_read" on public.orders for select using (auth.uid() = user_id);
+drop policy if exists "orders_own_read" on eleva.orders;
+create policy "orders_own_read" on eleva.orders for select using (auth.uid() = user_id);
 
-drop policy if exists "orders_own_insert" on public.orders;
-create policy "orders_own_insert" on public.orders for insert with check (auth.uid() = user_id);
+drop policy if exists "orders_own_insert" on eleva.orders;
+create policy "orders_own_insert" on eleva.orders for insert with check (auth.uid() = user_id);
 
-create table if not exists public.order_items (
+grant select, insert on eleva.orders to authenticated;
+
+create table if not exists eleva.order_items (
   id bigserial primary key,
-  order_id text references public.orders(id) on delete cascade,
+  order_id text references eleva.orders(id) on delete cascade,
   product_slug text,
   product_name text,
   qty integer not null,
@@ -114,23 +136,25 @@ create table if not exists public.order_items (
   variant text
 );
 
-alter table public.order_items enable row level security;
+alter table eleva.order_items enable row level security;
 
-drop policy if exists "order_items_own_read" on public.order_items;
-create policy "order_items_own_read" on public.order_items for select using (
-  exists (select 1 from public.orders o where o.id = order_items.order_id and o.user_id = auth.uid())
+drop policy if exists "order_items_own_read" on eleva.order_items;
+create policy "order_items_own_read" on eleva.order_items for select using (
+  exists (select 1 from eleva.orders o where o.id = order_items.order_id and o.user_id = auth.uid())
 );
 
-drop policy if exists "order_items_own_insert" on public.order_items;
-create policy "order_items_own_insert" on public.order_items for insert with check (
-  exists (select 1 from public.orders o where o.id = order_items.order_id and o.user_id = auth.uid())
+drop policy if exists "order_items_own_insert" on eleva.order_items;
+create policy "order_items_own_insert" on eleva.order_items for insert with check (
+  exists (select 1 from eleva.orders o where o.id = order_items.order_id and o.user_id = auth.uid())
 );
 
+grant select, insert on eleva.order_items to authenticated;
+grant usage, select on sequence eleva.order_items_id_seq to authenticated;
+
 -- ============================================
--- SEED: productos iniciales del catálogo
--- (sin seller_id para que sean "de la casa")
+-- SEED: 16 productos del catálogo
 -- ============================================
-insert into public.products (slug, name, description, price_cents, compare_cents, image_url, stock, category, rating, sold, badge, disc_pct) values
+insert into eleva.products (slug, name, description, price_cents, compare_cents, image_url, stock, category, rating, sold, badge, disc_pct) values
   ('vestido-midi-floral', 'Vestido midi floral de verano', 'Vestido midi de tela liviana con estampado floral, corte favorecedor.', 189000, 240000, '/productos/vestido-midi-floral.jpg', 12, 'moda', 4.6, 230, 'masvendido', 21),
   ('zapatillas-urbanas', 'Zapatillas urbanas unisex', 'Suela flexible, plantilla acolchada. Diseño urbano moderno.', 320000, null, '/productos/zapatillas-urbanas.webp', 40, 'moda', 4.7, 95, 'nuevo', null),
   ('skincare-nocturno', 'Set de skincare facial nocturno', 'Rutina completa nocturna: limpiador, serum y crema.', 155000, 210000, '/productos/skincare-nocturno.jpeg', 25, 'belleza', 4.8, 180, null, 26),
