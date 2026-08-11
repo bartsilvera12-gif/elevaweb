@@ -78,24 +78,24 @@ export default function PriceSlider() {
         <label className="flex flex-col gap-1">
           <span className="text-[10px] font-bold uppercase tracking-wider text-[color:var(--color-muted)]">Desde</span>
           <div className="relative">
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[11px] text-[color:var(--color-muted)] font-semibold">Gs.</span>
+            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] text-[color:var(--color-muted)] font-semibold">Gs.</span>
             <input
               inputMode="numeric"
               value={fmt(lo)}
               onChange={(e) => setLo(Math.min(parse(e.target.value), hi - STEP))}
-              className="w-full pl-9 pr-2 py-2 text-sm border border-[color:var(--color-line)] rounded focus:outline-none focus:border-[color:var(--color-brand)]"
+              className="w-full pl-7 pr-1.5 py-2 text-[13px] tabular-nums border border-[color:var(--color-line)] rounded focus:outline-none focus:border-[color:var(--color-brand)]"
             />
           </div>
         </label>
         <label className="flex flex-col gap-1">
           <span className="text-[10px] font-bold uppercase tracking-wider text-[color:var(--color-muted)]">Hasta</span>
           <div className="relative">
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[11px] text-[color:var(--color-muted)] font-semibold">Gs.</span>
+            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] text-[color:var(--color-muted)] font-semibold">Gs.</span>
             <input
               inputMode="numeric"
               value={fmt(hi)}
               onChange={(e) => setHi(Math.max(parse(e.target.value), lo + STEP))}
-              className="w-full pl-9 pr-2 py-2 text-sm border border-[color:var(--color-line)] rounded focus:outline-none focus:border-[color:var(--color-brand)]"
+              className="w-full pl-7 pr-1.5 py-2 text-[13px] tabular-nums border border-[color:var(--color-line)] rounded focus:outline-none focus:border-[color:var(--color-brand)]"
             />
           </div>
         </label>
