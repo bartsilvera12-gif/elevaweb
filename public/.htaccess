@@ -1,0 +1,26 @@
+# Hostinger (Apache) - servir HTML estático generado por Next.js export
+
+Options -MultiViews
+RewriteEngine On
+
+# Compresión gzip
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml
+</IfModule>
+
+# Cache agresivo de assets con hash
+<IfModule mod_headers.c>
+  <FilesMatch "\.(?:js|css|jpg|jpeg|png|webp|svg|woff2?|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>
+
+# Página 404 personalizada
+ErrorDocument 404 /404.html
+
+# Redirigir /ruta a /ruta/ (Next static export usa trailingSlash)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !\.[a-zA-Z0-9]+$
+RewriteCond %{REQUEST_URI} !/$
+RewriteRule ^(.*)$ /$1/ [L,R=301]

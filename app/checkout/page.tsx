@@ -78,7 +78,7 @@ export default function CheckoutPage() {
       shipping: { name, address, city, dept, phone },
     });
     clear();
-    router.push(`/pedido/${order.id}`);
+    router.push(`/pedido?id=${order.id}`);
   };
 
   return (

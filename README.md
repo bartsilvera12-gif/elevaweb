@@ -1,70 +1,76 @@
-# ELEVA — Storefront (Next.js 15 + Supabase)
+# ELEVA — Storefront (Next.js 15 · Static export · Supabase)
 
-Marketplace paraguayo con Next.js 15, TypeScript, Tailwind 4 y **Supabase** (Auth + Postgres + RLS).
+Marketplace paraguayo. Frontend: Next.js 15 + TypeScript + Tailwind 4, buildado como **HTML estático** (compatible con hosting compartido tipo Hostinger). Backend: **Supabase** (Auth + Postgres + RLS).
 
-## Setup
-
-### 1) Instalar
-```bash
-npm install
-```
-
-### 2) Configurar Supabase
+## 1. Setup Supabase
 
 1. Creá un proyecto en [supabase.com](https://supabase.com).
-2. Copiá `.env.example` a `.env.local` y completá con **Project Settings → API**:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `SUPABASE_SERVICE_ROLE_KEY` (solo server, nunca exponer)
-3. Andá al **SQL Editor** de Supabase y corré el contenido de [`supabase/schema.sql`](./supabase/schema.sql) una vez. Eso crea el schema `eleva` con las tablas `profiles`, `products`, `orders`, `order_items`, las políticas RLS, el trigger de auto-profile y hace el seed con 16 productos.
-4. **Settings → API → Exposed schemas** — agregá `eleva` a la lista (queda: `public, storage, graphql_public, eleva`). Sin esto la API pública no ve las tablas.
-5. En Vercel: **Settings → Environment Variables** — pegá las mismas 3 variables.
+2. **SQL Editor** → correr una vez el contenido de [`supabase/schema.sql`](./supabase/schema.sql). Crea schema `eleva`, tablas, RLS, trigger de auto-profile y seed de 16 productos.
+3. **Project Settings → API → Exposed schemas** → agregar `eleva` (queda: `public, storage, graphql_public, eleva`).
+4. **Project Settings → API** → copiar Project URL y anon key.
 
-### 3) Correr
-```bash
-npm run dev
+## 2. Variables de entorno
+
+`.env.local` (basado en `.env.example`):
+```
+NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...
 ```
 
-## Arquitectura
+En export estático, todo lo que empieza con `NEXT_PUBLIC_` se inlinea en el build. **No pongas el service role key** — la app no lo usa (todo respeta RLS con la anon key).
 
-- `@supabase/ssr` con cookies para auth (funciona en server components y route handlers)
-- **Row Level Security** activa: cada usuario solo ve/edita sus propios pedidos, perfiles, productos (si es vendedor)
-- Products públicos (`active = true`), órdenes privadas por `user_id = auth.uid()`
-- Trigger `handle_new_user()` crea profile automáticamente al registrarse
+## 3. Build
 
-## Estructura
+```bash
+npm install
+npm run build
+```
+
+Genera la carpeta `out/` con todos los HTML/CSS/JS estáticos.
+
+## 4. Subir a Hostinger
+
+1. Entrá al **File Manager** de Hostinger (o por FTP).
+2. Andá a `public_html/`.
+3. Subí **el contenido de `out/`** (no la carpeta, el contenido: `index.html`, `_next/`, `productos/`, etc.).
+4. Asegurate de subir también el archivo `.htaccess` (viene de `public/.htaccess`).
+5. Listo — entrá a tu dominio.
+
+## Estructura del proyecto
 
 ```
 app/
-  layout.tsx           Header + Footer
   page.tsx             Home
   catalogo/            Catálogo con filtros
-  producto/[slug]/     Detalle
-  carrito/, checkout/  Flow
-  ingresar/, registro/ Auth (Supabase)
-  vendedor/            Panel del emprendedor (7 secciones, clave: eleva2026)
-  admin/               Panel staff ELEVA (7 secciones, clave: eleva-staff-2026)
-  api/                 Route handlers → Supabase
+  producto/[slug]/     Detalle (pre-generado en build via generateStaticParams)
+  carrito/, checkout/  Flow completo
+  pedido/              Detalle de pedido (?id=ELV-XXXXXX en query string)
+  mis-pedidos/         Historial
+  ingresar/, registro/ Auth Supabase (client-side)
+  vendedor/            Panel del emprendedor (clave: eleva2026)
+  admin/               Panel staff ELEVA (clave: eleva-staff-2026)
 lib/
-  supabase/            client.ts (browser) · server.ts (SSR) · admin.ts (service role)
-  hooks/use-user.ts    Hook de sesión + logout
+  supabase/client.ts   Único cliente (browser)
+  hooks/use-user.ts    Sesión con onAuthStateChange
   store.ts             Zustand: cart, favorites, orders locales
 components/
   layout/, home/, catalog/, product/
 supabase/
-  schema.sql           SQL para correr una vez
-middleware.ts          Refresca cookies de sesión en cada request
+  schema.sql           Correr una vez
+public/
+  .htaccess            Config para Apache/Hostinger
 ```
 
-## API
+## Limitaciones del export estático
 
-| Método | Ruta | Auth |
-| --- | --- | --- |
-| POST | `/api/auth/register` | — |
-| POST | `/api/auth/login` | — |
-| POST | `/api/auth/logout` | — |
-| GET | `/api/me` | Cookie |
-| GET | `/api/products` | Público |
-| GET | `/api/products/[slug]` | Público |
-| GET | `/api/orders` | Cookie |
-| POST | `/api/orders` | Cookie |
+- **No hay route handlers `/api/*`** — todo pasa por el cliente Supabase directo.
+- **No hay middleware** — la sesión se refresca automáticamente por el cliente Supabase en el browser.
+- **No hay next/image optimización** — imágenes se sirven tal cual desde `/public`.
+- Las páginas dinámicas usan **query params** (`/pedido?id=ELV-XXX`) o **generateStaticParams** (`/producto/[slug]`).
+
+## Dev local
+
+```bash
+npm run dev
+# → http://localhost:3000
+```

@@ -7,6 +7,10 @@ import { Shield, Truck, ChevronRight, Store } from "lucide-react";
 import CatalogGrid from "@/components/catalog/CatalogGrid";
 import ProductActions from "@/components/product/ProductActions";
 
+export function generateStaticParams() {
+  return products.map((p) => ({ slug: p.slug }));
+}
+
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const p = products.find((x) => x.slug === slug);

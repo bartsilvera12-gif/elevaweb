@@ -4,9 +4,15 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
+export const dynamic = "force-static";
+
 export const metadata: Metadata = {
   title: "ELEVA — Marketplace paraguayo",
   description: "Comprá y vendé en un solo lugar. Emprendedores paraguayos, entrega coordinada, pago protegido.",
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/icon.svg" }],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

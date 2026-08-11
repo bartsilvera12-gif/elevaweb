@@ -59,7 +59,7 @@ export default function AdminPedidos() {
                     <span className={"inline-flex text-[11px] font-bold px-2 py-0.5 rounded uppercase " + (statusStyle[o.status] || statusStyle.paid)}>{o.status}</span>
                   </td>
                   <td className="px-2 py-3 text-right">
-                    <Link href={`/pedido/${o.id}`} className="p-1.5 rounded hover:bg-[color:var(--color-line-soft)] text-[color:var(--color-muted)] inline-flex"><ChevronRight size={16} /></Link>
+                    <Link href={`/pedido?id=${o.id}`} className="p-1.5 rounded hover:bg-[color:var(--color-line-soft)] text-[color:var(--color-muted)] inline-flex"><ChevronRight size={16} /></Link>
                   </td>
                 </tr>
               ))}

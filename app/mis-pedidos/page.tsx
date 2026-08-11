@@ -33,7 +33,7 @@ export default function MisPedidosPage() {
           {orders.map((o) => {
             const s = statusLabel[o.status] || statusLabel.paid;
             return (
-              <Link key={o.id} href={`/pedido/${o.id}`} className="card-flat p-5 flex items-center gap-5 hover:border-[color:var(--color-accent)] hover:shadow-md transition">
+              <Link key={o.id} href={`/pedido?id=${o.id}`} className="card-flat p-5 flex items-center gap-5 hover:border-[color:var(--color-accent)] hover:shadow-md transition">
                 <div className="flex -space-x-3 shrink-0">
                   {o.items.slice(0, 3).map((it, i) => (
                     <div key={i} className="relative w-14 h-14 rounded overflow-hidden border-2 border-white bg-[color:var(--color-line-soft)]">

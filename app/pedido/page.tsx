@@ -1,10 +1,10 @@
 "use client";
-import { use } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { formatGs } from "@/lib/utils";
 import { useOrders, useHydrated } from "@/lib/store";
-import { CheckCircle2, CircleDot, Circle, Package, Truck, Home, ChevronRight } from "lucide-react";
+import { CheckCircle2, Circle, Package, Truck, Home, ChevronRight } from "lucide-react";
 
 const steps = [
   { key: "paid", label: "Pagado", icon: CheckCircle2 },
@@ -13,8 +13,9 @@ const steps = [
   { key: "delivered", label: "Entregado", icon: Home },
 ];
 
-export default function PedidoDetallePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function PedidoDetallePage() {
+  const sp = useSearchParams();
+  const id = sp.get("id") || "";
   const hydrated = useHydrated();
   const order = useOrders((s) => s.orders.find((o) => o.id === id));
 
@@ -24,6 +25,7 @@ export default function PedidoDetallePage({ params }: { params: Promise<{ id: st
     return (
       <div className="container-eleva pt-10">
         <h1 className="text-3xl font-extrabold">Pedido no encontrado</h1>
+        <p className="text-sm text-[color:var(--color-muted)] mt-2">El pedido {id ? <code>{id}</code> : ""} no está en tus registros locales.</p>
         <Link href="/mis-pedidos" className="btn-primary mt-6 inline-flex">Ver mis pedidos</Link>
       </div>
     );
