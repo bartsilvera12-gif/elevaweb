@@ -30,25 +30,26 @@
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-  .dual-range { pointer-events: none; background: transparent; }
+  .dual-range { pointer-events: none; background: transparent; -webkit-appearance: none; appearance: none; }
+  .dual-range:focus { outline: none; }
+  .dual-range::-webkit-slider-runnable-track { background: transparent; height: 3px; border: none; }
+  .dual-range::-moz-range-track { background: transparent; height: 3px; border: none; }
   .dual-range::-webkit-slider-thumb {
     -webkit-appearance: none; appearance: none;
-    width: 22px; height: 22px; border-radius: 50%;
+    width: 20px; height: 20px; border-radius: 50%;
     background: var(--color-brand); border: 3px solid #fff;
     cursor: grab; pointer-events: auto;
-    box-shadow: 0 2px 8px rgba(36,4,83,0.35);
-    margin-top: 0;
+    box-shadow: 0 2px 6px rgba(36,4,83,0.35);
+    margin-top: -8.5px;
   }
   .dual-range::-webkit-slider-thumb:active { cursor: grabbing; background: var(--color-accent); }
   .dual-range::-moz-range-thumb {
-    width: 22px; height: 22px; border-radius: 50%;
+    width: 20px; height: 20px; border-radius: 50%;
     background: var(--color-brand); border: 3px solid #fff;
     cursor: grab; pointer-events: auto;
-    box-shadow: 0 2px 8px rgba(36,4,83,0.35);
+    box-shadow: 0 2px 6px rgba(36,4,83,0.35);
   }
   .dual-range::-moz-range-thumb:active { cursor: grabbing; background: var(--color-accent); }
-  .dual-range::-webkit-slider-runnable-track { background: transparent; height: 6px; }
-  .dual-range::-moz-range-track { background: transparent; height: 6px; }
   .card-flat { border: 1px solid var(--color-line); border-radius: 4px; background: #fff; }
   .btn-primary {
     background: var(--color-accent); color: #fff; font-weight: 700; border-radius: 4px;

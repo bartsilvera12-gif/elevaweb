@@ -43,38 +43,43 @@ export default function PriceSlider() {
   return (
     <div>
       {/* Slider */}
-      <div className="relative h-8 flex items-center">
-        <div className="absolute inset-x-0 h-1.5 bg-[color:var(--color-line)] rounded-full" />
-        <div
-          className="absolute h-1.5 bg-[color:var(--color-brand)] rounded-full"
-          style={{ left: `${loPct}%`, width: `${Math.max(0, hiPct - loPct)}%` }}
-        />
-        <input
-          type="range"
-          min={MIN}
-          max={MAX}
-          step={STEP}
-          value={lo}
-          onChange={(e) => setLo(Math.min(+e.target.value, hi - STEP))}
-          aria-label="Precio mínimo"
-          className="dual-range absolute inset-x-0 h-8 w-full appearance-none bg-transparent"
-          style={{ zIndex: lo >= hi - STEP ? 5 : 3 }}
-        />
-        <input
-          type="range"
-          min={MIN}
-          max={MAX}
-          step={STEP}
-          value={hi}
-          onChange={(e) => setHi(Math.max(+e.target.value, lo + STEP))}
-          aria-label="Precio máximo"
-          className="dual-range absolute inset-x-0 h-8 w-full appearance-none bg-transparent"
-          style={{ zIndex: 4 }}
-        />
+      <div className="px-[11px]">
+        <div className="relative h-6 select-none">
+          {/* Track base */}
+          <div className="absolute top-1/2 -translate-y-1/2 inset-x-0 h-[3px] bg-[color:var(--color-line)] rounded-full pointer-events-none" />
+          {/* Track fill */}
+          <div
+            className="absolute top-1/2 -translate-y-1/2 h-[3px] bg-[color:var(--color-brand)] rounded-full pointer-events-none"
+            style={{ left: `${loPct}%`, right: `${100 - hiPct}%` }}
+          />
+          {/* Range inputs */}
+          <input
+            type="range"
+            min={MIN}
+            max={MAX}
+            step={STEP}
+            value={lo}
+            onChange={(e) => setLo(Math.min(+e.target.value, hi - STEP))}
+            aria-label="Precio mínimo"
+            className="dual-range absolute inset-0 w-full h-full appearance-none bg-transparent"
+            style={{ zIndex: lo >= hi - STEP ? 5 : 3 }}
+          />
+          <input
+            type="range"
+            min={MIN}
+            max={MAX}
+            step={STEP}
+            value={hi}
+            onChange={(e) => setHi(Math.max(+e.target.value, lo + STEP))}
+            aria-label="Precio máximo"
+            className="dual-range absolute inset-0 w-full h-full appearance-none bg-transparent"
+            style={{ zIndex: 4 }}
+          />
+        </div>
       </div>
 
       {/* Inputs Desde / Hasta */}
-      <div className="grid grid-cols-2 gap-2 mt-3">
+      <div className="grid grid-cols-2 gap-2 mt-4">
         <label className="flex flex-col gap-1">
           <span className="text-[10px] font-bold uppercase tracking-wider text-[color:var(--color-muted)]">Desde</span>
           <div className="relative">
