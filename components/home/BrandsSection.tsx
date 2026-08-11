@@ -11,21 +11,24 @@ export default function BrandsSection() {
         <Link href="/catalogo" className="text-sm font-semibold text-[color:var(--color-brand)] hover:text-[color:var(--color-accent)]">Ver productos</Link>
       </div>
       <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-        {brands.map((b) => (
-          <Link
-            key={b.slug}
-            href={`/catalogo?q=${b.slug}`}
-            className="card-flat aspect-[4/3] flex items-center justify-center p-5 hover:border-[color:var(--color-accent)] hover:shadow-md transition"
-          >
-            {}
-            <img
-              src={`https://cdn.simpleicons.org/${b.slug}/240453`}
-              alt={b.name}
-              className="max-h-10 w-auto opacity-80 hover:opacity-100 transition"
-              loading="lazy"
-            />
-          </Link>
-        ))}
+        {brands.map((b) => {
+          const bigger = ["samsung", "sony", "panasonic", "lenovo"].includes(b.slug);
+          return (
+            <Link
+              key={b.slug}
+              href={`/catalogo?q=${b.slug}`}
+              className="card-flat aspect-[4/3] flex items-center justify-center p-5 hover:border-[color:var(--color-accent)] hover:shadow-md transition"
+            >
+              {}
+              <img
+                src={`https://cdn.simpleicons.org/${b.slug}/240453`}
+                alt={b.name}
+                className={`${bigger ? "max-h-14" : "max-h-10"} w-auto opacity-80 hover:opacity-100 transition`}
+                loading="lazy"
+              />
+            </Link>
+          );
+        })}
       </div>
     </section>
   );
