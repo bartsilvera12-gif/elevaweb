@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Package, ShoppingBag, Store, LogOut, Lock } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingBag, Store, LogOut, Lock, Wallet, MessageCircle, BarChart3 } from "lucide-react";
 
 const ADMIN_KEY = "eleva2026";
 const STORAGE = "eleva.admin";
@@ -67,6 +67,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: "/admin", label: "Overview", icon: LayoutDashboard },
     { href: "/admin/productos", label: "Productos", icon: Package },
     { href: "/admin/pedidos", label: "Pedidos", icon: ShoppingBag },
+    { href: "/admin/mensajes", label: "Mensajes", icon: MessageCircle },
+    { href: "/admin/analiticas", label: "Analíticas", icon: BarChart3 },
+    { href: "/admin/finanzas", label: "Finanzas", icon: Wallet },
     { href: "/admin/tienda", label: "Mi tienda", icon: Store },
   ];
 

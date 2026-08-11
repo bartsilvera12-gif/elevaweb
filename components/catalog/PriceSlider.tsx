@@ -1,20 +1,20 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { formatGs } from "@/lib/utils";
 
 const MIN = 0;
 const MAX = 5000000;
 const STEP = 50000;
 
+const fmt = (n: number) => new Intl.NumberFormat("es-PY").format(n);
+const parse = (s: string) => Number(s.replace(/\D/g, "")) || 0;
+
 export default function PriceSlider() {
   const router = useRouter();
   const sp = useSearchParams();
-  const initialLo = Math.max(MIN, Math.min(MAX, Number(sp.get("min") ?? MIN)));
-  const initialHi = Math.max(MIN, Math.min(MAX, Number(sp.get("max") ?? MAX)));
 
-  const [lo, setLo] = useState(initialLo);
-  const [hi, setHi] = useState(initialHi);
+  const [lo, setLo] = useState(0);
+  const [hi, setHi] = useState(MAX);
 
   useEffect(() => {
     setLo(Math.max(MIN, Math.min(MAX, Number(sp.get("min") ?? MIN))));
@@ -26,21 +26,29 @@ export default function PriceSlider() {
 
   const apply = () => {
     const p = new URLSearchParams(sp.toString());
-    if (lo > MIN) p.set("min", String(lo));
-    else p.delete("min");
-    if (hi < MAX) p.set("max", String(hi));
-    else p.delete("max");
+    const clampedLo = Math.max(MIN, Math.min(hi, lo));
+    const clampedHi = Math.max(clampedLo, Math.min(MAX, hi));
+    if (clampedLo > MIN) p.set("min", String(clampedLo)); else p.delete("min");
+    if (clampedHi < MAX) p.set("max", String(clampedHi)); else p.delete("max");
+    router.push(`/catalogo?${p.toString()}`);
+  };
+
+  const reset = () => {
+    setLo(MIN); setHi(MAX);
+    const p = new URLSearchParams(sp.toString());
+    p.delete("min"); p.delete("max");
     router.push(`/catalogo?${p.toString()}`);
   };
 
   return (
     <div>
-      <div className="text-sm text-[color:var(--color-ink)] font-semibold mb-2">
-        Desde <span className="text-[color:var(--color-brand)]">{formatGs(lo)}</span> hasta <span className="text-[color:var(--color-brand)]">{formatGs(hi)}{hi === MAX ? "+" : ""}</span>
-      </div>
-      <div className="relative h-6 flex items-center">
-        <div className="absolute inset-x-0 h-1 bg-[color:var(--color-line)] rounded" />
-        <div className="absolute h-1 bg-[color:var(--color-brand)] rounded" style={{ left: `${loPct}%`, width: `${hiPct - loPct}%` }} />
+      {/* Slider */}
+      <div className="relative h-8 flex items-center">
+        <div className="absolute inset-x-0 h-1.5 bg-[color:var(--color-line)] rounded-full" />
+        <div
+          className="absolute h-1.5 bg-[color:var(--color-brand)] rounded-full"
+          style={{ left: `${loPct}%`, width: `${Math.max(0, hiPct - loPct)}%` }}
+        />
         <input
           type="range"
           min={MIN}
@@ -48,8 +56,9 @@ export default function PriceSlider() {
           step={STEP}
           value={lo}
           onChange={(e) => setLo(Math.min(+e.target.value, hi - STEP))}
-          className="dual-range absolute inset-x-0 h-6 w-full appearance-none bg-transparent"
-          style={{ zIndex: lo > MAX - STEP * 2 ? 5 : 3 }}
+          aria-label="Precio mínimo"
+          className="dual-range absolute inset-x-0 h-8 w-full appearance-none bg-transparent"
+          style={{ zIndex: lo >= hi - STEP ? 5 : 3 }}
         />
         <input
           type="range"
@@ -58,17 +67,56 @@ export default function PriceSlider() {
           step={STEP}
           value={hi}
           onChange={(e) => setHi(Math.max(+e.target.value, lo + STEP))}
-          className="dual-range absolute inset-x-0 h-6 w-full appearance-none bg-transparent"
+          aria-label="Precio máximo"
+          className="dual-range absolute inset-x-0 h-8 w-full appearance-none bg-transparent"
           style={{ zIndex: 4 }}
         />
       </div>
-      <div className="flex items-center justify-between text-[10px] text-[color:var(--color-muted)] mt-1">
-        <span>{formatGs(MIN)}</span>
-        <span>{formatGs(MAX)}+</span>
+
+      {/* Inputs Desde / Hasta */}
+      <div className="grid grid-cols-2 gap-2 mt-3">
+        <label className="flex flex-col gap-1">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[color:var(--color-muted)]">Desde</span>
+          <div className="relative">
+            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[11px] text-[color:var(--color-muted)] font-semibold">Gs.</span>
+            <input
+              inputMode="numeric"
+              value={fmt(lo)}
+              onChange={(e) => setLo(Math.min(parse(e.target.value), hi - STEP))}
+              className="w-full pl-9 pr-2 py-2 text-sm border border-[color:var(--color-line)] rounded focus:outline-none focus:border-[color:var(--color-brand)]"
+            />
+          </div>
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[color:var(--color-muted)]">Hasta</span>
+          <div className="relative">
+            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[11px] text-[color:var(--color-muted)] font-semibold">Gs.</span>
+            <input
+              inputMode="numeric"
+              value={fmt(hi)}
+              onChange={(e) => setHi(Math.max(parse(e.target.value), lo + STEP))}
+              className="w-full pl-9 pr-2 py-2 text-sm border border-[color:var(--color-line)] rounded focus:outline-none focus:border-[color:var(--color-brand)]"
+            />
+          </div>
+        </label>
       </div>
-      <button onClick={apply} className="mt-3 w-full text-sm font-semibold bg-[color:var(--color-brand-100)] text-[color:var(--color-brand)] rounded px-3 py-2 hover:bg-[color:var(--color-brand-200)] transition">
-        Aplicar precio
-      </button>
+
+      <div className="flex gap-2 mt-3">
+        <button
+          onClick={apply}
+          className="flex-1 text-sm font-semibold bg-[color:var(--color-brand)] text-white rounded px-3 py-2 hover:brightness-110 transition"
+        >
+          Aplicar
+        </button>
+        {(sp.get("min") || sp.get("max")) && (
+          <button
+            onClick={reset}
+            className="text-xs text-[color:var(--color-muted)] hover:text-[color:var(--color-accent)] px-2"
+          >
+            Limpiar
+          </button>
+        )}
+      </div>
     </div>
   );
 }
