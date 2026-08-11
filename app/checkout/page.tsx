@@ -3,9 +3,11 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { formatGs } from "@/lib/utils";
-import { useCart, useOrders, useHydrated } from "@/lib/store";
+import { useCart, useHydrated } from "@/lib/store";
 import { findCoupon, computeTotals, type Coupon, coupons as allCoupons } from "@/lib/coupons";
-import { CreditCard, MapPin, User, Truck, Shield, ArrowRight, Tag, Check, X } from "lucide-react";
+import { useUser } from "@/lib/hooks/use-user";
+import { createClient } from "@/lib/supabase/client";
+import { CreditCard, MapPin, User as UserIcon, Truck, Shield, ArrowRight, Tag, Check, X, Loader2 } from "lucide-react";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -13,7 +15,7 @@ export default function CheckoutPage() {
   const items = useCart((s) => s.items);
   const subtotal = useCart((s) => s.subtotalCents());
   const clear = useCart((s) => s.clear);
-  const createOrder = useOrders((s) => s.create);
+  const { user, profile } = useUser();
 
   const [coupon, setCoupon] = useState<Coupon | null>(null);
   const [couponInput, setCouponInput] = useState("");
@@ -25,6 +27,8 @@ export default function CheckoutPage() {
   const [dept, setDept] = useState("Central");
   const [phone, setPhone] = useState("");
   const [method, setMethod] = useState<"tarjeta" | "transferencia" | "efectivo">("tarjeta");
+  const [submitting, setSubmitting] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
 
   const totals = useMemo(() => computeTotals(subtotal, coupon), [subtotal, coupon]);
 
@@ -42,54 +46,73 @@ export default function CheckoutPage() {
     );
   }
 
+  if (!user) {
+    return (
+      <div className="container-eleva pt-10">
+        <h1 className="text-3xl font-extrabold">Ingresá para completar el pedido</h1>
+        <p className="text-sm text-[color:var(--color-ink-soft)] mt-2">Necesitás una cuenta para guardar el pedido y hacer seguimiento.</p>
+        <div className="flex gap-3 mt-6">
+          <Link href={`/ingresar?next=${encodeURIComponent("/checkout")}`} className="btn-primary">Iniciar sesión</Link>
+          <Link href="/registro" className="btn-outline">Crear cuenta</Link>
+        </div>
+      </div>
+    );
+  }
+
   const applyCoupon = () => {
     const c = findCoupon(couponInput);
-    if (!c) {
-      setCoupon(null);
-      setCouponMsg({ ok: false, msg: "Ese cupón no existe" });
-      return;
-    }
+    if (!c) { setCoupon(null); setCouponMsg({ ok: false, msg: "Ese cupón no existe" }); return; }
     setCoupon(c);
     const t = computeTotals(subtotal, c);
-    if (t.couponError) {
-      setCouponMsg({ ok: false, msg: t.couponError });
-      setCoupon(null);
-    } else {
-      setCouponMsg({ ok: true, msg: `Aplicado: ${c.label}` });
-    }
+    if (t.couponError) { setCouponMsg({ ok: false, msg: t.couponError }); setCoupon(null); }
+    else setCouponMsg({ ok: true, msg: `Aplicado: ${c.label}` });
   };
 
-  const clearCoupon = () => {
-    setCoupon(null);
-    setCouponInput("");
-    setCouponMsg(null);
-  };
+  const clearCoupon = () => { setCoupon(null); setCouponInput(""); setCouponMsg(null); };
 
-  const placeOrder = (e: React.FormEvent) => {
+  const placeOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !address || !city || !phone) return;
-    const order = createOrder({
-      items,
-      subtotal_cents: totals.subtotal,
-      discount_cents: totals.discount,
-      shipping_cents: totals.shipping,
-      total_cents: totals.total,
-      coupon: coupon?.code,
-      shipping: { name, address, city, dept, phone },
+    setSubmitting(true);
+    setErr(null);
+
+    const supabase = createClient();
+    const id = "ELV-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+    const { data, error } = await supabase.rpc("create_order", {
+      p_id: id,
+      p_subtotal_cents: totals.subtotal,
+      p_discount_cents: totals.discount,
+      p_shipping_cents: totals.shipping,
+      p_total_cents: totals.total,
+      p_coupon: coupon?.code ?? null,
+      p_shipping: { name, address, city, dept, phone },
+      p_items: items.map((it) => ({
+        slug: it.slug,
+        name: it.name,
+        qty: it.qty,
+        price_cents: it.price_cents,
+        variant: it.variant ?? null,
+      })),
     });
+
+    setSubmitting(false);
+
+    if (error) { setErr(error.message); return; }
     clear();
-    router.push(`/pedido?id=${order.id}`);
+    router.push(`/pedido?id=${data?.id ?? id}`);
   };
 
   return (
     <div className="container-eleva pt-6">
       <h1 className="text-3xl font-extrabold">Checkout</h1>
-      <p className="text-sm text-[color:var(--color-muted)] mt-1">Completá tus datos para finalizar la compra.</p>
+      <p className="text-sm text-[color:var(--color-muted)] mt-1">
+        Hola <strong>{profile?.name || user.email}</strong> · Completá tus datos para finalizar la compra.
+      </p>
 
       <form onSubmit={placeOrder} className="grid lg:grid-cols-3 gap-6 mt-8">
         <div className="lg:col-span-2 flex flex-col gap-5">
           <section className="card-flat p-5">
-            <h2 className="flex items-center gap-2 font-bold text-[color:var(--color-brand)] mb-4"><User size={18} /> Datos de contacto</h2>
+            <h2 className="flex items-center gap-2 font-bold text-[color:var(--color-brand)] mb-4"><UserIcon size={18} /> Datos de contacto</h2>
             <div className="grid md:grid-cols-2 gap-3">
               <Input label="Nombre completo" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Karen Ayala" className="md:col-span-2" />
               <Input label="Teléfono" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+595 981 000 000" />
@@ -125,16 +148,13 @@ export default function CheckoutPage() {
                 <Input label="Número de tarjeta" placeholder="•••• •••• •••• ••••" className="md:col-span-2" />
                 <Input label="Vencimiento" placeholder="MM/AA" />
                 <Input label="CVV" placeholder="•••" />
-                <div className="md:col-span-2 text-xs text-[color:var(--color-muted)]">
-                  o pagalo en cuotas: <strong className="text-[color:var(--color-brand)]">3× {formatGs(Math.round(totals.total / 3))}</strong> · <strong>6× {formatGs(Math.round(totals.total / 6))}</strong>
-                </div>
               </div>
             )}
             {method === "transferencia" && (
-              <div className="text-sm text-[color:var(--color-ink-soft)]">Te enviaremos los datos bancarios al confirmar el pedido.</div>
+              <div className="text-sm text-[color:var(--color-ink-soft)]">Te enviamos los datos bancarios al confirmar.</div>
             )}
             {method === "efectivo" && (
-              <div className="text-sm text-[color:var(--color-ink-soft)]">Pagás en efectivo al momento de recibir tu pedido.</div>
+              <div className="text-sm text-[color:var(--color-ink-soft)]">Pagás al momento de recibir tu pedido.</div>
             )}
           </section>
         </div>
@@ -184,11 +204,14 @@ export default function CheckoutPage() {
             <span className="font-bold">Total</span>
             <span className="text-2xl font-extrabold text-[color:var(--color-brand)]">{formatGs(totals.total)}</span>
           </div>
-          <button type="submit" className="btn-primary w-full justify-center mt-5">Pagar {formatGs(totals.total)} <ArrowRight size={16} /></button>
+
+          {err && <div className="mt-3 text-sm bg-red-50 text-red-700 border border-red-200 rounded p-2">{err}</div>}
+
+          <button type="submit" disabled={submitting} className="btn-primary w-full justify-center mt-5 disabled:opacity-50">
+            {submitting ? <><Loader2 size={16} className="animate-spin" /> Procesando…</> : <>Pagar {formatGs(totals.total)} <ArrowRight size={16} /></>}
+          </button>
           <div className="flex items-center gap-2 text-xs text-[color:var(--color-muted)] mt-3 justify-center">
-            <Shield size={12} /> Pago protegido
-            <span>·</span>
-            <Truck size={12} /> Envío coordinado
+            <Shield size={12} /> Pago protegido <span>·</span> <Truck size={12} /> Envío coordinado
           </div>
         </aside>
       </form>

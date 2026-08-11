@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
-import { useOrders, useHydrated } from "@/lib/store";
+import { useSellerOrders } from "@/lib/hooks/use-orders";
 import { formatGs } from "@/lib/utils";
-import { ShoppingBag, ChevronRight } from "lucide-react";
+import { ShoppingBag, ChevronRight, Loader2 } from "lucide-react";
 
 const statusStyle: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800",
@@ -11,24 +11,24 @@ const statusStyle: Record<string, string> = {
   delivered: "bg-green-100 text-green-800",
 };
 
-export default function AdminPedidos() {
-  const hydrated = useHydrated();
-  const orders = useOrders((s) => s.orders);
-  if (!hydrated) return <div className="min-h-[400px]" />;
+export default function VendedorPedidos() {
+  const { orders, loading } = useSellerOrders();
+
+  if (loading) return <div className="flex justify-center py-12 text-[color:var(--color-muted)]"><Loader2 size={20} className="animate-spin" /></div>;
 
   return (
     <div>
-      <div className="flex items-end justify-between mb-6">
+      <div className="flex items-end justify-between mb-6 flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold">Pedidos</h1>
-          <p className="text-sm text-[color:var(--color-muted)] mt-1">{orders.length} pedidos recibidos</p>
+          <h1 className="text-2xl md:text-3xl font-extrabold">Pedidos de tus productos</h1>
+          <p className="text-sm text-[color:var(--color-muted)] mt-1">{orders.length} pedidos que contienen tus productos</p>
         </div>
       </div>
 
       {!orders.length ? (
         <div className="card-flat p-10 text-center">
           <ShoppingBag size={48} className="mx-auto text-[color:var(--color-brand-200)]" />
-          <p className="mt-4 text-[color:var(--color-ink-soft)]">Todavía no hay pedidos.</p>
+          <p className="mt-4 text-[color:var(--color-ink-soft)]">Todavía no hay pedidos con tus productos.</p>
         </div>
       ) : (
         <div className="card-flat overflow-hidden">
@@ -44,25 +44,26 @@ export default function AdminPedidos() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[color:var(--color-line-soft)]">
-              {orders.map((o) => (
-                <tr key={o.id} className="hover:bg-[color:var(--color-line-soft)]/40">
-                  <td className="px-4 py-3">
-                    <div className="font-semibold text-[color:var(--color-brand)]">{o.id}</div>
-                    <div className="text-[11px] text-[color:var(--color-muted)]">{o.items.length} productos</div>
-                  </td>
-                  <td className="px-4 py-3 hidden md:table-cell text-[color:var(--color-ink)]">{o.shipping.name}</td>
-                  <td className="px-4 py-3 hidden md:table-cell text-[color:var(--color-ink-soft)]">
-                    {new Date(o.created_at).toLocaleDateString("es-PY", { day: "2-digit", month: "short", year: "numeric" })}
-                  </td>
-                  <td className="px-4 py-3 text-right font-bold text-[color:var(--color-brand)]">{formatGs(o.total_cents)}</td>
-                  <td className="px-4 py-3 text-right">
-                    <span className={"inline-flex text-[11px] font-bold px-2 py-0.5 rounded uppercase " + (statusStyle[o.status] || statusStyle.paid)}>{o.status}</span>
-                  </td>
-                  <td className="px-2 py-3 text-right">
-                    <Link href={`/pedido?id=${o.id}`} className="p-1.5 rounded hover:bg-[color:var(--color-line-soft)] text-[color:var(--color-muted)] inline-flex"><ChevronRight size={16} /></Link>
-                  </td>
-                </tr>
-              ))}
+              {orders.map((o) => {
+                const itemsMine = (o.order_items ?? []).filter((it) => it.seller_id);
+                return (
+                  <tr key={o.id} className="hover:bg-[color:var(--color-line-soft)]/40">
+                    <td className="px-4 py-3">
+                      <div className="font-semibold text-[color:var(--color-brand)]">{o.id}</div>
+                      <div className="text-[11px] text-[color:var(--color-muted)]">{itemsMine.length} de tus productos</div>
+                    </td>
+                    <td className="px-4 py-3 hidden md:table-cell">{o.shipping?.name}</td>
+                    <td className="px-4 py-3 hidden md:table-cell text-[color:var(--color-ink-soft)]">{new Date(o.created_at).toLocaleDateString("es-PY", { day: "2-digit", month: "short", year: "numeric" })}</td>
+                    <td className="px-4 py-3 text-right font-bold text-[color:var(--color-brand)]">{formatGs(o.total_cents)}</td>
+                    <td className="px-4 py-3 text-right">
+                      <span className={"inline-flex text-[11px] font-bold px-2 py-0.5 rounded uppercase " + (statusStyle[o.status] || statusStyle.paid)}>{o.status}</span>
+                    </td>
+                    <td className="px-2 py-3 text-right">
+                      <Link href={`/pedido?id=${o.id}`} className="p-1.5 rounded hover:bg-[color:var(--color-line-soft)] text-[color:var(--color-muted)] inline-flex"><ChevronRight size={16} /></Link>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

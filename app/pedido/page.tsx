@@ -3,8 +3,8 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { formatGs } from "@/lib/utils";
-import { useOrders, useHydrated } from "@/lib/store";
-import { CheckCircle2, Circle, Package, Truck, Home, ChevronRight } from "lucide-react";
+import { useOrder } from "@/lib/hooks/use-orders";
+import { CheckCircle2, Circle, Package, Truck, Home, ChevronRight, Loader2 } from "lucide-react";
 
 const steps = [
   { key: "paid", label: "Pagado", icon: CheckCircle2 },
@@ -16,21 +16,25 @@ const steps = [
 export default function PedidoDetallePage() {
   const sp = useSearchParams();
   const id = sp.get("id") || "";
-  const hydrated = useHydrated();
-  const order = useOrders((s) => s.orders.find((o) => o.id === id));
+  const { order, loading } = useOrder(id);
 
-  if (!hydrated) return <div className="container-eleva pt-10 min-h-[400px]" />;
+  if (loading) return (
+    <div className="container-eleva pt-16 flex justify-center min-h-[400px] items-center text-[color:var(--color-muted)]">
+      <Loader2 size={20} className="animate-spin" />
+    </div>
+  );
 
   if (!order) {
     return (
       <div className="container-eleva pt-10">
         <h1 className="text-3xl font-extrabold">Pedido no encontrado</h1>
-        <p className="text-sm text-[color:var(--color-muted)] mt-2">El pedido {id ? <code>{id}</code> : ""} no está en tus registros locales.</p>
+        <p className="text-sm text-[color:var(--color-muted)] mt-2">El pedido {id ? <code>{id}</code> : ""} no existe o no tenés permiso para verlo.</p>
         <Link href="/mis-pedidos" className="btn-primary mt-6 inline-flex">Ver mis pedidos</Link>
       </div>
     );
   }
 
+  const items = order.order_items ?? [];
   const currentStep = order.status === "delivered" ? 3 : order.status === "shipped" ? 1 : 0;
 
   return (
@@ -80,16 +84,16 @@ export default function PedidoDetallePage() {
         <div className="lg:col-span-2 card-flat p-5">
           <h3 className="font-bold text-sm uppercase tracking-wider text-[color:var(--color-brand)] mb-3">Productos</h3>
           <div className="flex flex-col divide-y divide-[color:var(--color-line-soft)]">
-            {order.items.map((it) => (
-              <div key={`${it.slug}-${it.variant || ""}`} className="flex items-center gap-4 py-3">
-                <Link href={`/producto/${it.slug}`} className="relative w-16 h-16 shrink-0 rounded overflow-hidden bg-[color:var(--color-line-soft)]">
-                  <Image src={it.image} alt={it.name} fill sizes="64px" className="object-cover" />
+            {items.map((it) => (
+              <div key={`${it.product_slug}-${it.variant || ""}`} className="flex items-center gap-4 py-3">
+                <Link href={`/producto/${it.product_slug}/`} className="relative w-16 h-16 shrink-0 rounded overflow-hidden bg-[color:var(--color-line-soft)]">
+                  {it.product_image && <Image src={it.product_image} alt={it.product_name} fill sizes="64px" className="object-cover" />}
                 </Link>
                 <div className="flex-1 min-w-0">
-                  <Link href={`/producto/${it.slug}`} className="font-semibold text-[color:var(--color-brand)] hover:text-[color:var(--color-accent)] line-clamp-1">{it.name}</Link>
-                  <div className="text-xs text-[color:var(--color-muted)]">{it.qty}× {formatGs(it.price_cents)}{it.variant && ` · ${it.variant}`}</div>
+                  <Link href={`/producto/${it.product_slug}/`} className="font-semibold text-[color:var(--color-brand)] hover:text-[color:var(--color-accent)] line-clamp-1">{it.product_name}</Link>
+                  <div className="text-xs text-[color:var(--color-muted)]">{it.qty}× {formatGs(it.unit_price_cents)}{it.variant && ` · ${it.variant}`}</div>
                 </div>
-                <div className="text-right font-bold text-[color:var(--color-brand)]">{formatGs(it.price_cents * it.qty)}</div>
+                <div className="text-right font-bold text-[color:var(--color-brand)]">{formatGs(it.unit_price_cents * it.qty)}</div>
               </div>
             ))}
           </div>

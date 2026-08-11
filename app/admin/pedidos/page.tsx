@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
-import { useOrders, useHydrated } from "@/lib/store";
+import { useAllOrders } from "@/lib/hooks/use-orders";
 import { formatGs } from "@/lib/utils";
-import { ShoppingBag, ChevronRight } from "lucide-react";
+import { ShoppingBag, ChevronRight, Loader2 } from "lucide-react";
 
 const statusStyle: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800",
@@ -12,11 +12,11 @@ const statusStyle: Record<string, string> = {
 };
 
 export default function AdminPedidos() {
-  const hydrated = useHydrated();
-  const orders = useOrders((s) => s.orders);
+  const { orders, loading } = useAllOrders();
   const totalGMV = orders.reduce((n, o) => n + o.total_cents, 0);
   const totalComm = Math.round(totalGMV * 0.12);
-  if (!hydrated) return <div className="min-h-[400px]" />;
+
+  if (loading) return <div className="flex justify-center py-12 text-[color:var(--color-muted)]"><Loader2 size={20} className="animate-spin" /></div>;
 
   return (
     <div>
@@ -51,12 +51,10 @@ export default function AdminPedidos() {
                 <tr key={o.id} className="hover:bg-[color:var(--color-line-soft)]/40">
                   <td className="px-4 py-3">
                     <div className="font-semibold text-[color:var(--color-brand)]">{o.id}</div>
-                    <div className="text-[11px] text-[color:var(--color-muted)]">{o.items.length} productos</div>
+                    <div className="text-[11px] text-[color:var(--color-muted)]">{(o.order_items ?? []).length} productos</div>
                   </td>
-                  <td className="px-4 py-3 hidden md:table-cell">{o.shipping.name}</td>
-                  <td className="px-4 py-3 hidden md:table-cell text-[color:var(--color-ink-soft)]">
-                    {new Date(o.created_at).toLocaleDateString("es-PY", { day: "2-digit", month: "short", year: "numeric" })}
-                  </td>
+                  <td className="px-4 py-3 hidden md:table-cell">{o.shipping?.name}</td>
+                  <td className="px-4 py-3 hidden md:table-cell text-[color:var(--color-ink-soft)]">{new Date(o.created_at).toLocaleDateString("es-PY", { day: "2-digit", month: "short", year: "numeric" })}</td>
                   <td className="px-4 py-3 text-right font-bold text-[color:var(--color-brand)]">{formatGs(o.total_cents)}</td>
                   <td className="px-4 py-3 text-right hidden md:table-cell text-[color:var(--color-accent)] font-semibold">{formatGs(Math.round(o.total_cents * 0.12))}</td>
                   <td className="px-4 py-3 text-right">

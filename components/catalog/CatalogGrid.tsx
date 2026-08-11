@@ -1,11 +1,25 @@
 import Link from "next/link";
 import Image from "next/image";
 import { formatGs } from "@/lib/utils";
-import type { FullProduct } from "@/lib/mock-products";
 import FavoriteButton from "@/components/product/FavoriteButton";
 import AddToCartButton from "@/components/product/AddToCartButton";
 
-export default function CatalogGrid({ products }: { products: FullProduct[] }) {
+export interface CardProduct {
+  slug: string;
+  name: string;
+  price_cents: number;
+  compare_cents?: number;
+  rating?: number;
+  sold?: number;
+  badge?: "nuevo" | "masvendido" | null;
+  discPct?: number | null;
+  in_stock?: boolean;
+  category?: string;
+  image: string;
+  variants?: { label: string; options: string[] };
+}
+
+export default function CatalogGrid({ products }: { products: CardProduct[] }) {
   if (!products.length) {
     return (
       <div className="card-flat p-10 text-center text-[color:var(--color-ink-soft)]">
@@ -18,9 +32,9 @@ export default function CatalogGrid({ products }: { products: FullProduct[] }) {
       {products.map((p) => {
         const hasVariants = !!p.variants;
         return (
-          <Link key={p.slug} href={`/producto/${p.slug}`} className="card-flat hover:shadow-md transition-shadow flex flex-col overflow-hidden group">
+          <Link key={p.slug} href={`/producto/${p.slug}/`} className="card-flat hover:shadow-md transition-shadow flex flex-col overflow-hidden group">
             <div className="relative aspect-[4/3] bg-[color:var(--color-line-soft)]">
-              <Image src={p.image} alt={p.name} fill sizes="(max-width:768px) 50vw, 33vw" className="object-cover" />
+              {p.image && <Image src={p.image} alt={p.name} fill sizes="(max-width:768px) 50vw, 33vw" className="object-cover" />}
               {p.discPct ? (
                 <span className="absolute top-2.5 left-2.5 bg-[color:var(--color-accent)] text-white font-extrabold text-xs px-2 py-1 rounded z-10">-{p.discPct}%</span>
               ) : null}
@@ -44,7 +58,7 @@ export default function CatalogGrid({ products }: { products: FullProduct[] }) {
                 )}
               </div>
               {hasVariants ? (
-                <Link href={`/producto/${p.slug}`} className="btn-dark w-full justify-center mt-2 text-sm">Elegir opciones</Link>
+                <Link href={`/producto/${p.slug}/`} className="btn-dark w-full justify-center mt-2 text-sm">Elegir opciones</Link>
               ) : (
                 <AddToCartButton slug={p.slug} name={p.name} price_cents={p.price_cents} image={p.image} className="mt-2" />
               )}

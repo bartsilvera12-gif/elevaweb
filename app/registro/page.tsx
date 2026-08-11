@@ -3,13 +3,15 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Mail, Lock, User as UserIcon, Loader2, Check } from "lucide-react";
+import { Mail, Lock, User as UserIcon, Loader2, Check, Store } from "lucide-react";
 
 export default function RegistroPage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isSeller, setIsSeller] = useState(false);
+  const [storeName, setStoreName] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
@@ -23,13 +25,16 @@ export default function RegistroPage() {
       password,
       options: { data: { name } },
     });
-    setLoading(false);
-    if (error) {
-      setMsg({ ok: false, text: error.message });
-      return;
+    if (error) { setMsg({ ok: false, text: error.message }); setLoading(false); return; }
+
+    // Si marcó vendedor, actualizar profile
+    if (isSeller && data.user) {
+      await supabase.from("profiles").update({ is_seller: true, store_name: storeName || name || null }).eq("id", data.user.id);
     }
+
+    setLoading(false);
     if (data.session) {
-      router.push("/");
+      router.push(isSeller ? "/vendedor" : "/");
       router.refresh();
     } else {
       setMsg({ ok: true, text: "Cuenta creada. Revisá tu email para confirmar." });
@@ -46,6 +51,18 @@ export default function RegistroPage() {
           <Field icon={UserIcon} label="Nombre" value={name} onChange={setName} placeholder="Karen Ayala" />
           <Field icon={Mail} label="Email" type="email" required value={email} onChange={setEmail} placeholder="karen@ejemplo.com" />
           <Field icon={Lock} label="Contraseña" type="password" required minLength={6} value={password} onChange={setPassword} placeholder="Mínimo 6 caracteres" />
+
+          <label className="flex items-start gap-2.5 mt-2 p-3 rounded border border-[color:var(--color-line)] cursor-pointer hover:border-[color:var(--color-brand)]">
+            <input type="checkbox" checked={isSeller} onChange={(e) => setIsSeller(e.target.checked)} className="mt-0.5 accent-[color:var(--color-accent)]" />
+            <div className="flex-1">
+              <div className="text-sm font-semibold text-[color:var(--color-brand-900)] flex items-center gap-1.5"><Store size={14} /> También quiero vender</div>
+              <div className="text-xs text-[color:var(--color-muted)] mt-0.5">Vas a poder publicar productos y gestionar tu inventario.</div>
+            </div>
+          </label>
+
+          {isSeller && (
+            <Field icon={Store} label="Nombre de tu tienda" value={storeName} onChange={setStoreName} placeholder="Ej: Sana Botánica" />
+          )}
 
           <button disabled={loading} className="btn-primary justify-center mt-2 disabled:opacity-60">
             {loading ? <><Loader2 size={16} className="animate-spin" /> Creando cuenta...</> : "Crear cuenta"}
@@ -66,23 +83,13 @@ export default function RegistroPage() {
   );
 }
 
-function Field({ icon: Icon, label, value, onChange, ...rest }: {
-  icon: React.ComponentType<{ size?: number; className?: string }>;
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value">) {
+function Field({ icon: Icon, label, value, onChange, ...rest }: { icon: React.ComponentType<{ size?: number; className?: string }>; label: string; value: string; onChange: (v: string) => void; } & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value">) {
   return (
     <label className="flex flex-col gap-1.5">
       <span className="text-xs font-semibold text-[color:var(--color-ink-soft)]">{label}</span>
       <div className="relative">
         <Icon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--color-muted)]" />
-        <input
-          {...rest}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full pl-10 pr-3 py-3 border border-[color:var(--color-line)] rounded text-sm focus:outline-none focus:border-[color:var(--color-brand)]"
-        />
+        <input {...rest} value={value} onChange={(e) => onChange(e.target.value)} className="w-full pl-10 pr-3 py-3 border border-[color:var(--color-line)] rounded text-sm focus:outline-none focus:border-[color:var(--color-brand)]" />
       </div>
     </label>
   );

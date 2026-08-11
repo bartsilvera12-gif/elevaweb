@@ -1,9 +1,12 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
-import { categories } from "@/lib/mock-products";
+import { useCategoriesWithCounts } from "@/lib/hooks/use-categories";
 import { categoryIcon } from "@/lib/category-icons";
 
 export default function CategoriesGrid() {
+  const { categories } = useCategoriesWithCounts();
+
   return (
     <section className="container-eleva pt-12">
       <div className="flex items-end justify-between mb-6">
@@ -16,11 +19,7 @@ export default function CategoriesGrid() {
         {categories.slice(0, 6).map((c) => {
           const Icon = categoryIcon(c.slug);
           return (
-            <Link
-              key={c.slug}
-              href={`/catalogo?cat=${c.slug}`}
-              className="card-flat overflow-hidden hover:shadow-md hover:border-[color:var(--color-accent)] transition"
-            >
+            <Link key={c.slug} href={`/catalogo?cat=${c.slug}`} className="card-flat overflow-hidden hover:shadow-md hover:border-[color:var(--color-accent)] transition">
               <div className="relative aspect-[4/3] bg-[color:var(--color-line-soft)]">
                 <Image src={c.image} alt={c.name} fill sizes="(max-width:768px) 50vw, 16vw" className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />

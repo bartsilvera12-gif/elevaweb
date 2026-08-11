@@ -1,22 +1,43 @@
+"use client";
+import { use } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { notFound } from "next/navigation";
 import { formatGs } from "@/lib/utils";
-import { products } from "@/lib/mock-products";
-import { Shield, Truck, ChevronRight, Store } from "lucide-react";
+import { useProduct, useProducts } from "@/lib/hooks/use-products";
+import { Shield, Truck, ChevronRight, Store, Loader2 } from "lucide-react";
 import CatalogGrid from "@/components/catalog/CatalogGrid";
 import ProductActions from "@/components/product/ProductActions";
+import { categories as staticCategories } from "@/lib/mock-products";
+import { products as fallbackProducts } from "@/lib/mock-products";
 
 export function generateStaticParams() {
-  return products.map((p) => ({ slug: p.slug }));
+  return fallbackProducts.map((p) => ({ slug: p.slug }));
 }
 
-export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  const p = products.find((x) => x.slug === slug);
-  if (!p) notFound();
-  const related = products.filter((x) => x.category === p.category && x.slug !== p.slug).slice(0, 3);
-  const gallery = [p.image];
+export default function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params);
+  const { product: p, loading } = useProduct(slug);
+  const { products: related } = useProducts({ category: p?.category, onlyStock: false });
+
+  if (loading) {
+    return (
+      <div className="container-eleva pt-16 flex justify-center min-h-[400px] items-center text-[color:var(--color-muted)]">
+        <Loader2 size={20} className="animate-spin" />
+      </div>
+    );
+  }
+  if (!p) {
+    return (
+      <div className="container-eleva pt-16">
+        <h1 className="text-2xl font-extrabold">Producto no encontrado</h1>
+        <Link href="/catalogo" className="btn-primary mt-6 inline-flex">Ir al catálogo</Link>
+      </div>
+    );
+  }
+
+  const catName = staticCategories.find((c) => c.slug === p.category)?.name || p.category;
+  const relatedFiltered = related.filter((x) => x.slug !== p.slug).slice(0, 3);
+  const lowStock = p.stock > 0 && p.stock <= (p.stock_minimo || 0);
 
   return (
     <div className="container-eleva pt-6">
@@ -25,7 +46,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <ChevronRight size={12} />
         <Link href="/catalogo" className="hover:text-[color:var(--color-brand)]">Catálogo</Link>
         <ChevronRight size={12} />
-        <Link href={`/catalogo?cat=${p.category}`} className="hover:text-[color:var(--color-brand)] capitalize">{p.category}</Link>
+        <Link href={`/catalogo?cat=${p.category}`} className="hover:text-[color:var(--color-brand)] capitalize">{catName}</Link>
         <ChevronRight size={12} />
         <span className="text-[color:var(--color-ink-soft)] line-clamp-1">{p.name}</span>
       </nav>
@@ -33,14 +54,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       <div className="grid md:grid-cols-2 gap-10">
         <div className="flex flex-col gap-3">
           <div className="relative aspect-square rounded overflow-hidden bg-[color:var(--color-line-soft)]">
-            <Image src={p.image} alt={p.name} fill sizes="(max-width:768px) 100vw, 50vw" className="object-cover" priority />
-          </div>
-          <div className="grid grid-cols-4 gap-2">
-            {gallery.map((src, i) => (
-              <div key={i} className="relative aspect-square rounded overflow-hidden border border-[color:var(--color-line)] bg-[color:var(--color-line-soft)]">
-                <Image src={src} alt={`${p.name} ${i + 1}`} fill sizes="15vw" className="object-cover" />
-              </div>
-            ))}
+            {p.image_url && <Image src={p.image_url} alt={p.name} fill sizes="(max-width:768px) 100vw, 50vw" className="object-cover" priority />}
           </div>
         </div>
 
@@ -57,8 +71,18 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             {p.compare_cents && p.compare_cents > p.price_cents && (
               <>
                 <span className="text-base text-[color:var(--color-muted)] line-through">{formatGs(p.compare_cents)}</span>
-                <span className="bg-[color:var(--color-accent)] text-white text-xs font-extrabold px-2 py-1 rounded">-{p.discPct}%</span>
+                <span className="bg-[color:var(--color-accent)] text-white text-xs font-extrabold px-2 py-1 rounded">-{p.disc_pct}%</span>
               </>
+            )}
+          </div>
+
+          <div className="text-xs text-[color:var(--color-muted)]">
+            {p.stock > 0 ? (
+              <span className={lowStock ? "text-[color:var(--color-accent)] font-semibold" : ""}>
+                {lowStock ? `Últimas ${p.stock} ${p.unit}` : `Disponible · ${p.stock} ${p.unit}`}
+              </span>
+            ) : (
+              <span className="text-red-600 font-semibold">Sin stock</span>
             )}
           </div>
 
@@ -76,42 +100,42 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
           </div>
 
-          <ProductActions p={p} />
+          <ProductActions p={{
+            slug: p.slug,
+            name: p.name,
+            price_cents: p.price_cents,
+            image: p.image_url ?? "",
+            category: p.category,
+            variants: undefined,
+          }} />
 
-          <div className="card-flat p-5 mt-2">
-            <h3 className="font-bold text-sm uppercase tracking-wider text-[color:var(--color-brand)] mb-2">Descripción</h3>
-            <p className="text-sm text-[color:var(--color-ink-soft)]">
-              {p.name}. Producto seleccionado por nuestro equipo. Envío coordinado a todo el país. Consultas por WhatsApp.
-            </p>
-          </div>
-
-          <div className="card-flat p-5">
-            <h3 className="font-bold text-sm uppercase tracking-wider text-[color:var(--color-brand)] mb-3">Detalles</h3>
-            <dl className="text-sm divide-y divide-[color:var(--color-line-soft)]">
-              <Row k="Categoría" v={p.category} />
-              <Row k="Stock" v={p.in_stock ? "Disponible" : "Sin stock"} />
-              <Row k="Rating" v={`${p.rating?.toFixed(1) ?? "-"} / 5`} />
-              <Row k="Unidades vendidas" v={String(p.sold ?? 0)} />
-            </dl>
-          </div>
+          {p.description && (
+            <div className="card-flat p-5 mt-2">
+              <h3 className="font-bold text-sm uppercase tracking-wider text-[color:var(--color-brand)] mb-2">Descripción</h3>
+              <p className="text-sm text-[color:var(--color-ink-soft)] whitespace-pre-line">{p.description}</p>
+            </div>
+          )}
         </div>
       </div>
 
-      {related.length > 0 && (
+      {relatedFiltered.length > 0 && (
         <section className="mt-16">
           <h2 className="text-2xl font-extrabold mb-4">También te puede interesar</h2>
-          <CatalogGrid products={related} />
+          <CatalogGrid products={relatedFiltered.map((x) => ({
+            slug: x.slug,
+            name: x.name,
+            price_cents: x.price_cents,
+            compare_cents: x.compare_cents ?? undefined,
+            rating: x.rating ?? undefined,
+            sold: x.sold,
+            badge: x.badge,
+            discPct: x.disc_pct ?? undefined,
+            in_stock: x.stock > 0,
+            image: x.image_url ?? "",
+            category: x.category,
+          }))} />
         </section>
       )}
-    </div>
-  );
-}
-
-function Row({ k, v }: { k: string; v: string }) {
-  return (
-    <div className="flex justify-between gap-4 py-2.5">
-      <dt className="text-[color:var(--color-muted)]">{k}</dt>
-      <dd className="text-[color:var(--color-ink)] font-medium capitalize">{v}</dd>
     </div>
   );
 }

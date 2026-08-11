@@ -2,7 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 import { formatGs } from "@/lib/utils";
-import { products as allProducts } from "@/lib/mock-products";
 import FavoriteButton from "@/components/product/FavoriteButton";
 import AddToCartButton from "@/components/product/AddToCartButton";
 
@@ -19,9 +18,10 @@ export interface ProductCard {
   image?: string;
 }
 
-export default function ProductRow({ kicker, title, viewAllHref, products }: {
-  kicker: string; title: string; viewAllHref: string; products: ProductCard[];
+export default function ProductRow({ title, viewAllHref, products }: {
+  title: string; viewAllHref: string; products: ProductCard[];
 }) {
+  if (!products.length) return null;
   return (
     <section className="container-eleva pt-12">
       <div className="flex items-end justify-between mb-6">
@@ -40,11 +40,9 @@ export default function ProductRow({ kicker, title, viewAllHref, products }: {
 }
 
 function Card({ p }: { p: ProductCard }) {
-  const full = allProducts.find((x) => x.slug === p.slug);
-  const image = p.image || full?.image || "";
-  const hasVariants = !!full?.variants;
+  const image = p.image || "";
   return (
-    <Link href={`/producto/${p.slug}`} className="card-flat hover:shadow-md transition-shadow flex flex-col overflow-hidden group">
+    <Link href={`/producto/${p.slug}/`} className="card-flat hover:shadow-md transition-shadow flex flex-col overflow-hidden group">
       <div className="relative aspect-[4/3] bg-[color:var(--color-line-soft)]">
         {image && <Image src={image} alt={p.name} fill sizes="(max-width:768px) 50vw, 25vw" className="object-cover" />}
         {p.discPct && (
@@ -69,11 +67,7 @@ function Card({ p }: { p: ProductCard }) {
             <span className="text-xs text-[color:var(--color-muted)] line-through">{formatGs(p.compare_cents)}</span>
           )}
         </div>
-        {hasVariants ? (
-          <Link href={`/producto/${p.slug}`} className="btn-dark w-full justify-center mt-2 text-sm">Elegir opciones</Link>
-        ) : (
-          <AddToCartButton slug={p.slug} name={p.name} price_cents={p.price_cents} image={image} className="mt-2" />
-        )}
+        <AddToCartButton slug={p.slug} name={p.name} price_cents={p.price_cents} image={image} className="mt-2" />
       </div>
     </Link>
   );

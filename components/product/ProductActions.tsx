@@ -4,9 +4,16 @@ import { Minus, Plus, ShoppingCart, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/store";
 import FavoriteButton from "./FavoriteButton";
-import type { FullProduct } from "@/lib/mock-products";
+export interface ProductActionsInput {
+  slug: string;
+  name: string;
+  price_cents: number;
+  image: string;
+  category?: string;
+  variants?: { label: string; options: string[] };
+}
 
-export default function ProductActions({ p }: { p: FullProduct }) {
+export default function ProductActions({ p }: { p: ProductActionsInput }) {
   const router = useRouter();
   const add = useCart((s) => s.add);
   const opts = p.variants?.options ?? [];
