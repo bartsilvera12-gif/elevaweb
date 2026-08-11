@@ -87,7 +87,7 @@ export default function PriceSlider() {
             <input
               inputMode="numeric"
               value={fmt(lo)}
-              onChange={(e) => setLo(Math.min(parse(e.target.value), hi - STEP))}
+              onChange={(e) => setLo(Math.max(MIN, Math.min(parse(e.target.value), hi - STEP)))}
               className="w-full pl-7 pr-1.5 py-2 text-[13px] tabular-nums border border-[color:var(--color-line)] rounded focus:outline-none focus:border-[color:var(--color-brand)]"
             />
           </div>
@@ -99,7 +99,7 @@ export default function PriceSlider() {
             <input
               inputMode="numeric"
               value={fmt(hi)}
-              onChange={(e) => setHi(Math.max(parse(e.target.value), lo + STEP))}
+              onChange={(e) => setHi(Math.min(MAX, Math.max(parse(e.target.value), lo + STEP)))}
               className="w-full pl-7 pr-1.5 py-2 text-[13px] tabular-nums border border-[color:var(--color-line)] rounded focus:outline-none focus:border-[color:var(--color-brand)]"
             />
           </div>
