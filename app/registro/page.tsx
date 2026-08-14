@@ -23,7 +23,9 @@ export default function RegistroPage() {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { name } },
+      // app: 'eleva' -> el trigger de auth.users solo crea profile para signups de acá
+      // (auth.users es de toda la instancia self-hosted, la comparten otras apps)
+      options: { data: { name, app: "eleva" } },
     });
     if (error) { setMsg({ ok: false, text: error.message }); setLoading(false); return; }
 
