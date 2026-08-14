@@ -101,7 +101,7 @@ export default function VendedorProductos() {
                           <div className="fixed inset-0 z-20" onClick={() => setOpenMenu(null)} />
                           <div className="absolute right-2 top-10 z-30 bg-white border border-[color:var(--color-line)] rounded shadow-xl w-44 py-1 text-left">
                             <Link href={`/producto/${p.slug}/`} target="_blank" className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[color:var(--color-line-soft)]"><Eye size={14} /> Ver en tienda</Link>
-                            <Link href={`/vendedor/productos/${p.slug}`} onClick={() => setOpenMenu(null)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[color:var(--color-line-soft)]"><Pencil size={14} /> Editar</Link>
+                            <Link href={`/vendedor/productos/editar?slug=${p.slug}`} onClick={() => setOpenMenu(null)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[color:var(--color-line-soft)]"><Pencil size={14} /> Editar</Link>
                             <button onClick={() => toggle(p.slug, !p.active)} className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-[color:var(--color-line-soft)]">
                               {p.active ? <><EyeOff size={14} /> Pausar</> : <><Eye size={14} /> Activar</>}
                             </button>

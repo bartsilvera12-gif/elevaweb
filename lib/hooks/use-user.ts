@@ -10,6 +10,7 @@ export interface UserProfile {
   city: string | null;
   is_seller: boolean;
   store_name: string | null;
+  is_admin?: boolean | null;
 }
 
 export function useUser() {

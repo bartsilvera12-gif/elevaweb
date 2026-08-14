@@ -1,6 +1,6 @@
 "use client";
-import { use, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { categories } from "@/lib/mock-products";
 import { createClient } from "@/lib/supabase/client";
@@ -8,8 +8,17 @@ import { useUser } from "@/lib/hooks/use-user";
 import { UNITS, type DBProduct } from "@/lib/types";
 import { ChevronLeft, Trash2, Loader2 } from "lucide-react";
 
-export default function EditarProducto({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = use(params);
+export default function EditarProductoPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center pt-16 text-[color:var(--color-muted)]"><Loader2 size={20} className="animate-spin" /></div>}>
+      <EditarProducto />
+    </Suspense>
+  );
+}
+
+function EditarProducto() {
+  const sp = useSearchParams();
+  const slug = sp.get("slug") || "";
   const router = useRouter();
   const { user } = useUser();
   const [product, setProduct] = useState<DBProduct | null>(null);
