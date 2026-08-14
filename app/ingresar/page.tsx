@@ -41,7 +41,7 @@ export default function IngresarPage() {
             <span className="text-xs font-semibold text-[color:var(--color-ink-soft)]">Email</span>
             <div className="relative">
               <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--color-muted)]" />
-              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="karen@ejemplo.com" className="w-full pl-10 pr-3 py-3 border border-[color:var(--color-line)] rounded text-sm focus:outline-none focus:border-[color:var(--color-brand)]" />
+              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@email.com" className="w-full pl-10 pr-3 py-3 border border-[color:var(--color-line)] rounded text-sm focus:outline-none focus:border-[color:var(--color-brand)]" />
             </div>
           </label>
           <label className="flex flex-col gap-1.5">

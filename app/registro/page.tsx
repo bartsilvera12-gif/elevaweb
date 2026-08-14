@@ -48,8 +48,8 @@ export default function RegistroPage() {
         <p className="text-sm text-[color:var(--color-ink-soft)] mt-1">Registrate en 30 segundos.</p>
 
         <form onSubmit={submit} className="mt-6 flex flex-col gap-3">
-          <Field icon={UserIcon} label="Nombre" value={name} onChange={setName} placeholder="Karen Ayala" />
-          <Field icon={Mail} label="Email" type="email" required value={email} onChange={setEmail} placeholder="karen@ejemplo.com" />
+          <Field icon={UserIcon} label="Nombre" value={name} onChange={setName} placeholder="Tu nombre completo" />
+          <Field icon={Mail} label="Email" type="email" required value={email} onChange={setEmail} placeholder="tu@email.com" />
           <Field icon={Lock} label="Contraseña" type="password" required minLength={6} value={password} onChange={setPassword} placeholder="Mínimo 6 caracteres" />
 
           <label className="flex items-start gap-2.5 mt-2 p-3 rounded border border-[color:var(--color-line)] cursor-pointer hover:border-[color:var(--color-brand)]">

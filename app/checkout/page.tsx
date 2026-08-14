@@ -114,7 +114,7 @@ export default function CheckoutPage() {
           <section className="card-flat p-5">
             <h2 className="flex items-center gap-2 font-bold text-[color:var(--color-brand)] mb-4"><UserIcon size={18} /> Datos de contacto</h2>
             <div className="grid md:grid-cols-2 gap-3">
-              <Input label="Nombre completo" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Karen Ayala" className="md:col-span-2" />
+              <Input label="Nombre completo" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Tu nombre completo" className="md:col-span-2" />
               <Input label="Teléfono" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+595 981 000 000" />
             </div>
           </section>
