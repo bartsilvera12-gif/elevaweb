@@ -10,8 +10,8 @@ export const metadata: Metadata = {
   title: "ELEVA — Marketplace paraguayo",
   description: "Comprá y vendé en un solo lugar. Emprendedores paraguayos, entrega coordinada, pago protegido.",
   icons: {
-    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
-    apple: [{ url: "/icon.svg" }],
+    icon: [{ url: "/icon.png", type: "image/png", sizes: "64x64" }],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180" }],
   },
 };
 
