@@ -108,23 +108,40 @@ export default function PedidoDetallePage() {
           </p>
         ) : (
           <>
-            <p className="text-sm text-[color:var(--color-ink-soft)] mt-2">
-              Transferí <strong className="text-[color:var(--color-brand)]">{formatGs(order.total_cents)}</strong> a{" "}
-              <strong>{seller?.store_name || "el emprendedor"}</strong>. Cuando confirme que le entró el pago,
-              ELEVA empaqueta y despacha tu pedido.
-            </p>
-            <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-1 text-sm mt-4 pt-4 border-t border-[color:var(--color-line-soft)]">
-              {seller?.pago_titular && <Dato k="Titular" v={seller.pago_titular} />}
-              {seller?.pago_banco && <Dato k="Banco" v={seller.pago_banco} />}
-              {seller?.pago_cuenta && <Dato k="Cuenta" v={seller.pago_cuenta} />}
-              {seller?.pago_alias && <Dato k="Alias" v={seller.pago_alias} />}
-              {seller?.pago_telefono && <Dato k="Teléfono / giro" v={seller.pago_telefono} />}
-            </dl>
-            {seller?.pago_notas && <p className="text-sm text-[color:var(--color-ink-soft)] mt-3 whitespace-pre-line">{seller.pago_notas}</p>}
-            {seller && !seller.pago_titular && !seller.pago_cuenta && !seller.pago_alias && !seller.pago_telefono && (
-              <p className="text-sm text-[color:var(--color-accent)] mt-3">
-                Este emprendedor todavía no cargó sus datos de cobro. Te va a contactar al teléfono que dejaste.
-              </p>
+            {order.payment_method === "efectivo" ? (
+              <>
+                <p className="text-sm text-[color:var(--color-ink-soft)] mt-2">
+                  Pagás en <strong>efectivo</strong> a <strong>{seller?.store_name || "el emprendedor"}</strong>:{" "}
+                  <strong className="text-[color:var(--color-brand)]">{formatGs(order.total_cents)}</strong>.
+                  Coordinen cómo y dónde entregar el dinero. Cuando lo reciba y lo confirme, ELEVA despacha.
+                </p>
+                <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-1 text-sm mt-4 pt-4 border-t border-[color:var(--color-line-soft)]">
+                  {seller?.pago_telefono && <Dato k="Teléfono" v={seller.pago_telefono} />}
+                  {seller?.instagram && <Dato k="Instagram" v={seller.instagram} />}
+                  {seller?.tiktok && <Dato k="TikTok" v={seller.tiktok} />}
+                </dl>
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-[color:var(--color-ink-soft)] mt-2">
+                  Transferí <strong className="text-[color:var(--color-brand)]">{formatGs(order.total_cents)}</strong> a{" "}
+                  <strong>{seller?.store_name || "el emprendedor"}</strong>. Cuando confirme que le entró el pago,
+                  ELEVA empaqueta y despacha tu pedido.
+                </p>
+                <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-1 text-sm mt-4 pt-4 border-t border-[color:var(--color-line-soft)]">
+                  {seller?.pago_titular && <Dato k="Titular" v={seller.pago_titular} />}
+                  {seller?.pago_banco && <Dato k="Banco" v={seller.pago_banco} />}
+                  {seller?.pago_cuenta && <Dato k="Cuenta" v={seller.pago_cuenta} />}
+                  {seller?.pago_alias && <Dato k="Alias" v={seller.pago_alias} />}
+                  {seller?.pago_telefono && <Dato k="Teléfono / giro" v={seller.pago_telefono} />}
+                </dl>
+                {seller?.pago_notas && <p className="text-sm text-[color:var(--color-ink-soft)] mt-3 whitespace-pre-line">{seller.pago_notas}</p>}
+                {seller && !seller.pago_titular && !seller.pago_cuenta && !seller.pago_alias && !seller.pago_telefono && (
+                  <p className="text-sm text-[color:var(--color-accent)] mt-3">
+                    Este emprendedor todavía no cargó sus datos de cobro. Te va a contactar al teléfono que dejaste.
+                  </p>
+                )}
+              </>
             )}
           </>
         )}

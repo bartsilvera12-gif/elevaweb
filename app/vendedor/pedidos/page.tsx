@@ -77,6 +77,7 @@ export default function VendedorPedidos() {
                 <Dato k="Teléfono" v={o.shipping?.phone} />
                 <Dato k="Dirección" v={`${o.shipping?.address}, ${o.shipping?.city}`} />
                 <Dato k="Departamento" v={o.shipping?.dept} />
+                <Dato k="Método de pago" v={o.payment_method === "efectivo" ? "Efectivo" : "Transferencia"} />
               </div>
 
               <ul className="text-xs text-[color:var(--color-muted)] mt-3 space-y-0.5">

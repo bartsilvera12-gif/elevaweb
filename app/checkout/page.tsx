@@ -10,7 +10,7 @@ import { useProductsBySlugs } from "@/lib/hooks/use-products";
 import { useCoupons, useSellerPublic, useSettings } from "@/lib/hooks/use-platform";
 import { createClient } from "@/lib/supabase/client";
 import type { DBCoupon } from "@/lib/types";
-import { Wallet, MapPin, User as UserIcon, Truck, Shield, ArrowRight, Tag, Check, X, Loader2, Store } from "lucide-react";
+import { Wallet, MapPin, User as UserIcon, Truck, Shield, ArrowRight, Tag, Check, X, Loader2, Store, Banknote, Building2 } from "lucide-react";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -32,6 +32,7 @@ export default function CheckoutPage() {
   const [city, setCity] = useState("");
   const [dept, setDept] = useState("Central");
   const [phone, setPhone] = useState("");
+  const [payMethod, setPayMethod] = useState<"transferencia" | "efectivo">("transferencia");
   const [submitting, setSubmitting] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -124,6 +125,7 @@ export default function CheckoutPage() {
       p_prefix: prefix,
       p_coupon: coupon?.code ?? null,
       p_shipping: { name, address, city, dept, phone },
+      p_payment_method: payMethod,
       p_items: items.map((it) => ({ slug: it.slug, qty: it.qty, variant: it.variant ?? null })),
     });
 
@@ -169,9 +171,15 @@ export default function CheckoutPage() {
 
           <section className="card-flat p-5">
             <h2 className="flex items-center gap-2 font-bold text-[color:var(--color-brand)] mb-4"><Wallet size={18} /> Cómo pagás</h2>
+
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              <MetodoBtn active={payMethod === "transferencia"} onClick={() => setPayMethod("transferencia")} icon={Building2} label="Transferencia" sub="Con los datos del emprendedor" />
+              <MetodoBtn active={payMethod === "efectivo"} onClick={() => setPayMethod("efectivo")} icon={Banknote} label="Efectivo" sub="Coordinás con el emprendedor" />
+            </div>
+
             <p className="text-sm text-[color:var(--color-ink-soft)]">
-              Le pagás <strong>directamente a cada emprendedor</strong> con sus datos de cobro. Cuando confirme
-              que recibió el pago, ELEVA empaqueta y despacha tu pedido.
+              Le pagás <strong>directamente a cada emprendedor</strong>. Cuando confirme que recibió el pago,
+              ELEVA empaqueta y despacha tu pedido.
             </p>
             {desglose.length > 1 && (
               <p className="text-sm text-[color:var(--color-ink-soft)] mt-2">
@@ -197,18 +205,39 @@ export default function CheckoutPage() {
                         <li key={`${it.slug}-${it.variant || ""}`}>{it.qty}× {it.name}</li>
                       ))}
                     </ul>
-                    <dl className="grid sm:grid-cols-2 gap-x-4 gap-y-1 text-xs mt-3 pt-3 border-t border-[color:var(--color-line-soft)]">
-                      {s?.pago_titular && <Dato k="Titular" v={s.pago_titular} />}
-                      {s?.pago_banco && <Dato k="Banco" v={s.pago_banco} />}
-                      {s?.pago_cuenta && <Dato k="Cuenta" v={s.pago_cuenta} />}
-                      {s?.pago_alias && <Dato k="Alias" v={s.pago_alias} />}
-                      {s?.pago_telefono && <Dato k="Teléfono / giro" v={s.pago_telefono} />}
-                    </dl>
-                    {s?.pago_notas && <p className="text-xs text-[color:var(--color-ink-soft)] mt-2 whitespace-pre-line">{s.pago_notas}</p>}
-                    {s && !s.pago_titular && !s.pago_cuenta && !s.pago_alias && !s.pago_telefono && (
-                      <p className="text-xs text-[color:var(--color-accent)] mt-2">
-                        Este emprendedor todavía no cargó sus datos de cobro. Te va a contactar al teléfono que dejaste.
-                      </p>
+
+                    {payMethod === "transferencia" ? (
+                      <>
+                        <dl className="grid sm:grid-cols-2 gap-x-4 gap-y-1 text-xs mt-3 pt-3 border-t border-[color:var(--color-line-soft)]">
+                          {s?.pago_titular && <Dato k="Titular" v={s.pago_titular} />}
+                          {s?.pago_banco && <Dato k="Banco" v={s.pago_banco} />}
+                          {s?.pago_cuenta && <Dato k="Cuenta" v={s.pago_cuenta} />}
+                          {s?.pago_alias && <Dato k="Alias" v={s.pago_alias} />}
+                          {s?.pago_telefono && <Dato k="Teléfono / giro" v={s.pago_telefono} />}
+                        </dl>
+                        {s?.pago_notas && <p className="text-xs text-[color:var(--color-ink-soft)] mt-2 whitespace-pre-line">{s.pago_notas}</p>}
+                        {s && !s.pago_titular && !s.pago_cuenta && !s.pago_alias && !s.pago_telefono && (
+                          <p className="text-xs text-[color:var(--color-accent)] mt-2">
+                            Este emprendedor todavía no cargó sus datos bancarios. Te va a contactar al teléfono que dejaste.
+                          </p>
+                        )}
+                      </>
+                    ) : (
+                      <div className="mt-3 pt-3 border-t border-[color:var(--color-line-soft)] text-xs text-[color:var(--color-ink-soft)]">
+                        {s?.pago_telefono || s?.instagram ? (
+                          <>
+                            Coordiná el pago en efectivo con <strong>{s?.store_name}</strong>:
+                            <dl className="grid sm:grid-cols-2 gap-x-4 gap-y-1 mt-2">
+                              {s?.pago_telefono && <Dato k="Teléfono" v={s.pago_telefono} />}
+                              {s?.instagram && <Dato k="Instagram" v={s.instagram} />}
+                            </dl>
+                          </>
+                        ) : (
+                          <p className="text-[color:var(--color-accent)]">
+                            El emprendedor va a contactarte al teléfono que dejaste para coordinar el pago en efectivo.
+                          </p>
+                        )}
+                      </div>
                     )}
                   </div>
                 );
@@ -271,6 +300,15 @@ export default function CheckoutPage() {
         </aside>
       </form>
     </div>
+  );
+}
+
+function MetodoBtn({ active, onClick, icon: Icon, label, sub }: { active: boolean; onClick: () => void; icon: React.ElementType; label: string; sub: string }) {
+  return (
+    <button type="button" onClick={onClick} className={"flex flex-col gap-1 border rounded p-3 text-left transition " + (active ? "border-[color:var(--color-brand)] bg-[color:var(--color-brand-100)] text-[color:var(--color-brand)]" : "border-[color:var(--color-line)] hover:border-[color:var(--color-brand)]")}>
+      <div className="flex items-center gap-2 text-sm font-bold"><Icon size={16} /> {label}</div>
+      <div className="text-[11px] text-[color:var(--color-muted)] leading-tight">{sub}</div>
+    </button>
   );
 }
 

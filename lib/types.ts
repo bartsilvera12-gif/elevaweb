@@ -33,6 +33,7 @@ export interface DBOrder {
   currency: string;
   status: "pending" | "paid" | "shipped" | "delivered";
   seller_id: string | null;
+  payment_method: "transferencia" | "efectivo";
   payment_status: "pendiente" | "cobrado";
   paid_at: string | null;
   commission_pct: number | null;
