@@ -42,6 +42,7 @@ export interface DBOrder {
   coupon: string | null;
   shipping: {
     name: string;
+    email?: string;
     address: string;
     city: string;
     dept: string;

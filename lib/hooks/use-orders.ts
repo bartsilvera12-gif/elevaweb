@@ -12,15 +12,21 @@ export function useMyOrders() {
   useEffect(() => {
     let cancelled = false;
     const supabase = createClient();
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (!user) { setOrders([]); setLoading(false); return; }
-      const { data } = await supabase
-        .from("orders")
-        .select("*, order_items(*)")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      // Guest: leemos los ids que guardamos en localStorage al comprar
+      const guestIds: string[] = typeof window !== "undefined"
+        ? JSON.parse(localStorage.getItem("eleva.guest.orders") || "[]")
+        : [];
+
+      if (!user && !guestIds.length) { setOrders([]); setLoading(false); return; }
+
+      let q = supabase.from("orders").select("*, order_items(*)").order("created_at", { ascending: false });
+      if (user) q = q.eq("user_id", user.id);
+      else q = q.in("id", guestIds);
+      const { data } = await q;
       if (!cancelled) { setOrders((data as DBOrder[]) ?? []); setLoading(false); }
-    });
+    })();
     return () => { cancelled = true; };
   }, [refreshKey]);
 

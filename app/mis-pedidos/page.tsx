@@ -17,18 +17,6 @@ export default function MisPedidosPage() {
   const { user } = useUser();
   const { orders, loading } = useMyOrders();
 
-  if (!user) {
-    return (
-      <div className="container-eleva pt-10">
-        <h1 className="text-3xl font-extrabold">Mis pedidos</h1>
-        <div className="mt-8 card-flat p-10 text-center">
-          <p className="text-[color:var(--color-ink-soft)]">Iniciá sesión para ver tu historial de pedidos.</p>
-          <Link href="/ingresar?next=/mis-pedidos" className="btn-primary mt-6 inline-flex">Ingresar</Link>
-        </div>
-      </div>
-    );
-  }
-
   if (loading) return (
     <div className="container-eleva pt-16 flex justify-center min-h-[400px] items-center text-[color:var(--color-muted)]">
       <Loader2 size={20} className="animate-spin" />

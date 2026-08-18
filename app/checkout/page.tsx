@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { formatGs } from "@/lib/utils";
@@ -31,10 +31,17 @@ export default function CheckoutPage() {
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [dept, setDept] = useState("Central");
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [payMethod, setPayMethod] = useState<"transferencia" | "efectivo">("transferencia");
   const [submitting, setSubmitting] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user?.email) setEmail((v) => v || user.email!);
+    if (profile?.name) setName((v) => v || profile.name!);
+    if (profile?.phone) setPhone((v) => v || profile.phone!);
+  }, [user, profile]);
 
   const rules = useMemo(() => ({
     envio_cents: num("envio_cents", 25000),
@@ -87,19 +94,6 @@ export default function CheckoutPage() {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="container-eleva pt-10">
-        <h1 className="text-3xl font-extrabold">Ingresá para completar el pedido</h1>
-        <p className="text-sm text-[color:var(--color-ink-soft)] mt-2">Necesitás una cuenta para guardar el pedido y hacer seguimiento.</p>
-        <div className="flex gap-3 mt-6">
-          <Link href={`/ingresar?next=${encodeURIComponent("/checkout")}`} className="btn-primary">Iniciar sesión</Link>
-          <Link href="/registro" className="btn-outline">Crear cuenta</Link>
-        </div>
-      </div>
-    );
-  }
-
   const applyCoupon = () => {
     const c = coupons.find((x) => x.code.toUpperCase() === couponInput.trim().toUpperCase());
     if (!c) { setCoupon(null); setCouponMsg({ ok: false, msg: "Ese cupón no existe" }); return; }
@@ -116,7 +110,7 @@ export default function CheckoutPage() {
 
   const placeOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !address || !city || !phone) return;
+    if (!name || !email || !address || !city || !phone) return;
     setSubmitting(true);
     setErr(null);
 
@@ -124,7 +118,7 @@ export default function CheckoutPage() {
     const { data, error } = await createClient().rpc("create_order", {
       p_prefix: prefix,
       p_coupon: coupon?.code ?? null,
-      p_shipping: { name, address, city, dept, phone },
+      p_shipping: { name, email, address, city, dept, phone },
       p_payment_method: payMethod,
       p_items: items.map((it) => ({ slug: it.slug, qty: it.qty, variant: it.variant ?? null })),
     });
@@ -133,6 +127,12 @@ export default function CheckoutPage() {
     if (error) { setErr(error.message); return; }
 
     const creadas = (data as { id: string }[]) ?? [];
+    if (typeof window !== "undefined" && creadas.length) {
+      // Para el guest: guardamos los IDs para poder listarlos en /mis-pedidos aunque no tenga cuenta
+      const prev: string[] = JSON.parse(localStorage.getItem("eleva.guest.orders") || "[]");
+      const next = Array.from(new Set([...creadas.map((o) => o.id), ...prev])).slice(0, 30);
+      localStorage.setItem("eleva.guest.orders", JSON.stringify(next));
+    }
     clear();
     if (creadas.length === 1) router.push(`/pedido?id=${creadas[0].id}`);
     else router.push("/mis-pedidos");
@@ -142,7 +142,8 @@ export default function CheckoutPage() {
     <div className="container-eleva pt-6">
       <h1 className="text-3xl font-extrabold">Checkout</h1>
       <p className="text-sm text-[color:var(--color-muted)] mt-1">
-        Hola <strong>{profile?.name || user.email}</strong> · Completá tus datos para finalizar la compra.
+        {user ? <>Hola <strong>{profile?.name || user.email}</strong> · </> : <>¿Ya tenés cuenta? <Link href={`/ingresar?next=${encodeURIComponent("/checkout")}`} className="text-[color:var(--color-brand)] font-semibold">Iniciá sesión</Link> · </>}
+        Completá tus datos para finalizar la compra.
       </p>
 
       <form onSubmit={placeOrder} className="grid lg:grid-cols-3 gap-6 mt-8">
@@ -151,6 +152,7 @@ export default function CheckoutPage() {
             <h2 className="flex items-center gap-2 font-bold text-[color:var(--color-brand)] mb-4"><UserIcon size={18} /> Datos de contacto</h2>
             <div className="grid md:grid-cols-2 gap-3">
               <Input label="Nombre completo" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Tu nombre completo" className="md:col-span-2" />
+              <Input label="Email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@email.com" />
               <Input label="Teléfono" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+595 981 000 000" />
             </div>
           </section>
