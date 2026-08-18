@@ -20,6 +20,7 @@ export interface DBProduct {
   sold: number;
   badge: "nuevo" | "masvendido" | null;
   disc_pct: number | null;
+  is_featured: boolean;
   created_at: string;
 }
 

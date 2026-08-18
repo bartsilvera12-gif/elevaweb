@@ -21,6 +21,7 @@ export interface UserProfile {
   instagram?: string | null;
   tiktok?: string | null;
   mensualidad_cents?: number | null;
+  is_approved?: boolean | null;
 }
 
 export function useUser() {

@@ -47,6 +47,7 @@ export interface SellerRow extends SellerPublic {
   name: string | null;
   phone: string | null;
   is_seller: boolean;
+  is_approved: boolean;
   mensualidad_cents: number;
   created_at: string;
 }

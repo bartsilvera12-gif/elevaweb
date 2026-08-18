@@ -4,29 +4,29 @@ import TrustStrip from "@/components/home/TrustStrip";
 import ProductRow from "@/components/home/ProductRow";
 import CategoriesGrid from "@/components/home/CategoriesGrid";
 import BrandsSection from "@/components/home/BrandsSection";
-import { useProducts } from "@/lib/hooks/use-products";
+import { useDestacados, useNovedades, useOfertas, useMasVendidos } from "@/lib/hooks/use-products";
 import type { DBProduct } from "@/lib/types";
 
 export default function HomePage() {
-  const { products } = useProducts({});
-
-  const ofertas = products.filter((p) => p.disc_pct && p.disc_pct > 0).slice(0, 4);
-  const ofSet = new Set(ofertas.map((p) => p.slug));
-  const nuevos = products.filter((p) => p.badge === "nuevo" && !ofSet.has(p.slug)).slice(0, 4);
-  const nSet = new Set(nuevos.map((p) => p.slug));
-  const featured = products
-    .filter((p) => (p.rating ?? 0) >= 4.6 && !ofSet.has(p.slug) && !nSet.has(p.slug))
-    .slice(0, 4);
+  // Cada fila tiene su fuente:
+  //   Destacados y Ofertas: los elige ELEVA en /admin/destacados
+  //   Novedades: automático por fecha de creación
+  //   Más vendidos: automático por unidades vendidas
+  const { products: destacados } = useDestacados(4);
+  const { products: ofertas } = useOfertas(4);
+  const { products: nuevos } = useNovedades(4);
+  const { products: masVendidos } = useMasVendidos(4);
 
   return (
     <>
       <Hero />
       <TrustStrip />
       <CategoriesGrid />
-      <ProductRow title="Productos destacados" viewAllHref="/catalogo" products={featured.map(mapCard)} />
-      <ProductRow title="Ofertas del día" viewAllHref="/catalogo?ofertas=1" products={ofertas.map(mapCard)} />
+      {destacados.length > 0 && <ProductRow title="Productos destacados" viewAllHref="/catalogo" products={destacados.map(mapCard)} />}
+      {ofertas.length > 0 && <ProductRow title="Ofertas del día" viewAllHref="/catalogo?ofertas=1" products={ofertas.map(mapCard)} />}
       <BrandsSection />
-      <ProductRow title="Novedades de la semana" viewAllHref="/catalogo?nuevo=1" products={nuevos.map(mapCard)} />
+      {nuevos.length > 0 && <ProductRow title="Novedades de la semana" viewAllHref="/catalogo?nuevo=1" products={nuevos.map(mapCard)} />}
+      {masVendidos.length > 0 && <ProductRow title="Más vendidos" viewAllHref="/catalogo?best=1" products={masVendidos.map(mapCard)} />}
     </>
   );
 }
@@ -43,5 +43,6 @@ function mapCard(p: DBProduct) {
     discPct: p.disc_pct ?? undefined,
     in_stock: p.stock > 0,
     image: p.image_url ?? "",
+    category: p.category,
   };
 }

@@ -6,6 +6,7 @@ import { useCategorias, useSettings } from "@/lib/hooks/use-platform";
 import { useUser } from "@/lib/hooks/use-user";
 import { createClient } from "@/lib/supabase/client";
 import { UNITS } from "@/lib/types";
+import { uploadProductImage } from "@/lib/storage";
 import { ChevronLeft, Upload, Loader2 } from "lucide-react";
 
 const slugify = (s: string) =>
@@ -26,6 +27,7 @@ export default function NuevoProducto() {
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
   const { categorias } = useCategorias();
@@ -35,11 +37,13 @@ export default function NuevoProducto() {
   const compareNum = Number(compare.replace(/\D/g, "")) || 0;
   const fmt = (s: string) => { const n = Number(s.replace(/\D/g, "")) || 0; return n ? new Intl.NumberFormat("es-PY").format(n) : ""; };
 
-  const onImage = (f: File | null) => {
-    if (!f) return;
-    const r = new FileReader();
-    r.onload = () => setImage(String(r.result));
-    r.readAsDataURL(f);
+  const onImage = async (f: File | null) => {
+    if (!f || !user) return;
+    setUploading(true);
+    const { url, error } = await uploadProductImage(f, user.id);
+    setUploading(false);
+    if (error) { setErr("Error subiendo imagen: " + error); return; }
+    if (url) setImage(url);
   };
 
   const submit = async (e: React.FormEvent) => {

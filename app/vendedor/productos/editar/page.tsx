@@ -6,6 +6,7 @@ import { useCategorias } from "@/lib/hooks/use-platform";
 import { createClient } from "@/lib/supabase/client";
 import { useUser } from "@/lib/hooks/use-user";
 import { UNITS, type DBProduct } from "@/lib/types";
+import { uploadProductImage } from "@/lib/storage";
 import { ChevronLeft, Trash2, Loader2 } from "lucide-react";
 
 export default function EditarProductoPage() {
@@ -72,11 +73,13 @@ function EditarProducto() {
 
   const fmt = (s: string) => { const n = Number(s.replace(/\D/g, "")) || 0; return n ? new Intl.NumberFormat("es-PY").format(n) : ""; };
 
-  const onImage = (f: File | null) => {
-    if (!f) return;
-    const r = new FileReader();
-    r.onload = () => setImage(String(r.result));
-    r.readAsDataURL(f);
+  const onImage = async (f: File | null) => {
+    if (!f || !user) return;
+    setSaving(true);
+    const { url, error } = await uploadProductImage(f, user.id);
+    setSaving(false);
+    if (error) { setMsg("Error subiendo imagen: " + error); return; }
+    if (url) setImage(url);
   };
 
   const save = async () => {

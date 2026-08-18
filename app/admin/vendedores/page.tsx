@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSellers, useSellerAccounts, registrarPago, cobrarMensualidades } from "@/lib/hooks/use-platform";
 import { createClient } from "@/lib/supabase/client";
 import { formatGs } from "@/lib/utils";
-import { Search, Users, Loader2, Wallet, Warehouse, Check } from "lucide-react";
+import { Search, Users, Loader2, Wallet, Warehouse, Check, ShieldCheck, Clock } from "lucide-react";
 
 const periodoActual = () => new Date().toISOString().slice(0, 7);
 
@@ -24,7 +24,18 @@ export default function AdminVendedores() {
     (s.store_name || "").toLowerCase().includes(q.toLowerCase()) ||
     (s.name || "").toLowerCase().includes(q.toLowerCase()) ||
     (s.city || "").toLowerCase().includes(q.toLowerCase())
-  );
+  ).sort((a, b) => Number(a.is_approved) - Number(b.is_approved)); // pendientes arriba
+
+  const pendientes = sellers.filter((s) => !s.is_approved).length;
+
+  const aprobar = async (id: string) => {
+    setWorking(true);
+    const { error } = await createClient().from("profiles").update({ is_approved: true }).eq("id", id);
+    setWorking(false);
+    setMsg(error?.message ?? "Emprendedor aprobado");
+    reload();
+    setTimeout(() => setMsg(null), 3000);
+  };
 
   const guardarMensualidad = async (id: string) => {
     setWorking(true);
@@ -73,7 +84,7 @@ export default function AdminVendedores() {
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold">Emprendedores</h1>
           <p className="text-sm text-[color:var(--color-muted)] mt-1">
-            {sellers.length} registrados · te deben <strong className="text-[color:var(--color-accent)]">{formatGs(deudaTotal)}</strong>
+            {sellers.length} registrados{pendientes > 0 && <> · <strong className="text-yellow-700">{pendientes} esperando aprobación</strong></>} · te deben <strong className="text-[color:var(--color-accent)]">{formatGs(deudaTotal)}</strong>
           </p>
         </div>
         <button onClick={generarMensualidades} disabled={working} className="btn-outline disabled:opacity-50">
@@ -114,8 +125,14 @@ export default function AdminVendedores() {
                     </div>
                   </div>
                   <div className="text-right shrink-0">
-                    <div className={"font-extrabold " + (saldo > 0 ? "text-[color:var(--color-accent)]" : "text-green-600")}>{formatGs(Math.abs(saldo))}</div>
-                    <div className="text-[10px] text-[color:var(--color-muted)] uppercase">{saldo > 0 ? "te debe" : "al día"}</div>
+                    {s.is_approved ? (
+                      <>
+                        <div className={"font-extrabold " + (saldo > 0 ? "text-[color:var(--color-accent)]" : "text-green-600")}>{formatGs(Math.abs(saldo))}</div>
+                        <div className="text-[10px] text-[color:var(--color-muted)] uppercase">{saldo > 0 ? "te debe" : "al día"}</div>
+                      </>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded bg-yellow-100 text-yellow-800 uppercase"><Clock size={10} /> Pendiente</span>
+                    )}
                   </div>
                 </div>
 
@@ -130,6 +147,11 @@ export default function AdminVendedores() {
                 )}
 
                 <div className="flex items-center gap-2 mt-4 flex-wrap">
+                  {!s.is_approved && (
+                    <button onClick={() => aprobar(s.id)} disabled={working} className="btn-primary text-sm disabled:opacity-50">
+                      <ShieldCheck size={14} /> Aprobar
+                    </button>
+                  )}
                   {editing === s.id ? (
                     <>
                       <input

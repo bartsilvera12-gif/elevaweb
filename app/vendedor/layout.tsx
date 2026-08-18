@@ -45,6 +45,21 @@ export default function VendedorLayout({ children }: { children: React.ReactNode
     window.location.reload();
   };
 
+  if (profile?.is_seller && !profile.is_approved) {
+    return (
+      <div className="container-eleva pt-16 pb-24 max-w-md">
+        <div className="card-flat p-8 border-t-4 border-yellow-400">
+          <div className="w-12 h-12 rounded bg-yellow-100 text-yellow-800 flex items-center justify-center mb-4"><Loader2 size={22} /></div>
+          <h1 className="text-2xl font-extrabold">Tu cuenta está en revisión</h1>
+          <p className="text-sm text-[color:var(--color-ink-soft)] mt-2">
+            El equipo de ELEVA está por aprobar tu registro como vendedor. Cuando confirmen, vas a poder
+            publicar productos y recibir pedidos. Te contactamos apenas esté listo.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (!profile?.is_seller) {
     return (
       <div className="container-eleva pt-16 pb-24 max-w-md">

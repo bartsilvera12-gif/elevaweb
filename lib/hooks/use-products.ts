@@ -142,3 +142,65 @@ export function useProductsBySlugs(slugs: string[]) {
 
   return { products, loading };
 }
+
+
+// Novedades: por fecha de creación (últimos N días)
+export function useNovedades(limit = 8, days = 30) {
+  const [products, setProducts] = useState<DBProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    let cancelled = false;
+    const desde = new Date(); desde.setDate(desde.getDate() - days);
+    createClient().from("products").select("*")
+      .eq("active", true).gte("created_at", desde.toISOString())
+      .order("created_at", { ascending: false }).limit(limit)
+      .then(({ data }) => { if (!cancelled) { setProducts((data as DBProduct[]) ?? []); setLoading(false); } });
+    return () => { cancelled = true; };
+  }, [limit, days]);
+  return { products, loading };
+}
+
+// Más vendidos: por sold desc
+export function useMasVendidos(limit = 8) {
+  const [products, setProducts] = useState<DBProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    let cancelled = false;
+    createClient().from("products").select("*")
+      .eq("active", true).gt("sold", 0)
+      .order("sold", { ascending: false }).limit(limit)
+      .then(({ data }) => { if (!cancelled) { setProducts((data as DBProduct[]) ?? []); setLoading(false); } });
+    return () => { cancelled = true; };
+  }, [limit]);
+  return { products, loading };
+}
+
+// Destacados: los que ELEVA marcó en admin (is_featured = true)
+export function useDestacados(limit = 8) {
+  const [products, setProducts] = useState<DBProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    let cancelled = false;
+    createClient().from("products").select("*")
+      .eq("active", true).eq("is_featured", true)
+      .order("created_at", { ascending: false }).limit(limit)
+      .then(({ data }) => { if (!cancelled) { setProducts((data as DBProduct[]) ?? []); setLoading(false); } });
+    return () => { cancelled = true; };
+  }, [limit]);
+  return { products, loading };
+}
+
+// Ofertas: los que tienen descuento
+export function useOfertas(limit = 8) {
+  const [products, setProducts] = useState<DBProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    let cancelled = false;
+    createClient().from("products").select("*")
+      .eq("active", true).gt("disc_pct", 0)
+      .order("disc_pct", { ascending: false }).limit(limit)
+      .then(({ data }) => { if (!cancelled) { setProducts((data as DBProduct[]) ?? []); setLoading(false); } });
+    return () => { cancelled = true; };
+  }, [limit]);
+  return { products, loading };
+}
