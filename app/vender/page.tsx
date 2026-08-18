@@ -7,15 +7,15 @@ import { useState } from "react";
 const beneficios = [
   { icon: Warehouse, t: "Nosotros almacenamos", d: "Dejás tu stock en nuestro depósito de Asunción y nos ocupamos de recepción, control y logística." },
   { icon: TrendingUp, t: "Aparecés en el catálogo", d: "Tus productos entran al buscador, ofertas y novedades. Sin pagar más por visibilidad básica." },
-  { icon: Wallet, t: "Cobrás semanalmente", d: "Todos los lunes recibís la liquidación de la semana pasada por transferencia. Sin comisiones ocultas." },
-  { icon: ShieldCheck, t: "Vos ponés el precio", d: "Nosotros solo cobramos una comisión clara del 12% por venta cerrada. Sin cargos por publicar." },
+  { icon: Wallet, t: "Cobrás vos, directo", d: "El cliente te paga a vos con tus propios medios de cobro. La plata no pasa por nosotros." },
+  { icon: ShieldCheck, t: "Vos ponés el precio", d: "Nos pagás una comisión por venta y una mensualidad por el espacio en depósito. Todo a la vista en tu panel." },
 ];
 
 const pasos = [
   { n: 1, t: "Creá tu cuenta", d: "Registrate con tu email en menos de 2 minutos." },
   { n: 2, t: "Cargá tus productos", d: "Subís fotos, precio y stock desde el panel." },
   { n: 3, t: "Traé el stock", d: "Coordinamos que dejes tus productos en nuestro depósito." },
-  { n: 4, t: "Cobrás cada lunes", d: "Recibís tu liquidación por transferencia bancaria." },
+  { n: 4, t: "Cobrás y confirmás", d: "El cliente te transfiere, vos confirmás el cobro en tu panel y nosotros despachamos." },
 ];
 
 const testimonios = [
@@ -25,9 +25,9 @@ const testimonios = [
 ];
 
 const faqs = [
-  { q: "¿Cuánto cobra ELEVA por venta?", a: "12% por venta cerrada. No cobramos por publicar, ni por almacenar los primeros 30 días. Sin costos ocultos." },
+  { q: "¿Cuánto cobra ELEVA?", a: "Una comisión por cada venta cerrada más una mensualidad por el espacio que ocupa tu stock en el depósito. Los montos se acuerdan con vos y quedan registrados en tu panel." },
   { q: "¿Cómo entrego mi stock?", a: "Cuando cargues tus primeros productos, coordinamos día y hora para que traigas el stock a nuestro depósito en Asunción, o pasamos a buscarlo en Central." },
-  { q: "¿Cuándo cobro?", a: "Todos los lunes por transferencia bancaria, liquidamos las ventas cerradas de la semana anterior (menos comisión)." },
+  { q: "¿Cuándo cobro?", a: "En el momento: el cliente te paga directamente a vos. Después nos pagás a nosotros la comisión y la mensualidad, que ves siempre en Finanzas." },
   { q: "¿Qué pasa si mi producto no se vende?", a: "Podés retirarlo cuando quieras sin costo. Los primeros 30 días de almacenamiento son gratis, después es Gs. 500/día por producto." },
   { q: "¿Puedo vender desde el interior?", a: "Sí. Coordinamos el envío del stock al depósito por encomienda. Los primeros envíos los cubrimos nosotros." },
 ];

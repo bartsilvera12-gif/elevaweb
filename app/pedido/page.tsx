@@ -4,10 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { formatGs } from "@/lib/utils";
 import { useOrder } from "@/lib/hooks/use-orders";
-import { CheckCircle2, Circle, Package, Truck, Home, ChevronRight, Loader2 } from "lucide-react";
+import { useSellerPublic, useReclamos } from "@/lib/hooks/use-platform";
+import { useState } from "react";
+import { CheckCircle2, Circle, Package, Truck, Home, ChevronRight, Loader2, Wallet, Store, AlertTriangle } from "lucide-react";
 
 const steps = [
-  { key: "paid", label: "Pagado", icon: CheckCircle2 },
+  { key: "paid", label: "Pago confirmado", icon: CheckCircle2 },
   { key: "shipped", label: "Despachado", icon: Package },
   { key: "in_transit", label: "En camino", icon: Truck },
   { key: "delivered", label: "Entregado", icon: Home },
@@ -17,6 +19,12 @@ export default function PedidoDetallePage() {
   const sp = useSearchParams();
   const id = sp.get("id") || "";
   const { order, loading } = useOrder(id);
+  const sellerMap = useSellerPublic([order?.seller_id ?? null]);
+  const { crear } = useReclamos();
+  const [motivo, setMotivo] = useState("");
+  const [detalle, setDetalle] = useState("");
+  const [abriendo, setAbriendo] = useState(false);
+  const [reclamoMsg, setReclamoMsg] = useState<string | null>(null);
 
   if (loading) return (
     <div className="container-eleva pt-16 flex justify-center min-h-[400px] items-center text-[color:var(--color-muted)]">
@@ -36,6 +44,16 @@ export default function PedidoDetallePage() {
 
   const items = order.order_items ?? [];
   const currentStep = order.status === "delivered" ? 3 : order.status === "shipped" ? 1 : 0;
+  const seller = order.seller_id ? sellerMap[order.seller_id] : null;
+  const pagado = order.payment_status === "cobrado";
+
+  const enviarReclamo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!motivo.trim()) return;
+    const error = await crear({ order_id: order.id, seller_id: order.seller_id, motivo, detalle });
+    setReclamoMsg(error ?? "Reclamo enviado. ELEVA lo va a revisar.");
+    if (!error) { setMotivo(""); setDetalle(""); setAbriendo(false); }
+  };
 
   return (
     <div className="container-eleva pt-6">
@@ -80,6 +98,43 @@ export default function PedidoDetallePage() {
         </div>
       </div>
 
+      <div className={"card-flat p-5 mt-6 border-l-4 " + (pagado ? "border-green-500" : "border-[color:var(--color-accent)]")}>
+        <h3 className="flex items-center gap-2 font-bold text-[color:var(--color-brand)]">
+          <Wallet size={18} /> {pagado ? "Pago confirmado" : "Cómo pagar este pedido"}
+        </h3>
+        {pagado ? (
+          <p className="text-sm text-[color:var(--color-ink-soft)] mt-2">
+            {seller?.store_name || "El emprendedor"} confirmó que recibió tu pago. ELEVA ya puede empaquetar y despachar.
+          </p>
+        ) : (
+          <>
+            <p className="text-sm text-[color:var(--color-ink-soft)] mt-2">
+              Transferí <strong className="text-[color:var(--color-brand)]">{formatGs(order.total_cents)}</strong> a{" "}
+              <strong>{seller?.store_name || "el emprendedor"}</strong>. Cuando confirme que le entró el pago,
+              ELEVA empaqueta y despacha tu pedido.
+            </p>
+            <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-1 text-sm mt-4 pt-4 border-t border-[color:var(--color-line-soft)]">
+              {seller?.pago_titular && <Dato k="Titular" v={seller.pago_titular} />}
+              {seller?.pago_banco && <Dato k="Banco" v={seller.pago_banco} />}
+              {seller?.pago_cuenta && <Dato k="Cuenta" v={seller.pago_cuenta} />}
+              {seller?.pago_alias && <Dato k="Alias" v={seller.pago_alias} />}
+              {seller?.pago_telefono && <Dato k="Teléfono / giro" v={seller.pago_telefono} />}
+            </dl>
+            {seller?.pago_notas && <p className="text-sm text-[color:var(--color-ink-soft)] mt-3 whitespace-pre-line">{seller.pago_notas}</p>}
+            {seller && !seller.pago_titular && !seller.pago_cuenta && !seller.pago_alias && !seller.pago_telefono && (
+              <p className="text-sm text-[color:var(--color-accent)] mt-3">
+                Este emprendedor todavía no cargó sus datos de cobro. Te va a contactar al teléfono que dejaste.
+              </p>
+            )}
+          </>
+        )}
+        {seller?.store_name && (
+          <div className="text-xs text-[color:var(--color-muted)] mt-4 flex items-center gap-1.5">
+            <Store size={12} /> Vendido por {seller.store_name}
+          </div>
+        )}
+      </div>
+
       <div className="grid lg:grid-cols-3 gap-6 mt-6">
         <div className="lg:col-span-2 card-flat p-5">
           <h3 className="font-bold text-sm uppercase tracking-wider text-[color:var(--color-brand)] mb-3">Productos</h3>
@@ -122,8 +177,50 @@ export default function PedidoDetallePage() {
               <div>{order.shipping.phone}</div>
             </div>
           </div>
+
+          <div className="card-flat p-5">
+            <h3 className="flex items-center gap-2 font-bold text-sm uppercase tracking-wider text-[color:var(--color-brand)] mb-3">
+              <AlertTriangle size={14} /> ¿Algún problema?
+            </h3>
+            {reclamoMsg && <p className="text-sm text-[color:var(--color-ink-soft)] mb-3">{reclamoMsg}</p>}
+            {!abriendo ? (
+              <button onClick={() => { setAbriendo(true); setReclamoMsg(null); }} className="btn-outline text-sm w-full justify-center">
+                Abrir un reclamo
+              </button>
+            ) : (
+              <form onSubmit={enviarReclamo} className="flex flex-col gap-2">
+                <input
+                  autoFocus
+                  value={motivo}
+                  onChange={(e) => setMotivo(e.target.value)}
+                  placeholder="Motivo (ej: llegó dañado)"
+                  className="border border-[color:var(--color-line)] rounded px-3 py-2 text-sm focus:outline-none focus:border-[color:var(--color-brand)]"
+                />
+                <textarea
+                  rows={3}
+                  value={detalle}
+                  onChange={(e) => setDetalle(e.target.value)}
+                  placeholder="Contanos qué pasó"
+                  className="border border-[color:var(--color-line)] rounded px-3 py-2 text-sm focus:outline-none focus:border-[color:var(--color-brand)]"
+                />
+                <div className="flex gap-2">
+                  <button className="btn-primary text-sm flex-1 justify-center">Enviar</button>
+                  <button type="button" onClick={() => setAbriendo(false)} className="btn-outline text-sm">Cancelar</button>
+                </div>
+              </form>
+            )}
+          </div>
         </aside>
       </div>
+    </div>
+  );
+}
+
+function Dato({ k, v }: { k: string; v: string }) {
+  return (
+    <div className="flex justify-between gap-2">
+      <dt className="text-[color:var(--color-muted)]">{k}</dt>
+      <dd className="font-semibold text-[color:var(--color-ink)]">{v}</dd>
     </div>
   );
 }

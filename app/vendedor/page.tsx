@@ -5,22 +5,26 @@ import { DollarSign, ShoppingBag, Package, TrendingUp, AlertTriangle } from "luc
 import { formatGs } from "@/lib/utils";
 import { useMyProducts } from "@/lib/hooks/use-products";
 import { useSellerOrders } from "@/lib/hooks/use-orders";
+import { useMyCharges } from "@/lib/hooks/use-platform";
 
 export default function VendedorOverview() {
   const { products } = useMyProducts();
   const { orders } = useSellerOrders();
 
+  const { charges } = useMyCharges();
+
   const lowStock = products.filter((p) => p.stock_minimo > 0 && p.stock <= p.stock_minimo);
-  const totalRevenue = orders.reduce((n, o) => n + o.total_cents, 0);
-  const netRevenue = Math.round(totalRevenue * 0.88);
-  const totalOrders = orders.length;
-  const avgTicket = totalOrders ? Math.round(totalRevenue / totalOrders) : 0;
+  const cobradas = orders.filter((o) => o.payment_status === "cobrado");
+  const totalRevenue = cobradas.reduce((n, o) => n + o.total_cents, 0);
+  const porCobrar = orders.filter((o) => o.payment_status !== "cobrado");
+  const saldo = charges.reduce((n, c) => n + c.amount_cents, 0);
+  const avgTicket = cobradas.length ? Math.round(totalRevenue / cobradas.length) : 0;
 
   const cards = [
-    { icon: DollarSign, label: "Ventas brutas", value: formatGs(totalRevenue), sub: "todos los pedidos" },
-    { icon: TrendingUp, label: "Neto (después de 12%)", value: formatGs(netRevenue), sub: "lo que cobrás" },
-    { icon: ShoppingBag, label: "Pedidos", value: String(totalOrders), sub: `Ticket ${formatGs(avgTicket)}` },
-    { icon: Package, label: "Productos activos", value: String(products.filter((p) => p.active).length), sub: `${products.length} totales` },
+    { icon: DollarSign, label: "Ventas cobradas", value: formatGs(totalRevenue), sub: `${cobradas.length} pedidos` },
+    { icon: ShoppingBag, label: "Falta cobrar", value: String(porCobrar.length), sub: "confirmalos en Pedidos" },
+    { icon: TrendingUp, label: "Le debés a ELEVA", value: formatGs(Math.max(0, saldo)), sub: "comisiones + depósito" },
+    { icon: Package, label: "Productos activos", value: String(products.filter((p) => p.active).length), sub: `Ticket ${formatGs(avgTicket)}` },
   ];
 
   return (

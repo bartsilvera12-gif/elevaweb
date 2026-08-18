@@ -7,8 +7,8 @@ import { useUser } from "@/lib/hooks/use-user";
 import { Package, ChevronRight, Loader2 } from "lucide-react";
 
 const statusLabel: Record<string, { l: string; c: string }> = {
-  pending: { l: "Pendiente", c: "bg-yellow-100 text-yellow-800" },
-  paid: { l: "Pagado", c: "bg-blue-100 text-blue-800" },
+  pending: { l: "Falta pagar", c: "bg-yellow-100 text-yellow-800" },
+  paid: { l: "Pago confirmado", c: "bg-blue-100 text-blue-800" },
   shipped: { l: "Enviado", c: "bg-purple-100 text-purple-800" },
   delivered: { l: "Entregado", c: "bg-green-100 text-green-800" },
 };
@@ -49,7 +49,7 @@ export default function MisPedidosPage() {
       ) : (
         <div className="flex flex-col gap-3 mt-6">
           {orders.map((o) => {
-            const s = statusLabel[o.status] || statusLabel.paid;
+            const s = o.payment_status !== "cobrado" ? statusLabel.pending : statusLabel[o.status] || statusLabel.paid;
             const items = o.order_items ?? [];
             return (
               <Link key={o.id} href={`/pedido?id=${o.id}`} className="card-flat p-5 flex items-center gap-5 hover:border-[color:var(--color-accent)] hover:shadow-md transition">

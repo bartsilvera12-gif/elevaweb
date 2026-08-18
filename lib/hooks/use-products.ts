@@ -120,3 +120,25 @@ export function useLowStock() {
 
   return { items, loading };
 }
+
+// Productos del carrito, para saber de qué emprendedor es cada uno
+export function useProductsBySlugs(slugs: string[]) {
+  const [products, setProducts] = useState<DBProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const key = slugs.join(",");
+
+  useEffect(() => {
+    if (!key) { setProducts([]); setLoading(false); return; }
+    let cancelled = false;
+    createClient()
+      .from("products")
+      .select("*")
+      .in("slug", key.split(","))
+      .then(({ data }) => {
+        if (!cancelled) { setProducts((data as DBProduct[]) ?? []); setLoading(false); }
+      });
+    return () => { cancelled = true; };
+  }, [key]);
+
+  return { products, loading };
+}

@@ -2,7 +2,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { categories } from "@/lib/mock-products";
+import { useCategorias } from "@/lib/hooks/use-platform";
 import { createClient } from "@/lib/supabase/client";
 import { useUser } from "@/lib/hooks/use-user";
 import { UNITS, type DBProduct } from "@/lib/types";
@@ -17,6 +17,7 @@ export default function EditarProductoPage() {
 }
 
 function EditarProducto() {
+  const { categorias } = useCategorias();
   const sp = useSearchParams();
   const slug = sp.get("slug") || "";
   const router = useRouter();
@@ -25,7 +26,7 @@ function EditarProducto() {
   const [loading, setLoading] = useState(true);
 
   const [name, setName] = useState("");
-  const [category, setCategory] = useState(categories[0].slug);
+  const [category, setCategory] = useState("moda");
   const [price, setPrice] = useState("");
   const [compare, setCompare] = useState("");
   const [stock, setStock] = useState("0");
@@ -128,7 +129,7 @@ function EditarProducto() {
               <label className="flex flex-col gap-1">
                 <span className="text-xs font-semibold text-[color:var(--color-ink-soft)]">Categoría</span>
                 <select value={category} onChange={(e) => setCategory(e.target.value)} className="border border-[color:var(--color-line)] rounded px-3 py-2.5 text-sm bg-white focus:outline-none focus:border-[color:var(--color-brand)]">
-                  {categories.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
+                  {categorias.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
                 </select>
               </label>
               <label className="flex flex-col gap-1">

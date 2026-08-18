@@ -11,6 +11,16 @@ export interface UserProfile {
   is_seller: boolean;
   store_name: string | null;
   is_admin?: boolean | null;
+  store_desc?: string | null;
+  pago_titular?: string | null;
+  pago_banco?: string | null;
+  pago_cuenta?: string | null;
+  pago_alias?: string | null;
+  pago_telefono?: string | null;
+  pago_notas?: string | null;
+  instagram?: string | null;
+  tiktok?: string | null;
+  mensualidad_cents?: number | null;
 }
 
 export function useUser() {

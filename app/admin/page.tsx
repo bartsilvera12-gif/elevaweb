@@ -1,28 +1,36 @@
 "use client";
 import { motion } from "motion/react";
 import Link from "next/link";
-import { DollarSign, Users, ShoppingBag, AlertTriangle, TrendingUp, Package } from "lucide-react";
+import { DollarSign, Users, ShoppingBag, AlertTriangle, TrendingUp, Package, Wallet, Clock } from "lucide-react";
 import { formatGs } from "@/lib/utils";
 import { useAllOrders } from "@/lib/hooks/use-orders";
 import { useLowStock, useProducts } from "@/lib/hooks/use-products";
+import { useSellerAccounts } from "@/lib/hooks/use-platform";
 
 export default function AdminOverview() {
   const { orders } = useAllOrders();
   const { items: lowStock } = useLowStock();
   const { products } = useProducts({});
+  const { accounts } = useSellerAccounts();
 
-  const totalGMV = orders.reduce((n, o) => n + o.total_cents, 0);
-  const totalComm = Math.round(totalGMV * 0.12);
-  const totalOrders = orders.length;
-  const avgTicket = totalOrders ? Math.round(totalGMV / totalOrders) : 0;
+  // Solo cuentan las ventas que el emprendedor ya confirmó como cobradas
+  const cobrados = orders.filter((o) => o.payment_status === "cobrado");
+  const totalGMV = cobrados.reduce((n, o) => n + o.total_cents, 0);
+  const totalComm = cobrados.reduce((n, o) => n + (o.commission_cents ?? 0), 0);
+  const esperandoPago = orders.filter((o) => o.payment_status !== "cobrado");
+  const porEmpacar = cobrados.filter((o) => o.status === "paid").length;
+  const avgTicket = cobrados.length ? Math.round(totalGMV / cobrados.length) : 0;
+  const porCobrar = accounts.reduce((n, a) => n + Math.max(0, a.saldo_cents), 0);
 
   const cards = [
-    { icon: DollarSign, label: "GMV total", value: formatGs(totalGMV), sub: `${totalOrders} pedidos`, accent: true },
-    { icon: TrendingUp, label: "Comisión ELEVA", value: formatGs(totalComm), sub: "12% del GMV" },
-    { icon: ShoppingBag, label: "Ticket promedio", value: formatGs(avgTicket), sub: "por pedido" },
-    { icon: Package, label: "Productos activos", value: String(products.length), sub: "en catálogo" },
+    { icon: DollarSign, label: "Ventas cobradas", value: formatGs(totalGMV), sub: `${cobrados.length} pedidos`, accent: true },
+    { icon: TrendingUp, label: "Comisión ELEVA", value: formatGs(totalComm), sub: "sobre ventas confirmadas" },
+    { icon: Wallet, label: "Te deben", value: formatGs(porCobrar), sub: "comisiones + depósito", warn: porCobrar > 0 },
+    { icon: Package, label: "Para empacar", value: String(porEmpacar), sub: "pagados, sin despachar", warn: porEmpacar > 0 },
+    { icon: Clock, label: "Esperando pago", value: String(esperandoPago.length), sub: "el cliente no pagó aún" },
+    { icon: ShoppingBag, label: "Ticket promedio", value: formatGs(avgTicket), sub: "por pedido cobrado" },
+    { icon: Users, label: "Productos activos", value: String(products.length), sub: "en catálogo" },
     { icon: AlertTriangle, label: "Stock bajo", value: String(lowStock.length), sub: "necesitan reponer", warn: lowStock.length > 0 },
-    { icon: Users, label: "Órdenes hoy", value: String(orders.filter((o) => new Date(o.created_at).toDateString() === new Date().toDateString()).length), sub: "última medianoche" },
   ];
 
   return (
@@ -82,7 +90,7 @@ export default function AdminOverview() {
                 </div>
                 <div className="text-right">
                   <div className="font-bold text-[color:var(--color-brand)]">{formatGs(o.total_cents)}</div>
-                  <div className="text-[10px] text-[color:var(--color-accent)] font-semibold">Comisión {formatGs(Math.round(o.total_cents * 0.12))}</div>
+                  <div className="text-[10px] text-[color:var(--color-accent)] font-semibold">Comisión {formatGs(o.commission_cents ?? 0)}</div>
                 </div>
               </li>
             ))}

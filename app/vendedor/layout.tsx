@@ -51,7 +51,7 @@ export default function VendedorLayout({ children }: { children: React.ReactNode
         <div className="card-flat p-8 border-t-4 border-[color:var(--color-accent)]">
           <div className="w-12 h-12 rounded bg-[color:var(--color-accent)]/10 text-[color:var(--color-accent)] flex items-center justify-center mb-4"><Rocket size={22} /></div>
           <h1 className="text-2xl font-extrabold">Convertite en emprendedor ELEVA</h1>
-          <p className="text-sm text-[color:var(--color-ink-soft)] mt-2">Publicá productos, gestioná tu inventario y cobrá semanalmente. Sin cargos por publicar. Comisión del 12% por venta cerrada.</p>
+          <p className="text-sm text-[color:var(--color-ink-soft)] mt-2">Publicá productos, gestioná tu inventario y cobrá vos mismo cada venta. Nos pagás una comisión por venta y la mensualidad de depósito.</p>
           <form onSubmit={upgradeToSeller} className="mt-6 flex flex-col gap-3">
             <label className="flex flex-col gap-1.5">
               <span className="text-xs font-semibold text-[color:var(--color-ink-soft)]">Nombre de tu tienda</span>

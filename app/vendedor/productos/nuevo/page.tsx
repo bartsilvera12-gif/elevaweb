@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { categories } from "@/lib/mock-products";
+import { useCategorias, useSettings } from "@/lib/hooks/use-platform";
 import { useUser } from "@/lib/hooks/use-user";
 import { createClient } from "@/lib/supabase/client";
 import { UNITS } from "@/lib/types";
@@ -16,7 +16,7 @@ export default function NuevoProducto() {
   const { user } = useUser();
 
   const [name, setName] = useState("");
-  const [category, setCategory] = useState(categories[0].slug);
+  const [category, setCategory] = useState("moda");
   const [price, setPrice] = useState("");
   const [compare, setCompare] = useState("");
   const [stock, setStock] = useState("10");
@@ -28,6 +28,9 @@ export default function NuevoProducto() {
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
+  const { categorias } = useCategorias();
+  const { num } = useSettings();
+  const comisionPct = num("comision_pct", 12);
   const priceNum = Number(price.replace(/\D/g, "")) || 0;
   const compareNum = Number(compare.replace(/\D/g, "")) || 0;
   const fmt = (s: string) => { const n = Number(s.replace(/\D/g, "")) || 0; return n ? new Intl.NumberFormat("es-PY").format(n) : ""; };
@@ -92,7 +95,7 @@ export default function NuevoProducto() {
               <label className="flex flex-col gap-1">
                 <span className="text-xs font-semibold text-[color:var(--color-ink-soft)]">Categoría</span>
                 <select value={category} onChange={(e) => setCategory(e.target.value)} className="border border-[color:var(--color-line)] rounded px-3 py-2.5 text-sm bg-white focus:outline-none focus:border-[color:var(--color-brand)]">
-                  {categories.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
+                  {categorias.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
                 </select>
               </label>
               <label className="flex flex-col gap-1">
@@ -125,9 +128,9 @@ export default function NuevoProducto() {
             </div>
             {priceNum > 0 && (
               <div className="mt-3 text-sm text-[color:var(--color-ink-soft)] bg-[color:var(--color-line-soft)] rounded p-3">
-                Comisión ELEVA (12%): <strong>Gs. {fmt(String(Math.round(priceNum * 0.12)))}</strong>
+                Comisión ELEVA ({comisionPct}%): <strong>Gs. {fmt(String(Math.round((priceNum * comisionPct) / 100)))}</strong>
                 <span className="mx-2">·</span>
-                Vos recibís: <strong className="text-[color:var(--color-brand)]">Gs. {fmt(String(Math.round(priceNum * 0.88)))}</strong>
+                Cobrás vos: <strong className="text-[color:var(--color-brand)]">Gs. {fmt(String(priceNum))}</strong> (le pagás la comisión a ELEVA después)
               </div>
             )}
           </div>

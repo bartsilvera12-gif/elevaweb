@@ -4,10 +4,13 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { formatGs } from "@/lib/utils";
 import { useCart, useHydrated } from "@/lib/store";
-import { findCoupon, computeTotals, type Coupon, coupons as allCoupons } from "@/lib/coupons";
+import { computeTotals } from "@/lib/coupons";
 import { useUser } from "@/lib/hooks/use-user";
+import { useProductsBySlugs } from "@/lib/hooks/use-products";
+import { useCoupons, useSellerPublic, useSettings } from "@/lib/hooks/use-platform";
 import { createClient } from "@/lib/supabase/client";
-import { CreditCard, MapPin, User as UserIcon, Truck, Shield, ArrowRight, Tag, Check, X, Loader2 } from "lucide-react";
+import type { DBCoupon } from "@/lib/types";
+import { Wallet, MapPin, User as UserIcon, Truck, Shield, ArrowRight, Tag, Check, X, Loader2, Store } from "lucide-react";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -16,8 +19,11 @@ export default function CheckoutPage() {
   const subtotal = useCart((s) => s.subtotalCents());
   const clear = useCart((s) => s.clear);
   const { user, profile } = useUser();
+  const { num } = useSettings();
+  const { coupons } = useCoupons();
+  const { products } = useProductsBySlugs(items.map((i) => i.slug));
 
-  const [coupon, setCoupon] = useState<Coupon | null>(null);
+  const [coupon, setCoupon] = useState<DBCoupon | null>(null);
   const [couponInput, setCouponInput] = useState("");
   const [couponMsg, setCouponMsg] = useState<{ ok: boolean; msg: string } | null>(null);
 
@@ -26,11 +32,45 @@ export default function CheckoutPage() {
   const [city, setCity] = useState("");
   const [dept, setDept] = useState("Central");
   const [phone, setPhone] = useState("");
-  const [method, setMethod] = useState<"tarjeta" | "transferencia" | "efectivo">("tarjeta");
   const [submitting, setSubmitting] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
-  const totals = useMemo(() => computeTotals(subtotal, coupon), [subtotal, coupon]);
+  const rules = useMemo(() => ({
+    envio_cents: num("envio_cents", 25000),
+    envio_gratis_desde_cents: num("envio_gratis_desde_cents", 500000),
+  }), [num]);
+
+  // Cada emprendedor cobra por su cuenta: el carrito se divide en un pedido por emprendedor.
+  const grupos = useMemo(() => {
+    const bySeller = new Map<string, { sellerId: string | null; items: typeof items; subtotal: number }>();
+    for (const it of items) {
+      const p = products.find((x) => x.slug === it.slug);
+      const sid = p?.seller_id ?? null;
+      const k = sid ?? "sin-vendedor";
+      const g = bySeller.get(k) ?? { sellerId: sid, items: [], subtotal: 0 };
+      g.items = [...g.items, it];
+      g.subtotal += it.price_cents * it.qty;
+      bySeller.set(k, g);
+    }
+    return [...bySeller.values()];
+  }, [items, products]);
+
+  const sellerMap = useSellerPublic(grupos.map((g) => g.sellerId));
+  const totals = useMemo(() => computeTotals(subtotal, coupon, rules), [subtotal, coupon, rules]);
+
+  // Mismo prorrateo que hace eleva.create_order, para que lo que se muestra coincida
+  const desglose = useMemo(() => grupos.map((g) => {
+    let discount = 0;
+    if (coupon && !(coupon.min_cents && subtotal < coupon.min_cents)) {
+      if (coupon.kind === "percent") discount = Math.round((g.subtotal * coupon.value) / 100);
+      else if (coupon.kind === "flat") discount = Math.round((coupon.value * g.subtotal) / (subtotal || 1));
+    }
+    let shipping = g.subtotal >= rules.envio_gratis_desde_cents ? 0 : rules.envio_cents;
+    if (coupon?.kind === "shipping") shipping = 0;
+    return { ...g, discount, shipping, total: Math.max(0, g.subtotal - discount + shipping) };
+  }), [grupos, coupon, subtotal, rules]);
+
+  const totalAPagar = desglose.reduce((n, g) => n + g.total, 0);
 
   if (!hydrated) return <div className="container-eleva pt-10 min-h-[400px]" />;
 
@@ -60,12 +100,15 @@ export default function CheckoutPage() {
   }
 
   const applyCoupon = () => {
-    const c = findCoupon(couponInput);
+    const c = coupons.find((x) => x.code.toUpperCase() === couponInput.trim().toUpperCase());
     if (!c) { setCoupon(null); setCouponMsg({ ok: false, msg: "Ese cupón no existe" }); return; }
+    if (c.min_cents && subtotal < c.min_cents) {
+      setCoupon(null);
+      setCouponMsg({ ok: false, msg: `Este cupón requiere una compra mínima de ${formatGs(c.min_cents)}` });
+      return;
+    }
     setCoupon(c);
-    const t = computeTotals(subtotal, c);
-    if (t.couponError) { setCouponMsg({ ok: false, msg: t.couponError }); setCoupon(null); }
-    else setCouponMsg({ ok: true, msg: `Aplicado: ${c.label}` });
+    setCouponMsg({ ok: true, msg: `Aplicado: ${c.label}` });
   };
 
   const clearCoupon = () => { setCoupon(null); setCouponInput(""); setCouponMsg(null); };
@@ -76,30 +119,21 @@ export default function CheckoutPage() {
     setSubmitting(true);
     setErr(null);
 
-    const supabase = createClient();
-    const id = "ELV-" + Math.random().toString(36).slice(2, 8).toUpperCase();
-    const { data, error } = await supabase.rpc("create_order", {
-      p_id: id,
-      p_subtotal_cents: totals.subtotal,
-      p_discount_cents: totals.discount,
-      p_shipping_cents: totals.shipping,
-      p_total_cents: totals.total,
+    const prefix = "ELV-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+    const { data, error } = await createClient().rpc("create_order", {
+      p_prefix: prefix,
       p_coupon: coupon?.code ?? null,
       p_shipping: { name, address, city, dept, phone },
-      p_items: items.map((it) => ({
-        slug: it.slug,
-        name: it.name,
-        qty: it.qty,
-        price_cents: it.price_cents,
-        variant: it.variant ?? null,
-      })),
+      p_items: items.map((it) => ({ slug: it.slug, qty: it.qty, variant: it.variant ?? null })),
     });
 
     setSubmitting(false);
-
     if (error) { setErr(error.message); return; }
+
+    const creadas = (data as { id: string }[]) ?? [];
     clear();
-    router.push(`/pedido?id=${data?.id ?? id}`);
+    if (creadas.length === 1) router.push(`/pedido?id=${creadas[0].id}`);
+    else router.push("/mis-pedidos");
   };
 
   return (
@@ -134,28 +168,52 @@ export default function CheckoutPage() {
           </section>
 
           <section className="card-flat p-5">
-            <h2 className="flex items-center gap-2 font-bold text-[color:var(--color-brand)] mb-4"><CreditCard size={18} /> Pago</h2>
-            <div className="grid grid-cols-3 gap-2 mb-4">
-              {(["tarjeta","transferencia","efectivo"] as const).map((m) => (
-                <button key={m} type="button" onClick={() => setMethod(m)} className={
-                  "border rounded p-3 text-sm capitalize font-semibold transition " +
-                  (method === m ? "border-[color:var(--color-brand)] bg-[color:var(--color-brand-100)] text-[color:var(--color-brand)]" : "border-[color:var(--color-line)] text-[color:var(--color-ink-soft)] hover:border-[color:var(--color-brand)]")
-                }>{m === "tarjeta" ? "Tarjeta" : m === "transferencia" ? "Transferencia" : "Efectivo"}</button>
-              ))}
+            <h2 className="flex items-center gap-2 font-bold text-[color:var(--color-brand)] mb-4"><Wallet size={18} /> Cómo pagás</h2>
+            <p className="text-sm text-[color:var(--color-ink-soft)]">
+              Le pagás <strong>directamente a cada emprendedor</strong> con sus datos de cobro. Cuando confirme
+              que recibió el pago, ELEVA empaqueta y despacha tu pedido.
+            </p>
+            {desglose.length > 1 && (
+              <p className="text-sm text-[color:var(--color-ink-soft)] mt-2">
+                Tu carrito tiene productos de <strong>{desglose.length} emprendedores</strong>, así que se va a dividir
+                en {desglose.length} pedidos, uno por cada uno.
+              </p>
+            )}
+
+            <div className="flex flex-col gap-3 mt-4">
+              {desglose.map((g, i) => {
+                const s = g.sellerId ? sellerMap[g.sellerId] : null;
+                return (
+                  <div key={g.sellerId ?? i} className="border border-[color:var(--color-line)] rounded p-4">
+                    <div className="flex items-center justify-between gap-3 flex-wrap">
+                      <div className="flex items-center gap-2 font-bold text-[color:var(--color-brand)]">
+                        <Store size={16} className="text-[color:var(--color-accent)]" />
+                        {s?.store_name || "Emprendedor ELEVA"}
+                      </div>
+                      <div className="font-extrabold text-[color:var(--color-brand)]">{formatGs(g.total)}</div>
+                    </div>
+                    <ul className="text-xs text-[color:var(--color-muted)] mt-2 space-y-0.5">
+                      {g.items.map((it) => (
+                        <li key={`${it.slug}-${it.variant || ""}`}>{it.qty}× {it.name}</li>
+                      ))}
+                    </ul>
+                    <dl className="grid sm:grid-cols-2 gap-x-4 gap-y-1 text-xs mt-3 pt-3 border-t border-[color:var(--color-line-soft)]">
+                      {s?.pago_titular && <Dato k="Titular" v={s.pago_titular} />}
+                      {s?.pago_banco && <Dato k="Banco" v={s.pago_banco} />}
+                      {s?.pago_cuenta && <Dato k="Cuenta" v={s.pago_cuenta} />}
+                      {s?.pago_alias && <Dato k="Alias" v={s.pago_alias} />}
+                      {s?.pago_telefono && <Dato k="Teléfono / giro" v={s.pago_telefono} />}
+                    </dl>
+                    {s?.pago_notas && <p className="text-xs text-[color:var(--color-ink-soft)] mt-2 whitespace-pre-line">{s.pago_notas}</p>}
+                    {s && !s.pago_titular && !s.pago_cuenta && !s.pago_alias && !s.pago_telefono && (
+                      <p className="text-xs text-[color:var(--color-accent)] mt-2">
+                        Este emprendedor todavía no cargó sus datos de cobro. Te va a contactar al teléfono que dejaste.
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-            {method === "tarjeta" && (
-              <div className="grid md:grid-cols-2 gap-3">
-                <Input label="Número de tarjeta" placeholder="•••• •••• •••• ••••" className="md:col-span-2" />
-                <Input label="Vencimiento" placeholder="MM/AA" />
-                <Input label="CVV" placeholder="•••" />
-              </div>
-            )}
-            {method === "transferencia" && (
-              <div className="text-sm text-[color:var(--color-ink-soft)]">Te enviamos los datos bancarios al confirmar.</div>
-            )}
-            {method === "efectivo" && (
-              <div className="text-sm text-[color:var(--color-ink-soft)]">Pagás al momento de recibir tu pedido.</div>
-            )}
           </section>
         </div>
 
@@ -190,31 +248,37 @@ export default function CheckoutPage() {
                 {couponMsg.ok ? <Check size={12} /> : <X size={12} />} {couponMsg.msg}
               </div>
             )}
-            <div className="text-[11px] text-[color:var(--color-muted)] mt-2">
-              Probá: {allCoupons.map((c) => c.code).join(" · ")}
-            </div>
           </div>
 
           <dl className="text-sm space-y-1.5 border-t border-[color:var(--color-line)] pt-3 mt-3">
             <div className="flex justify-between"><dt className="text-[color:var(--color-ink-soft)]">Subtotal</dt><dd className="font-medium">{formatGs(totals.subtotal)}</dd></div>
-            {totals.discount > 0 && <div className="flex justify-between text-[color:var(--color-accent)]"><dt>Descuento</dt><dd className="font-medium">-{formatGs(totals.discount)}</dd></div>}
-            <div className="flex justify-between"><dt className="text-[color:var(--color-ink-soft)]">Envío</dt><dd className="font-medium">{totals.shipping === 0 ? "Gratis" : formatGs(totals.shipping)}</dd></div>
+            {totals.discount > 0 && <div className="flex justify-between text-[color:var(--color-accent)]"><dt>Descuento</dt><dd className="font-medium">-{formatGs(desglose.reduce((n, g) => n + g.discount, 0))}</dd></div>}
+            <div className="flex justify-between"><dt className="text-[color:var(--color-ink-soft)]">Envío</dt><dd className="font-medium">{desglose.every((g) => g.shipping === 0) ? "Gratis" : formatGs(desglose.reduce((n, g) => n + g.shipping, 0))}</dd></div>
           </dl>
           <div className="border-t border-[color:var(--color-line)] mt-3 pt-3 flex items-baseline justify-between">
             <span className="font-bold">Total</span>
-            <span className="text-2xl font-extrabold text-[color:var(--color-brand)]">{formatGs(totals.total)}</span>
+            <span className="text-2xl font-extrabold text-[color:var(--color-brand)]">{formatGs(totalAPagar)}</span>
           </div>
 
           {err && <div className="mt-3 text-sm bg-red-50 text-red-700 border border-red-200 rounded p-2">{err}</div>}
 
           <button type="submit" disabled={submitting} className="btn-primary w-full justify-center mt-5 disabled:opacity-50">
-            {submitting ? <><Loader2 size={16} className="animate-spin" /> Procesando…</> : <>Pagar {formatGs(totals.total)} <ArrowRight size={16} /></>}
+            {submitting ? <><Loader2 size={16} className="animate-spin" /> Procesando…</> : <>Confirmar pedido <ArrowRight size={16} /></>}
           </button>
           <div className="flex items-center gap-2 text-xs text-[color:var(--color-muted)] mt-3 justify-center">
-            <Shield size={12} /> Pago protegido <span>·</span> <Truck size={12} /> Envío coordinado
+            <Shield size={12} /> Pagás al emprendedor <span>·</span> <Truck size={12} /> Despacha ELEVA
           </div>
         </aside>
       </form>
+    </div>
+  );
+}
+
+function Dato({ k, v }: { k: string; v: string }) {
+  return (
+    <div className="flex justify-between gap-2">
+      <dt className="text-[color:var(--color-muted)]">{k}</dt>
+      <dd className="font-semibold text-[color:var(--color-ink)]">{v}</dd>
     </div>
   );
 }

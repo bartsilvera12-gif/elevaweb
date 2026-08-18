@@ -1,20 +1,22 @@
 "use client";
 import { useState } from "react";
-import { coupons as initial, type Coupon } from "@/lib/coupons";
-import { Tag, Plus, Trash2, Copy, Check } from "lucide-react";
+import { useCoupons } from "@/lib/hooks/use-platform";
+import type { DBCoupon } from "@/lib/types";
+import { Tag, Plus, Trash2, Copy, Check, Loader2 } from "lucide-react";
 import { formatGs } from "@/lib/utils";
 
-const kindLabel: Record<Coupon["kind"], string> = {
+const kindLabel: Record<DBCoupon["kind"], string> = {
   percent: "Porcentaje",
   flat: "Descuento fijo",
   shipping: "Envío gratis",
 };
 
 export default function AdminCupones() {
-  const [items, setItems] = useState<Coupon[]>(initial);
+  const { coupons: items, loading, create, remove: removeCoupon } = useCoupons(false);
   const [copied, setCopied] = useState<string | null>(null);
-  const [newCoupon, setNewCoupon] = useState({ code: "", label: "", kind: "percent" as Coupon["kind"], value: 10, minCents: 0 });
+  const [newCoupon, setNewCoupon] = useState({ code: "", label: "", kind: "percent" as DBCoupon["kind"], value: 10, minCents: 0 });
   const [showForm, setShowForm] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
 
   const copy = (code: string) => {
     navigator.clipboard.writeText(code);
@@ -22,27 +24,39 @@ export default function AdminCupones() {
     setTimeout(() => setCopied(null), 1500);
   };
 
-  const remove = (code: string) => {
+  const remove = async (code: string) => {
     if (!confirm(`¿Eliminar cupón "${code}"?`)) return;
-    setItems(items.filter((c) => c.code !== code));
+    setErr(await removeCoupon(code));
   };
 
-  const add = () => {
+  const add = async () => {
     if (!newCoupon.code || !newCoupon.label) return;
-    setItems([{ ...newCoupon, code: newCoupon.code.toUpperCase(), minCents: newCoupon.minCents || undefined } as Coupon, ...items]);
+    const error = await create({
+      code: newCoupon.code.toUpperCase(),
+      label: newCoupon.label,
+      kind: newCoupon.kind,
+      value: newCoupon.kind === "shipping" ? 0 : newCoupon.value,
+      min_cents: newCoupon.minCents || 0,
+    });
+    setErr(error);
+    if (error) return;
     setNewCoupon({ code: "", label: "", kind: "percent", value: 10, minCents: 0 });
     setShowForm(false);
   };
+
+  if (loading) return <div className="flex justify-center py-12 text-[color:var(--color-muted)]"><Loader2 size={20} className="animate-spin" /></div>;
 
   return (
     <div>
       <div className="flex items-end justify-between mb-6 flex-wrap gap-3">
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold">Cupones</h1>
-          <p className="text-sm text-[color:var(--color-muted)] mt-1">{items.length} cupones activos</p>
+          <p className="text-sm text-[color:var(--color-muted)] mt-1">{items.length} cupones · valen para todo el marketplace</p>
         </div>
         <button onClick={() => setShowForm(!showForm)} className="btn-primary"><Plus size={16} /> Nuevo cupón</button>
       </div>
+
+      {err && <div className="mb-4 text-sm bg-red-50 text-red-700 border border-red-200 rounded p-3">{err}</div>}
 
       {showForm && (
         <div className="card-flat p-5 mb-4 bg-[color:var(--color-brand-100)]/30">
@@ -58,7 +72,7 @@ export default function AdminCupones() {
             </label>
             <label className="flex flex-col gap-1">
               <span className="text-xs font-semibold text-[color:var(--color-ink-soft)]">Tipo</span>
-              <select value={newCoupon.kind} onChange={(e) => setNewCoupon({ ...newCoupon, kind: e.target.value as Coupon["kind"] })} className="border border-[color:var(--color-line)] rounded px-3 py-2.5 text-sm bg-white focus:outline-none focus:border-[color:var(--color-brand)]">
+              <select value={newCoupon.kind} onChange={(e) => setNewCoupon({ ...newCoupon, kind: e.target.value as DBCoupon["kind"] })} className="border border-[color:var(--color-line)] rounded px-3 py-2.5 text-sm bg-white focus:outline-none focus:border-[color:var(--color-brand)]">
                 <option value="percent">Porcentaje (%)</option>
                 <option value="flat">Descuento fijo (Gs.)</option>
                 <option value="shipping">Envío gratis</option>
@@ -106,7 +120,7 @@ export default function AdminCupones() {
               <span className="text-[color:var(--color-muted)]">{kindLabel[c.kind]}</span>
               <span className="font-bold text-[color:var(--color-brand)]">
                 {c.kind === "percent" ? `${c.value}%` : c.kind === "flat" ? formatGs(c.value) : "Envío gratis"}
-                {c.minCents ? ` · desde ${formatGs(c.minCents)}` : ""}
+                {c.min_cents ? ` · desde ${formatGs(c.min_cents)}` : ""}
               </span>
             </div>
           </div>
