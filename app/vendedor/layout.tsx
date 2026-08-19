@@ -39,7 +39,9 @@ export default function VendedorLayout({ children }: { children: React.ReactNode
     setUpgrading(true);
     setUpErr(null);
     const supabase = createClient();
-    const { error } = await supabase.from("profiles").update({ is_seller: true, store_name: storeName.trim() }).eq("id", user.id);
+    // upsert por si el profile aún no existe (registros hechos antes del trigger de app='eleva')
+    const { error } = await supabase.from("profiles")
+      .upsert({ id: user.id, is_seller: true, store_name: storeName.trim(), name: user.user_metadata?.name ?? null }, { onConflict: "id" });
     setUpgrading(false);
     if (error) { setUpErr(error.message); return; }
     window.location.reload();
