@@ -158,11 +158,11 @@ export default function PedidoDetallePage() {
           <div className="flex flex-col divide-y divide-[color:var(--color-line-soft)]">
             {items.map((it) => (
               <div key={`${it.product_slug}-${it.variant || ""}`} className="flex items-center gap-4 py-3">
-                <Link href={`/producto/${it.product_slug}/`} className="relative w-16 h-16 shrink-0 rounded overflow-hidden bg-[color:var(--color-line-soft)]">
+                <Link href={`/producto?slug=${it.product_slug}`} className="relative w-16 h-16 shrink-0 rounded overflow-hidden bg-[color:var(--color-line-soft)]">
                   {it.product_image && <Image src={it.product_image} alt={it.product_name} fill sizes="64px" className="object-cover" />}
                 </Link>
                 <div className="flex-1 min-w-0">
-                  <Link href={`/producto/${it.product_slug}/`} className="font-semibold text-[color:var(--color-brand)] hover:text-[color:var(--color-accent)] line-clamp-1">{it.product_name}</Link>
+                  <Link href={`/producto?slug=${it.product_slug}`} className="font-semibold text-[color:var(--color-brand)] hover:text-[color:var(--color-accent)] line-clamp-1">{it.product_name}</Link>
                   <div className="text-xs text-[color:var(--color-muted)]">{it.qty}× {formatGs(it.unit_price_cents)}{it.variant && ` · ${it.variant}`}</div>
                 </div>
                 <div className="text-right font-bold text-[color:var(--color-brand)]">{formatGs(it.unit_price_cents * it.qty)}</div>

@@ -32,7 +32,7 @@ export default function CatalogGrid({ products }: { products: CardProduct[] }) {
       {products.map((p) => {
         const hasVariants = !!p.variants;
         return (
-          <Link key={p.slug} href={`/producto/${p.slug}/`} className="card-flat hover:shadow-md transition-shadow flex flex-col overflow-hidden group">
+          <Link key={p.slug} href={`/producto?slug=${p.slug}`} className="card-flat hover:shadow-md transition-shadow flex flex-col overflow-hidden group">
             <div className="relative aspect-[4/3] bg-[color:var(--color-line-soft)]">
               {p.image && <Image src={p.image} alt={p.name} fill sizes="(max-width:768px) 50vw, 33vw" className="object-cover" />}
               {p.discPct ? (
@@ -58,7 +58,7 @@ export default function CatalogGrid({ products }: { products: CardProduct[] }) {
                 )}
               </div>
               {hasVariants ? (
-                <Link href={`/producto/${p.slug}/`} className="btn-dark w-full justify-center mt-2 text-sm">Elegir opciones</Link>
+                <Link href={`/producto?slug=${p.slug}`} className="btn-dark w-full justify-center mt-2 text-sm">Elegir opciones</Link>
               ) : (
                 <AddToCartButton slug={p.slug} name={p.name} price_cents={p.price_cents} image={p.image} className="mt-2" />
               )}

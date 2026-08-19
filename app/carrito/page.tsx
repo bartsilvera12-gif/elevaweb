@@ -54,11 +54,11 @@ export default function CarritoPage() {
         <div className="lg:col-span-2 flex flex-col gap-3">
           {items.map((it) => (
             <div key={`${it.slug}-${it.variant || ""}`} className="card-flat p-4 flex items-center gap-4">
-              <Link href={`/producto/${it.slug}`} className="relative w-20 h-20 shrink-0 rounded overflow-hidden bg-[color:var(--color-line-soft)]">
+              <Link href={`/producto?slug=${it.slug}`} className="relative w-20 h-20 shrink-0 rounded overflow-hidden bg-[color:var(--color-line-soft)]">
                 <Image src={it.image} alt={it.name} fill sizes="80px" className="object-cover" />
               </Link>
               <div className="flex-1 min-w-0">
-                <Link href={`/producto/${it.slug}`} className="font-semibold text-[color:var(--color-brand)] hover:text-[color:var(--color-accent)] line-clamp-1">{it.name}</Link>
+                <Link href={`/producto?slug=${it.slug}`} className="font-semibold text-[color:var(--color-brand)] hover:text-[color:var(--color-accent)] line-clamp-1">{it.name}</Link>
                 {it.variant && <div className="text-xs text-[color:var(--color-muted)] mt-0.5">Variante: {it.variant}</div>}
                 <div className="mt-2 flex items-center gap-3">
                   <div className="flex items-center border border-[color:var(--color-line)] rounded">

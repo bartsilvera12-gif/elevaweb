@@ -42,7 +42,7 @@ export default function ProductRow({ title, viewAllHref, products }: {
 function Card({ p }: { p: ProductCard }) {
   const image = p.image || "";
   return (
-    <Link href={`/producto/${p.slug}/`} className="card-flat hover:shadow-md transition-shadow flex flex-col overflow-hidden group">
+    <Link href={`/producto?slug=${p.slug}`} className="card-flat hover:shadow-md transition-shadow flex flex-col overflow-hidden group">
       <div className="relative aspect-[4/3] bg-[color:var(--color-line-soft)]">
         {image && <Image src={image} alt={p.name} fill sizes="(max-width:768px) 50vw, 25vw" className="object-cover" />}
         {p.discPct && (

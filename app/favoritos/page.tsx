@@ -30,7 +30,7 @@ export default function FavoritosPage() {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
           {items.map((p) => (
-            <Link key={p.slug} href={`/producto/${p.slug}/`} className="card-flat hover:shadow-md transition-shadow flex flex-col overflow-hidden">
+            <Link key={p.slug} href={`/producto?slug=${p.slug}`} className="card-flat hover:shadow-md transition-shadow flex flex-col overflow-hidden">
               <div className="relative aspect-[4/3] bg-[color:var(--color-line-soft)]">
                 {p.image_url && <Image src={p.image_url} alt={p.name} fill sizes="(max-width:768px) 50vw, 25vw" className="object-cover" />}
                 <FavoriteButton slug={p.slug} floating />
