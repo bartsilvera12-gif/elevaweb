@@ -16,6 +16,9 @@ export default function AdminVendedores() {
   const [mensualidad, setMensualidad] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [working, setWorking] = useState(false);
+  const [payFor, setPayFor] = useState<{ id: string; name: string; saldo: number } | null>(null);
+  const [payMonto, setPayMonto] = useState("");
+  const [payNota, setPayNota] = useState("");
 
   const cuenta = (id: string) => accounts.find((a) => a.seller_id === id);
 
@@ -50,14 +53,21 @@ export default function AdminVendedores() {
     setTimeout(() => setMsg(null), 3000);
   };
 
-  const cobrarPago = async (id: string, saldo: number) => {
-    const input = prompt(`¿Cuánto pagó? (saldo actual: ${formatGs(saldo)})`, String(Math.max(0, saldo)));
-    if (!input) return;
-    const monto = Number(input.replace(/\D/g, ""));
+  const abrirCobro = (id: string, name: string, saldo: number) => {
+    setPayFor({ id, name, saldo });
+    setPayMonto(String(Math.max(0, saldo)));
+    setPayNota("");
+  };
+
+  const confirmarCobro = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!payFor) return;
+    const monto = Number(payMonto.replace(/\D/g, ""));
     if (!monto) return;
     setWorking(true);
-    const error = await registrarPago(id, monto, "Pago recibido");
+    const error = await registrarPago(payFor.id, monto, payNota || "Pago recibido");
     setWorking(false);
+    setPayFor(null);
     setMsg(error ?? "Pago registrado");
     reloadAccounts();
     setTimeout(() => setMsg(null), 3000);
@@ -172,7 +182,7 @@ export default function AdminVendedores() {
                       >
                         <Warehouse size={14} /> Depósito: {formatGs(s.mensualidad_cents || 0)}/mes
                       </button>
-                      <button onClick={() => cobrarPago(s.id, saldo)} disabled={working} className="btn-primary text-sm disabled:opacity-50">
+                      <button onClick={() => abrirCobro(s.id, s.store_name || s.name || "Emprendedor", saldo)} disabled={working} className="btn-primary text-sm disabled:opacity-50">
                         <Wallet size={14} /> Registrar pago
                       </button>
                       <Link href="/admin/mensajes" className="text-xs text-[color:var(--color-brand)] font-semibold ml-auto">Mensajes →</Link>
@@ -182,6 +192,51 @@ export default function AdminVendedores() {
               </div>
             );
           })}
+        </div>
+      )}
+      {payFor && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40"
+          onClick={(e) => { if (e.target === e.currentTarget) setPayFor(null); }}
+        >
+          <form onSubmit={confirmarCobro} className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 border border-[color:var(--color-line)]">
+            <h3 className="text-lg font-extrabold text-[color:var(--color-brand)]">Registrar pago</h3>
+            <p className="text-sm text-[color:var(--color-ink-soft)] mt-1">
+              De <strong>{payFor.name}</strong> · saldo actual <strong className={payFor.saldo > 0 ? "text-[color:var(--color-accent)]" : "text-green-600"}>{formatGs(Math.abs(payFor.saldo))}</strong>
+            </p>
+
+            <label className="flex flex-col gap-1.5 mt-5">
+              <span className="text-xs font-semibold text-[color:var(--color-ink-soft)]">Monto (Gs.)</span>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[color:var(--color-muted)]">Gs.</span>
+                <input
+                  autoFocus
+                  inputMode="numeric"
+                  value={payMonto ? new Intl.NumberFormat("es-PY").format(Number(payMonto.replace(/\D/g, "")) || 0) : ""}
+                  onChange={(e) => setPayMonto(e.target.value.replace(/\D/g, ""))}
+                  placeholder="0"
+                  className="w-full pl-10 pr-3 py-2.5 text-sm border border-[color:var(--color-line)] rounded focus:outline-none focus:border-[color:var(--color-brand)]"
+                />
+              </div>
+            </label>
+
+            <label className="flex flex-col gap-1.5 mt-3">
+              <span className="text-xs font-semibold text-[color:var(--color-ink-soft)]">Nota (opcional)</span>
+              <input
+                value={payNota}
+                onChange={(e) => setPayNota(e.target.value)}
+                placeholder="Ej: transferencia 15/08"
+                className="w-full px-3 py-2.5 text-sm border border-[color:var(--color-line)] rounded focus:outline-none focus:border-[color:var(--color-brand)]"
+              />
+            </label>
+
+            <div className="flex justify-end gap-2 mt-6">
+              <button type="button" onClick={() => setPayFor(null)} className="btn-outline text-sm">Cancelar</button>
+              <button type="submit" disabled={working || !payMonto} className="btn-primary text-sm disabled:opacity-50">
+                {working ? <Loader2 size={14} className="animate-spin" /> : <Wallet size={14} />} Registrar
+              </button>
+            </div>
+          </form>
         </div>
       )}
     </div>
