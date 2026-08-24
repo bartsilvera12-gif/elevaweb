@@ -4,9 +4,8 @@ import { motion } from "motion/react";
 import { MessageCircle, Mail, Phone, MapPin, Clock, Send, Check, Instagram, Facebook, Search, Users, CheckCircle2 } from "lucide-react";
 
 const canales = [
-  { icon: MessageCircle, t: "WhatsApp", d: "+595 981 000 000", sub: "Respuesta en menos de 2 horas", href: "https://wa.me/595981000000", accent: true },
-  { icon: Mail, t: "Email", d: "hola@eleva.com.py", sub: "Te respondemos en 24hs hábiles", href: "mailto:hola@eleva.com.py" },
-  { icon: Phone, t: "Teléfono", d: "021 000 0000", sub: "Lunes a sábado, 9:00 a 20:00", href: "tel:+59521000000" },
+  { icon: MessageCircle, t: "WhatsApp", d: "+595 986 121 439", sub: "Respuesta en menos de 2 horas", href: "https://wa.me/595986121439", accent: true },
+  { icon: Mail, t: "Email", d: "macs242002@icloud.com", sub: "Te respondemos en 24hs hábiles", href: "mailto:macs242002@icloud.com" },
 ];
 
 const asuntos = [
@@ -223,7 +222,7 @@ export default function ContactoPage() {
         >
           <div className="text-xs font-bold tracking-widest uppercase text-[color:var(--color-accent)]">Prensa y alianzas</div>
           <h2 className="text-xl md:text-2xl font-extrabold mt-2">¿Sos periodista o querés hacer alianza con ELEVA?</h2>
-          <p className="text-white/70 mt-2 max-w-xl mx-auto text-sm">Escribinos a <a href="mailto:prensa@eleva.com.py" className="underline">prensa@eleva.com.py</a> o <a href="mailto:alianzas@eleva.com.py" className="underline">alianzas@eleva.com.py</a>.</p>
+          <p className="text-white/70 mt-2 max-w-xl mx-auto text-sm">Escribinos a <a href="mailto:macs242002@icloud.com" className="underline">macs242002@icloud.com</a>.</p>
         </motion.div>
       </section>
     </>

@@ -36,7 +36,7 @@ const faqs = [
   { q: "¿Cuánto tarda mi pedido en llegar?", a: "En Asunción y Central, entre 24 y 48 horas. En el interior, 3 a 5 días hábiles por encomienda. Recibís el número de seguimiento por email y WhatsApp." },
   { q: "¿Puedo pagar en cuotas?", a: "Sí, hasta 6 cuotas sin interés con tarjetas de crédito. El detalle aparece en el checkout antes de confirmar." },
   { q: "¿Qué pasa si el producto no llega o llega en mal estado?", a: "Tenés 7 días para reclamar. Retenemos el pago hasta confirmar tu recepción. Si algo no está bien, coordinamos devolución o reembolso íntegro." },
-  { q: "¿Puedo cambiar la dirección después de comprar?", a: "Sí, siempre que el pedido no haya sido despachado. Escribinos por WhatsApp al +595 981 000 000 con el número de pedido." },
+  { q: "¿Puedo cambiar la dirección después de comprar?", a: "Sí, siempre que el pedido no haya sido despachado. Escribinos por WhatsApp al +595 986 121 439 con el número de pedido." },
   { q: "¿Cómo uso un cupón?", a: "En el checkout, después del resumen, hay un campo 'Cupón'. Ingresá el código y hacé click en Aplicar. Códigos activos: ELEVA10, NUEVO5, ENVIOGRATIS, MENOS20K." },
 ];
 
