@@ -54,7 +54,7 @@ export default function VendedorOverview() {
           <ul className="divide-y divide-[color:var(--color-line-soft)]">
             {lowStock.slice(0, 5).map((p) => (
               <li key={p.slug} className="flex justify-between items-center py-2 text-sm">
-                <Link href={`/vendedor/productos/editar?slug=${p.slug}`} className="font-medium text-[color:var(--color-brand)] hover:text-[color:var(--color-accent)] truncate">{p.name}</Link>
+                <Link href={`/producto?slug=${p.slug}`} target="_blank" className="font-medium text-[color:var(--color-brand)] hover:text-[color:var(--color-accent)] truncate">{p.name}</Link>
                 <span className="text-xs">
                   <span className="font-black text-yellow-700">{p.stock} {p.unit}</span>
                   <span className="text-[color:var(--color-muted)]"> / mín {p.stock_minimo}</span>

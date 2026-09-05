@@ -34,8 +34,12 @@ export default function VendedorProductos() {
           <h1 className="text-2xl md:text-3xl font-extrabold">Productos</h1>
           <p className="text-sm text-[color:var(--color-muted)] mt-1">{filtered.length} productos tuyos publicados</p>
         </div>
-        <Link href="/vendedor/productos/nuevo" className="btn-primary"><Plus size={16} /> Nuevo producto</Link>
       </div>
+
+      <p className="text-xs text-[color:var(--color-muted)] -mt-3 mb-4">
+        ELEVA carga y gestiona los productos por vos. Si necesitás actualizar precio, stock, foto o
+        descripción, escribinos por Mensajes.
+      </p>
 
       <div className="card-flat p-3 mb-3">
         <div className="relative">
@@ -48,8 +52,7 @@ export default function VendedorProductos() {
         <div className="flex justify-center py-12 text-[color:var(--color-muted)]"><Loader2 size={20} className="animate-spin" /></div>
       ) : filtered.length === 0 ? (
         <div className="card-flat p-10 text-center">
-          <p className="text-[color:var(--color-ink-soft)]">Todavía no publicaste productos.</p>
-          <Link href="/vendedor/productos/nuevo" className="btn-primary mt-4 inline-flex">Crear primero</Link>
+          <p className="text-[color:var(--color-ink-soft)]">Todavía no hay productos tuyos publicados. Escribile a ELEVA por Mensajes para cargar los primeros.</p>
         </div>
       ) : (
         <div className="card-flat overflow-hidden">
@@ -94,21 +97,8 @@ export default function VendedorProductos() {
                     <td className="px-4 py-3 text-right">
                       <span className={"inline-flex text-xs font-semibold px-2 py-0.5 rounded " + (p.active ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600")}>{p.active ? "Activo" : "Pausado"}</span>
                     </td>
-                    <td className="px-2 py-3 text-right relative">
-                      <button onClick={() => setOpenMenu(openMenu === p.slug ? null : p.slug)} className="p-1.5 rounded hover:bg-[color:var(--color-line-soft)] text-[color:var(--color-muted)]"><MoreHorizontal size={16} /></button>
-                      {openMenu === p.slug && (
-                        <>
-                          <div className="fixed inset-0 z-20" onClick={() => setOpenMenu(null)} />
-                          <div className="absolute right-2 top-10 z-30 bg-white border border-[color:var(--color-line)] rounded shadow-xl w-44 py-1 text-left">
-                            <Link href={`/producto?slug=${p.slug}`} target="_blank" className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[color:var(--color-line-soft)]"><Eye size={14} /> Ver en tienda</Link>
-                            <Link href={`/vendedor/productos/editar?slug=${p.slug}`} onClick={() => setOpenMenu(null)} className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-[color:var(--color-line-soft)]"><Pencil size={14} /> Editar</Link>
-                            <button onClick={() => toggle(p.slug, !p.active)} className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-[color:var(--color-line-soft)]">
-                              {p.active ? <><EyeOff size={14} /> Pausar</> : <><Eye size={14} /> Activar</>}
-                            </button>
-                            <button onClick={() => remove(p.slug, p.name)} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50"><Trash2 size={14} /> Eliminar</button>
-                          </div>
-                        </>
-                      )}
+                    <td className="px-2 py-3 text-right">
+                      <Link href={`/producto?slug=${p.slug}`} target="_blank" className="p-1.5 rounded hover:bg-[color:var(--color-line-soft)] text-[color:var(--color-muted)] inline-flex"><Eye size={16} /></Link>
                     </td>
                   </tr>
                 );

@@ -67,16 +67,25 @@ export default function CheckoutPage() {
   const totals = useMemo(() => computeTotals(subtotal, coupon, rules), [subtotal, coupon, rules]);
 
   // Mismo prorrateo que hace eleva.create_order, para que lo que se muestra coincida
+  // Envio: uno solo por carrito, se aplica al pedido que contiene el producto mas caro.
+  // Si el carrito ya supera el umbral de envio gratis, no se cobra nada.
+  const shippingCentsCart = subtotal >= rules.envio_gratis_desde_cents ? 0 : rules.envio_cents;
+  const cartShippingFree = coupon?.kind === "shipping" || shippingCentsCart === 0;
+  const grupoConProductoMasCaro = grupos.reduce((best, g) => {
+    const maxItem = Math.max(...g.items.map((i) => i.price_cents));
+    return !best || maxItem > best.maxItem ? { key: g.sellerId ?? "sin", maxItem } : best;
+  }, null as { key: string; maxItem: number } | null);
+
   const desglose = useMemo(() => grupos.map((g) => {
     let discount = 0;
     if (coupon && !(coupon.min_cents && subtotal < coupon.min_cents)) {
       if (coupon.kind === "percent") discount = Math.round((g.subtotal * coupon.value) / 100);
       else if (coupon.kind === "flat") discount = Math.round((coupon.value * g.subtotal) / (subtotal || 1));
     }
-    let shipping = g.subtotal >= rules.envio_gratis_desde_cents ? 0 : rules.envio_cents;
-    if (coupon?.kind === "shipping") shipping = 0;
+    const gKey = g.sellerId ?? "sin";
+    const shipping = !cartShippingFree && gKey === grupoConProductoMasCaro?.key ? shippingCentsCart : 0;
     return { ...g, discount, shipping, total: Math.max(0, g.subtotal - discount + shipping) };
-  }), [grupos, coupon, subtotal, rules]);
+  }), [grupos, coupon, subtotal, rules, cartShippingFree, shippingCentsCart, grupoConProductoMasCaro]);
 
   const totalAPagar = desglose.reduce((n, g) => n + g.total, 0);
 

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, ShoppingBag, Tag, LayoutGrid, AlertTriangle, Settings, LogOut, ShieldCheck, Boxes, Loader2, MessageCircle, Star } from "lucide-react";
+import { LayoutDashboard, Users, ShoppingBag, Tag, LayoutGrid, AlertTriangle, Settings, LogOut, ShieldCheck, Boxes, Loader2, MessageCircle, Star, Package } from "lucide-react";
 import { useUser, signOut } from "@/lib/hooks/use-user";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -45,6 +45,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: "/admin/vendedores", label: "Vendedores", icon: Users },
     { href: "/admin/pedidos", label: "Pedidos", icon: ShoppingBag },
     { href: "/admin/inventario", label: "Inventario", icon: Boxes },
+    { href: "/admin/productos", label: "Productos", icon: Package },
     { href: "/admin/destacados", label: "Destacados", icon: Star },
     { href: "/admin/mensajes", label: "Mensajes", icon: MessageCircle },
     { href: "/admin/reclamos", label: "Reclamos", icon: AlertTriangle },
