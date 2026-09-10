@@ -14,7 +14,7 @@ export default function Footer() {
           </p>
           <div className="text-sm text-[color:var(--color-brand-200)] mt-4 space-y-1">
             <a href="https://wa.me/595986121439" className="block hover:text-white">WhatsApp: +595 986 121 439</a>
-            <a href="mailto:macs242002@icloud.com" className="block hover:text-white break-all">macs242002@icloud.com</a>
+            <a href="mailto:elevastorepy@gmail.com" className="block hover:text-white break-all">elevastorepy@gmail.com</a>
           </div>
         </div>
         <FooterCol title="Comprar" links={[["/catalogo","Catálogo"],["/catalogo?ofertas=1","Ofertas"],["/catalogo?nuevo=1","Novedades"],["/como-comprar","Cómo comprar"]]} />

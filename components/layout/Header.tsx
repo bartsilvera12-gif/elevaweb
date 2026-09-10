@@ -10,6 +10,7 @@ import { categoryIcon } from "@/lib/category-icons";
 import { useCart, useFavorites, useHydrated } from "@/lib/store";
 import { useCity } from "@/lib/city-store";
 import { useUser, signOut } from "@/lib/hooks/use-user";
+import { useSettings } from "@/lib/hooks/use-platform";
 import CitySelector from "./CitySelector";
 
 const navItems = [
@@ -20,11 +21,8 @@ const navItems = [
   { href: "/como-comprar", label: "Cómo comprar" },
 ];
 
-const announcements = [
-  { icon: Truck, text: "Envío gratis en compras desde Gs. 500.000" },
-  { icon: Zap, text: "Semana de ofertas: hasta 40% off" },
-  { icon: ShoppingCart, text: "3 cuotas sin interés con tarjeta" },
-];
+// Fallback de la barra promocional mientras cargan los settings (o si no existen).
+const PROMO_BANNER_FALLBACK = "Todo lo que buscás, en un solo lugar";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -34,6 +32,17 @@ export default function Header() {
   const cartCount = useCart((s) => s.count());
   const favCount = useFavorites((s) => s.slugs.length);
   const { user, profile } = useUser();
+  // Barra promocional administrable desde /admin/configuracion.
+  // Mientras los settings no terminaron de resolverse NO se renderiza la barra
+  // (evita el flash cuando en realidad está desactivada). Al resolverse: si el
+  // hook trajo error, `settings` queda vacío y aplica el fallback (activa + texto
+  // por defecto), sin romper el Header.
+  const { settings, bool, loading: settingsLoading } = useSettings();
+  const promoActive = bool("promo_banner_active", true);
+  const promoBannerText =
+    typeof settings["promo_banner_text"] === "string" && (settings["promo_banner_text"] as string).trim()
+      ? (settings["promo_banner_text"] as string)
+      : PROMO_BANNER_FALLBACK;
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -67,16 +76,17 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-[color:var(--color-line)] shadow-[0_1px_0_rgba(36,4,83,0.02)]">
-      {/* Announcement strip */}
-      <div className="bg-gradient-to-r from-[#240453] via-[#3B1370] to-[#240453] text-white text-xs overflow-hidden">
-        <div className="container-eleva py-2 flex items-center gap-6 md:gap-10 overflow-x-auto no-scrollbar">
-          {announcements.map((a, i) => (
-            <span key={i} className="flex items-center gap-2 whitespace-nowrap opacity-90">
-              <a.icon size={12} className="text-[color:var(--color-accent)]" /> {a.text}
-            </span>
-          ))}
+      {/* Barra promocional (administrable desde /admin/configuracion).
+          No se renderiza mientras cargan los settings ni cuando está desactivada:
+          en ambos casos sin franja, sin alto reservado. */}
+      {!settingsLoading && promoActive && (
+        <div className="bg-gradient-to-r from-[#240453] via-[#3B1370] to-[#240453] text-white text-xs">
+          <div className="container-eleva py-2 flex items-center justify-center gap-2 text-center">
+            <Zap size={12} className="text-[color:var(--color-accent)] shrink-0" />
+            <span className="opacity-90">{promoBannerText}</span>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* DESKTOP top row */}
       <div className="hidden md:flex container-eleva items-center gap-6 py-4">

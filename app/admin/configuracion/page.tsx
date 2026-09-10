@@ -1,10 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSettings } from "@/lib/hooks/use-platform";
-import { Settings, Percent, Truck, Bell, Check, Loader2, Warehouse } from "lucide-react";
+import { Settings, Percent, Truck, Bell, Check, Loader2, Warehouse, Megaphone } from "lucide-react";
+
+const PROMO_BANNER_FALLBACK = "Todo lo que buscás, en un solo lugar";
 
 export default function AdminConfiguracion() {
-  const { loading, save: saveSettings, num, bool } = useSettings();
+  const { loading, save: saveSettings, num, bool, settings } = useSettings();
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -14,6 +16,8 @@ export default function AdminConfiguracion() {
   const [notifyEmail, setNotifyEmail] = useState(true);
   const [notifyWA, setNotifyWA] = useState(true);
   const [maintenance, setMaintenance] = useState(false);
+  const [promoBannerText, setPromoBannerText] = useState(PROMO_BANNER_FALLBACK);
+  const [promoBannerActive, setPromoBannerActive] = useState(true);
 
   useEffect(() => {
     if (loading) return;
@@ -23,7 +27,10 @@ export default function AdminConfiguracion() {
     setNotifyEmail(bool("notificar_email", true));
     setNotifyWA(bool("notificar_whatsapp", true));
     setMaintenance(bool("mantenimiento", false));
-  }, [loading, num, bool]);
+    const promo = settings["promo_banner_text"];
+    setPromoBannerText(typeof promo === "string" && promo.trim() ? promo : PROMO_BANNER_FALLBACK);
+    setPromoBannerActive(bool("promo_banner_active", true));
+  }, [loading, num, bool, settings]);
 
   const save = async () => {
     setSaving(true);
@@ -34,6 +41,8 @@ export default function AdminConfiguracion() {
       notificar_email: notifyEmail,
       notificar_whatsapp: notifyWA,
       mantenimiento: maintenance,
+      promo_banner_text: promoBannerText,
+      promo_banner_active: promoBannerActive,
     });
     setSaving(false);
     setErr(error);
@@ -110,6 +119,26 @@ export default function AdminConfiguracion() {
           <div className="flex flex-col gap-2">
             <Toggle label="Enviar por email al confirmar pedido" checked={notifyEmail} onChange={setNotifyEmail} />
             <Toggle label="Notificar por WhatsApp cuando se despacha" checked={notifyWA} onChange={setNotifyWA} />
+          </div>
+        </div>
+
+        <div className="card-flat p-5">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[color:var(--color-brand)] mb-3">
+            <Megaphone size={14} /> Barra promocional
+          </div>
+          <div className="grid gap-3">
+            <label className="flex flex-col gap-1">
+              <span className="text-xs font-semibold text-[color:var(--color-ink-soft)]">Texto de la barra promocional</span>
+              <input
+                type="text"
+                value={promoBannerText}
+                onChange={(e) => setPromoBannerText(e.target.value)}
+                placeholder={PROMO_BANNER_FALLBACK}
+                className="border border-[color:var(--color-line)] rounded px-3 py-2.5 text-sm focus:outline-none focus:border-[color:var(--color-brand)]"
+              />
+              <span className="text-[10px] text-[color:var(--color-muted)]">Se muestra en la franja superior de la web</span>
+            </label>
+            <Toggle label="Mostrar barra promocional" checked={promoBannerActive} onChange={setPromoBannerActive} />
           </div>
         </div>
 
