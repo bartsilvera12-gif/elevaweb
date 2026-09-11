@@ -61,7 +61,7 @@ function Card({ p }: { p: ProductCard }) {
           {p.rating != null ? <>★ {p.rating.toFixed(1)} · {p.sold ?? 0} vendidos</> : <>&nbsp;</>}
         </div>
         <div className="font-semibold text-sm line-clamp-2 text-[color:var(--color-ink)] min-h-[40px]">{p.name}</div>
-        <div className="flex items-baseline gap-2 mt-1 min-h-[28px]">
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0 mt-1 min-h-[28px]">
           <span className="font-extrabold text-lg text-[color:var(--color-brand)]">{formatGs(p.price_cents)}</span>
           {p.compare_cents && p.compare_cents > p.price_cents && (
             <span className="text-xs text-[color:var(--color-muted)] line-through">{formatGs(p.compare_cents)}</span>

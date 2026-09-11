@@ -47,6 +47,7 @@ export default function Header() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const isHome = pathname === "/";
+  const isPanel = pathname.startsWith("/admin") || pathname.startsWith("/vendedor");
   const isActive = (href: string) => {
     const [path, query] = href.split("?");
     if (pathname !== path) return false;
@@ -193,7 +194,7 @@ export default function Header() {
       </div>
 
       {/* Desktop nav */}
-      <nav className="hidden md:block border-t border-[color:var(--color-line-soft)]">
+      <nav className={"hidden md:block border-t border-[color:var(--color-line-soft)] " + (isPanel ? "md:hidden" : "")}>
         <div className="container-eleva flex items-center gap-1 h-12">
           <CitySelector />
           <span className="w-px h-5 bg-[color:var(--color-line)] mx-2" />
