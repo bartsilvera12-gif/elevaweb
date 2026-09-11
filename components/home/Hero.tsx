@@ -43,7 +43,7 @@ export default function Hero() {
     <section className="container-eleva pt-6">
       <div className="relative overflow-hidden rounded bg-gradient-to-br from-[#240453] via-[#3B1370] to-[#240453] text-white h-[420px] md:h-[440px]">
         {/* Background images stacked with crossfade */}
-        <div className="hidden md:block absolute inset-0">
+        <div className="absolute inset-0">
           {slides.map((sl, idx) => (
             <div
               key={sl.image}
@@ -51,7 +51,7 @@ export default function Hero() {
               style={{ opacity: idx === i ? 1 : 0 }}
               aria-hidden={idx !== i}
             >
-              <div className="absolute right-0 top-0 bottom-0 w-1/2 overflow-hidden">
+              <div className="absolute right-0 top-0 bottom-0 w-full md:w-1/2 overflow-hidden">
                 <Image
                   src={sl.image}
                   alt=""
@@ -60,7 +60,7 @@ export default function Hero() {
                   className="object-cover"
                   priority={idx === 0}
                 />
-                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-[#240453]/20 to-[#240453]" />
+                <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-l from-[#240453]/70 via-[#240453]/40 md:from-transparent md:via-[#240453]/20 to-[#240453]" />
               </div>
             </div>
           ))}

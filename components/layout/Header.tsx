@@ -75,6 +75,7 @@ export default function Header() {
   }, [drawerOpen]);
 
   return (
+    <>
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-[color:var(--color-line)] shadow-[0_1px_0_rgba(36,4,83,0.02)]">
       {/* Barra promocional (administrable desde /admin/configuracion).
           No se renderiza mientras cargan los settings ni cuando está desactivada:
@@ -277,9 +278,10 @@ export default function Header() {
         )}
       </AnimatePresence>
 
-      {/* MOBILE DRAWER */}
-      <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} favCount={hydrated ? favCount : 0} user={user} profile={profile} />
     </header>
+    {/* MOBILE DRAWER: fuera del <header>, si no queda atrapado por su backdrop-filter */}
+    <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} favCount={hydrated ? favCount : 0} user={user} profile={profile} />
+    </>
   );
 }
 
@@ -468,7 +470,7 @@ function MobileDrawer({ open, onClose, favCount, user, profile }: { open: boolea
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "spring", damping: 32, stiffness: 300 }}
-            className="md:hidden fixed left-0 top-0 bottom-0 z-[61] w-[86%] max-w-[360px] bg-white flex flex-col shadow-2xl"
+            className="md:hidden fixed left-0 top-0 z-[61] w-[86%] max-w-[360px] h-[100dvh] bg-white flex flex-col shadow-2xl"
           >
             {/* Drawer header */}
             <div className="bg-gradient-to-br from-[#240453] to-[#1A003F] text-white px-5 py-6 relative">
