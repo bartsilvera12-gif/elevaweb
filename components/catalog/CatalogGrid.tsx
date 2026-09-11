@@ -46,21 +46,21 @@ export default function CatalogGrid({ products }: { products: CardProduct[] }) {
               )}
               <FavoriteButton slug={p.slug} floating />
             </div>
-            <div className="p-3.5 flex flex-col gap-1.5">
-              {p.rating != null && (
-                <div className="text-xs text-[color:var(--color-muted)]">★ {p.rating.toFixed(1)} · {p.sold ?? 0} vendidos</div>
-              )}
-              <div className="font-semibold text-sm line-clamp-2">{p.name}</div>
-              <div className="flex items-baseline gap-2 mt-1">
+            <div className="p-3.5 flex flex-col gap-1.5 flex-1">
+              <div className="text-xs text-[color:var(--color-muted)] min-h-[16px]">
+                {p.rating != null ? <>★ {p.rating.toFixed(1)} · {p.sold ?? 0} vendidos</> : <>&nbsp;</>}
+              </div>
+              <div className="font-semibold text-sm line-clamp-2 min-h-[40px]">{p.name}</div>
+              <div className="flex items-baseline gap-2 mt-1 min-h-[28px]">
                 <span className="font-extrabold text-lg text-[color:var(--color-brand)]">{formatGs(p.price_cents)}</span>
                 {p.compare_cents && p.compare_cents > p.price_cents && (
                   <span className="text-xs text-[color:var(--color-muted)] line-through">{formatGs(p.compare_cents)}</span>
                 )}
               </div>
               {hasVariants ? (
-                <Link href={`/producto?slug=${p.slug}`} className="btn-dark w-full justify-center mt-2 text-sm">Elegir opciones</Link>
+                <Link href={`/producto?slug=${p.slug}`} className="btn-dark w-full justify-center mt-auto text-sm">Elegir opciones</Link>
               ) : (
-                <AddToCartButton slug={p.slug} name={p.name} price_cents={p.price_cents} image={p.image} className="mt-2" />
+                <AddToCartButton slug={p.slug} name={p.name} price_cents={p.price_cents} image={p.image} className="mt-auto" />
               )}
             </div>
           </Link>
