@@ -5,7 +5,7 @@ import { MessageCircle, Mail, Phone, MapPin, Clock, Send, Check, Instagram, Face
 
 const canales = [
   { icon: MessageCircle, t: "WhatsApp", d: "+595 986 121 439", sub: "Respuesta en menos de 2 horas", href: "https://wa.me/595986121439", accent: true },
-  { icon: Mail, t: "Email", d: "macs242002@icloud.com", sub: "Te respondemos en 24hs hábiles", href: "mailto:macs242002@icloud.com" },
+  { icon: Mail, t: "Email", d: "elevastorepy@gmail.com", sub: "Te respondemos en 24hs hábiles", href: "mailto:elevastorepy@gmail.com" },
 ];
 
 const asuntos = [
@@ -222,7 +222,7 @@ export default function ContactoPage() {
         >
           <div className="text-xs font-bold tracking-widest uppercase text-[color:var(--color-accent)]">Prensa y alianzas</div>
           <h2 className="text-xl md:text-2xl font-extrabold mt-2">¿Sos periodista o querés hacer alianza con ELEVA?</h2>
-          <p className="text-white/70 mt-2 max-w-xl mx-auto text-sm">Escribinos a <a href="mailto:macs242002@icloud.com" className="underline">macs242002@icloud.com</a>.</p>
+          <p className="text-white/70 mt-2 max-w-xl mx-auto text-sm">Escribinos a <a href="mailto:elevastorepy@gmail.com" className="underline">elevastorepy@gmail.com</a>.</p>
         </motion.div>
       </section>
     </>
